@@ -25,3 +25,6 @@ How to install and launch your application.
 - Adam Laurin  
 - Labiba Ali  
 - Linyue Wang
+
+
+Adding stuff so I can do a test pull request
