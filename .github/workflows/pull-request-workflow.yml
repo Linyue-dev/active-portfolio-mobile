@@ -19,6 +19,9 @@ jobs:
           distribution: 'temurin'
           java-version: 17
 
+      - name: Give permissions for gradlew execution
+        run: chmod +x ./gradlew
+
       - name: Run Kotlin lint
         run: ./gradlew ktlintCheck
 
