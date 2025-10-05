@@ -2,7 +2,7 @@ name: pull request linting
 
 on:
   pull_request:
-    branches: ["main", "Testing-CICD-workflows"]
+    branches: ["main"]
 
 jobs:
   lint:
