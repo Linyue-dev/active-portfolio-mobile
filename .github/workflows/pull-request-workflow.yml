@@ -1,0 +1,29 @@
+name: pull request linting
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  lint:
+    name: Run lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Give permissions for gradlew execution
+        run: chmod +x ./gradlew
+
+      - name: Run Kotlin lint
+        run: ./gradlew ktlintCheck
+
+      - name: Run Android lint
+        run: ./gradlew lint
