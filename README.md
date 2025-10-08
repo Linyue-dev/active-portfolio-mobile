@@ -20,11 +20,16 @@ How to install and launch your application.
 
 ## Screenshots of application
 - (By Sprint 1): Screenshots from each of the main screens of your application.
-The landing page:
+  
+**The landing page:**
+  
   - ![img.png](img.png)
-The About us page:
+    
+**The About us page:**
   - ![img_1.png](img_1.png)
-The Comment page:
+    
+**The Comment page:**
+
   - ![img_2.png](img_2.png)
 
 ## Team members
