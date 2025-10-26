@@ -18,7 +18,7 @@ import androidx.navigation.NavController
 import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.Navigation.LocalNavController
 import com.example.active_portfolio_mobile.Navigation.Routes
-
+import com.example.active_portfolio_mobile.composables.adventure.TestAdventuresFetch
 
 //Display the landing page of the app with the tile and navigation button.
 //Users can navigate to the comments page or the About us page from here.
@@ -78,6 +78,8 @@ fun LandingPage(modifier : Modifier){
                             fontSize = 16.sp
                         )
                     }
+
+                    TestAdventuresFetch()
                 }
 
             }
