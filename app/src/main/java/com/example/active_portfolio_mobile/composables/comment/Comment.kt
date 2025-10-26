@@ -1,4 +1,4 @@
-package com.example.active_portfolio_mobile.CommentComposable
+package com.example.active_portfolio_mobile.composables.comment
 
 import java.util.concurrent.TimeUnit
 

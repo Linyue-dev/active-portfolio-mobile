@@ -3,7 +3,6 @@ package com.example.active_portfolio_mobile.Screen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -16,9 +15,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.active_portfolio_mobile.CommentComposable.Comment
-import com.example.active_portfolio_mobile.CommentComposable.CommentInput
-import com.example.active_portfolio_mobile.CommentComposable.CommentList
+import com.example.active_portfolio_mobile.composables.comment.Comment
+import com.example.active_portfolio_mobile.composables.comment.CommentInput
+import com.example.active_portfolio_mobile.composables.comment.CommentList
 import com.example.active_portfolio_mobile.ui.theme.CommentScreenTheme
 import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
