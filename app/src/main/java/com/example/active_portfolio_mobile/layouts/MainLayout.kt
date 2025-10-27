@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import com.example.active_portfolio_mobile.Navigation.Routes
 
 /**
@@ -71,6 +72,11 @@ fun MainLayout(content: @Composable () -> Unit) {
                             )
                         }
                         // Put nav buttons here
+                        Button(onClick = {
+                            navController.navigate(route = Routes.AdventureCreate.route)
+                        }) {
+                                Text("Create Adv")
+                        }
                     }
                 }
             )

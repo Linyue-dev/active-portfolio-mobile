@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.active_portfolio_mobile.Screen.CommentPage
 import com.example.active_portfolio_mobile.Screen.AboutUsPage
 import com.example.active_portfolio_mobile.Screen.LandingPage
+import com.example.active_portfolio_mobile.Screen.adventure.CreateAdventureScreen
 
 //Sets up the app navigation using NavHost with three routes: LandingPage,
 // CommentPage and AboutUsPage.
@@ -28,6 +29,8 @@ fun Router(modifier: Modifier) {
             composable(Routes.Main.route) { LandingPage(modifier)}
             composable(Routes.Comment.route) {CommentPage(modifier)}
             composable(Routes.About.route) {AboutUsPage(modifier)}
+            // Adventure routes
+            composable(Routes.AdventureCreate.route) { CreateAdventureScreen(modifier) }
         }
     }
 }
