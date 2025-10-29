@@ -20,6 +20,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 
+/**
+ * A list of selectable items, many of which can be selected at once.
+ * @param list The list of items to be displayed and selected.
+ * Display is based on the item's toString() value.
+ * @param selectedItems A list of items to be pre-selected.
+ * @param selectItem A function that will be called whenever an item is selected. The item itself
+ * is passed as a parameter.
+ * @param deselectItem A function that will be called whenever an item is deselected. The item
+ * itself is passed as a parameter.
+ */
 @Composable
 fun <T> MultiSelectList(list: List<T>,
                         selectedItems: List<T>,
@@ -32,7 +42,9 @@ fun <T> MultiSelectList(list: List<T>,
                     modifier = Modifier.padding(all = 5.dp)
                 ) {
                     Row {
-                        var checkedState by rememberSaveable { mutableStateOf(false) }
+                        var checkedState by rememberSaveable {
+                            mutableStateOf(item in selectedItems)
+                        }
                         Text(item.toString())
                         Checkbox(
                             checked = checkedState,

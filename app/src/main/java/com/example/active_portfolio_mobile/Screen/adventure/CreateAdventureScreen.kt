@@ -1,11 +1,8 @@
 package com.example.active_portfolio_mobile.Screen.adventure
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -13,9 +10,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,6 +22,11 @@ import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.model.Adventure
 import com.example.active_portfolio_mobile.viewModels.AdventureCreationUpdateVM
 
+/**
+ * The primary screen for creating, updating, and deleting an Adventure.
+ * @param adventureToUpdate An existing Adventure object which is to be updated.
+ * If none supplied, the screen will seek to create a new adventure.
+ */
 @Composable
 fun CreateAdventureScreen(
     modifier: Modifier,
@@ -36,11 +35,15 @@ fun CreateAdventureScreen(
 ) {
     val adventure by adventureVM.adventure.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
+        if (adventureToUpdate != null) {
+            adventureVM.setAdventure(adventureToUpdate)
+        }
         adventureVM.setUserId("68ff6707223ec2d08217d54d") //TODO set to the signed in user's id
     }
 
     MainLayout {
         LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
+            // Set Title of Adventure
             item {
                 TextField(
                     label = { Text("Title") },
@@ -52,11 +55,13 @@ fun CreateAdventureScreen(
                     ), modifier = Modifier.fillMaxWidth()
                 )
             }
+            // Navigate to Adventure Section creation/update/delete for this adventure
             item {
                 Button(onClick = {}) {
-                    Text("Build My Adventure") //TODO actually nav to section update screen
+                    Text("Build My Adventure") //TODO actually nav to section update screen (only when adventure already created)
                 }
             }
+            // Set visibility of Adventure
             item {
                 DropDownTab(name = "Visibility: ${adventure.visibility}") {
                     SingleSelectList(
@@ -66,6 +71,7 @@ fun CreateAdventureScreen(
                     )
                 }
             }
+            // Select Portfolios in which to include this Adventure.
             item {
                 // TODO Get the user's portfolios and set them here dynamically, using their names
                 DropDownTab(name = "Portfolios (TO UPDATE WITH REAL PORTFOLIOS)") {
@@ -81,6 +87,7 @@ fun CreateAdventureScreen(
                     )
                 }
             }
+            // Create Adventure or save changes to existing one.
             item {
                 Button(onClick = {
                     adventureVM.saveAdventure()
@@ -91,6 +98,7 @@ fun CreateAdventureScreen(
                     Text("${adventureVM.message.value}")
                 }
             }
+            // Delete the Adventure.
             item {
                 if (adventure.id != "") {
                     DeleteButtonWithConfirm {

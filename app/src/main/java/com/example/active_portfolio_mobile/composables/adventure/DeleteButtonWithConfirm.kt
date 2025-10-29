@@ -12,9 +12,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 
+/**
+ * A button for performing a deletion operation, which shows a confirmation pop-up when pressed.
+ * @param deleteFunc The function which will handle the deletion operation
+ * once the deletion is confirmed.
+ */
 @Composable
 fun DeleteButtonWithConfirm(deleteFunc: () -> Unit) {
     var confirmDelete by remember { mutableStateOf(false) }
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Button(onClick = {
             confirmDelete = true

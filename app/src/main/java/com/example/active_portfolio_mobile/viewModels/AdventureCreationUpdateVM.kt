@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
+/**
+ * A view model which handles operations related to an Adventure object.
+ */
 class AdventureCreationUpdateVM : ViewModel() {
     private var _message = mutableStateOf<String?>(null)
     val message: State<String?>
@@ -42,11 +45,20 @@ class AdventureCreationUpdateVM : ViewModel() {
             _adventure.update { it.copy(visibility = visibility) }
         }
     }
+
+    /**
+     * Add a portfolio to the list of portfolios in which the adventure is included.
+     * @param portfolio The ID of the portfolio to add (24 hex characters).
+     */
     fun addToPortfolios(portfolio: String) {
         viewModelScope.launch {
             _adventure.update { it.copy(portfolios = it.portfolios + portfolio) }
         }
     }
+    /**
+     * Remove a portfolio from the list of portfolios in which the adventure is included.
+     * @param portfolioToRemove The ID of the portfolio to remove (24 hex characters).
+     */
     fun removeFromPortfolios(portfolioToRemove: String) {
         viewModelScope.launch {
             _adventure.update {
@@ -57,6 +69,11 @@ class AdventureCreationUpdateVM : ViewModel() {
         }
     }
 
+    /**
+     * Creates an Adventure or updates an existing one depending on whether the view model's
+     * adventure has a set id. Sets the adventure id once a new Adventure is created so it can
+     * proceed to be updated when this function is called again.
+     */
     fun saveAdventure() {
         viewModelScope.launch {
             try {
@@ -88,6 +105,11 @@ class AdventureCreationUpdateVM : ViewModel() {
         }
     }
 
+    /**
+     * Deletes an adventure through the Active Portfolio API using the current id value of view model's
+     * adventure. The values for the view model's held adventure are then reset (except for userId),
+     * allowing a new adventure to be defined and created.
+     */
     fun deleteAdventure() {
         viewModelScope.launch {
             try {

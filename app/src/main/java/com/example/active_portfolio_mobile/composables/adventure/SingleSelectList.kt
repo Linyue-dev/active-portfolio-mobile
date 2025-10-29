@@ -4,16 +4,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+/**
+ * A list of items, one of which can be selected at a time.
+ * @param list The list of items to be displayed and selected.
+ * @param selectedItem The item in the list that is selected.
+ * @param setSelectedItem The setter function for the selected item.
+ */
 @Composable
 fun SingleSelectList(list: List<String>, selectedItem: String, setSelectedItem: (String) -> Unit) {
     Column {
@@ -24,7 +28,11 @@ fun SingleSelectList(list: List<String>, selectedItem: String, setSelectedItem: 
                     onClick = {
                         setSelectedItem(item)
                     }) {
-                    Text(item)
+                    var fontWeight = FontWeight.Normal
+                    if (item == selectedItem) {
+                        fontWeight = FontWeight.Bold
+                    }
+                    Text(text = item, fontWeight = fontWeight)
                 }
             }
         }
