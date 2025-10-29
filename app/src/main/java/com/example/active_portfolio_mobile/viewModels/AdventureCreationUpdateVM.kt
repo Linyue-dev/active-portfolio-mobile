@@ -82,9 +82,24 @@ class AdventureCreationUpdateVM : ViewModel() {
                 } else {
                     _message.value = response.message()
                 }
-
             } catch(err: Exception) {
                 println("An error occurred while creating/updating the Adventure: $err")
+            }
+        }
+    }
+
+    fun deleteAdventure() {
+        viewModelScope.launch {
+            try {
+                val response = ActivePortfolioApi.adventure.delete(adventure.value.id)
+                if (response.isSuccessful) {
+                    _adventure.update { it.copy(id = "", title = "", visibility = "", portfolios = emptyList()) }
+                    _message.value = "Success"
+                } else {
+                    _message.value = response.message()
+                }
+            } catch(err: Exception) {
+                println("An error occurred while trying to delete the Adventure: $err")
             }
         }
     }
