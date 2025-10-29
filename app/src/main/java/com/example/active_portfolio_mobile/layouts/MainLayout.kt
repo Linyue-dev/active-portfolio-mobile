@@ -71,10 +71,17 @@ fun MainLayout(content: @Composable () -> Unit) {
                             )
                         }
                         // Put nav buttons here
+                        IconButton( onClick = {
+                            navController.navigate(Routes.Profile.route)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.Person,
+                                contentDescription = "Profile"
+                            )
+                        }
                     }
                 }
             )
-
         }
     ) { innerPadding ->
         // The main content block
