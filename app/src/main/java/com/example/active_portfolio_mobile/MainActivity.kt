@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.active_portfolio_mobile.Navigation.Router
+import com.example.active_portfolio_mobile.navigation.Router
 import com.example.active_portfolio_mobile.ui.theme.CommentScreenTheme
 
 

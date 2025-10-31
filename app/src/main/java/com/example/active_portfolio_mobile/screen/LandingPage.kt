@@ -15,10 +15,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.active_portfolio_mobile.layouts.MainLayout
-import com.example.active_portfolio_mobile.Navigation.LocalNavController
-import com.example.active_portfolio_mobile.Navigation.Routes
+import com.example.active_portfolio_mobile.navigation.LocalNavController
+import com.example.active_portfolio_mobile.navigation.Routes
 import com.example.active_portfolio_mobile.composables.adventure.TestAdventuresFetch
+import com.example.active_portfolio_mobile.layouts.MainLayout
 
 //Display the landing page of the app with the tile and navigation button.
 //Users can navigate to the comments page or the About us page from here.

@@ -1,4 +1,4 @@
-package com.example.active_portfolio_mobile.Screen
+package com.example.active_portfolio_mobile.ui.profile
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
@@ -7,9 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.example.active_portfolio_mobile.Navigation.LocalNavController
-import com.example.active_portfolio_mobile.Navigation.Routes
 import com.example.active_portfolio_mobile.layouts.MainLayout
+import com.example.active_portfolio_mobile.navigation.LocalNavController
+import com.example.active_portfolio_mobile.navigation.Routes
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 
 @Composable

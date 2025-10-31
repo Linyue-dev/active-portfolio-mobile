@@ -2,10 +2,8 @@ package com.example.active_portfolio_mobile.data.local
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.active_portfolio_mobile.model.User
+import com.example.active_portfolio_mobile.data.remote.dto.User
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.decodeFromString
 
 class TokenManager (context: Context) {
     private val prefs: SharedPreferences =

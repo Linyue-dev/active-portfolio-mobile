@@ -1,4 +1,4 @@
-package com.example.active_portfolio_mobile.model
+package com.example.active_portfolio_mobile.data.remote.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -27,13 +27,4 @@ data class LogInRequest(
 data class LogInResponse(
     val token: String,
     val user: User
-)
-
-@Serializable
-data class SignUpRequest(
-    val email: String,
-    val password: String,
-    val firstName: String,
-    val lastName: String,
-    val program: String,
 )

@@ -1,4 +1,4 @@
-package com.example.active_portfolio_mobile.Navigation
+package com.example.active_portfolio_mobile.navigation
 
 //Defines the navigation routes used in the app.
 //Each object represents a specific screen route for navigation
@@ -9,7 +9,6 @@ sealed class Routes(val route: String){
 
     // Auth
     object Login : Routes("LoginPageRoute")
-    object SignUp : Routes("SignUpPageRoute")
 
     // User
     object Profile : Routes("ProfilePageRoute")

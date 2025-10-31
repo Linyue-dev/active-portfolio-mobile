@@ -22,17 +22,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.active_portfolio_mobile.Navigation.LocalNavController
-import com.example.active_portfolio_mobile.Navigation.Routes
 import com.example.active_portfolio_mobile.layouts.MainLayout
+import com.example.active_portfolio_mobile.navigation.LocalNavController
+import com.example.active_portfolio_mobile.navigation.Routes
 
 @Composable
 fun LoginPage(
     viewModel: AuthViewModel,
-    onNavigateToSignUp: () -> Unit
 ){
     MainLayout {
         val navController = LocalNavController.current
@@ -100,16 +100,11 @@ fun LoginPage(
                 }
             }
 
-            TextButton( onClick = onNavigateToSignUp) {
-                Text("Don't have an account? Sign up")
-            }
-
-
             if (uiState.error != null) {
                 Spacer(Modifier.height(16.dp))
                 Text(
                     text = uiState.error ?: "",
-                    color = androidx.compose.ui.graphics.Color.Red
+                    color = Color.Red
                 )
             }
         }

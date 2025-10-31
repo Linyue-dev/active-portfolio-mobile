@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.local.TokenManager
 import com.example.active_portfolio_mobile.data.remote.RetrofitClient
-import com.example.active_portfolio_mobile.data.remote.UserApiService
-import com.example.active_portfolio_mobile.model.LogInRequest
-import com.example.active_portfolio_mobile.model.User
+import com.example.active_portfolio_mobile.data.remote.api.UserApiService
+import com.example.active_portfolio_mobile.data.remote.dto.LogInRequest
+import com.example.active_portfolio_mobile.data.remote.dto.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -101,15 +101,11 @@ class AuthViewModel(
         }
     }
 
-
     /**
      * Handle user logout
      */
     fun logout(){
-
-        // Clear all token and user data
         tokenManager.clearAll()
-        // Reset UI state to initial state
         _uiState.value = AuthUiState(isLoading = false)
     }
 }

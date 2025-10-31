@@ -1,4 +1,4 @@
-package com.example.active_portfolio_mobile.Navigation
+package com.example.active_portfolio_mobile.navigation
 
 
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,10 +16,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.active_portfolio_mobile.Screen.CommentPage
 import com.example.active_portfolio_mobile.Screen.AboutUsPage
 import com.example.active_portfolio_mobile.Screen.LandingPage
-import com.example.active_portfolio_mobile.Screen.ProfilePage
+import com.example.active_portfolio_mobile.ui.profile.ProfilePage
 import com.example.active_portfolio_mobile.data.local.TokenManager
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
-import com.example.active_portfolio_mobile.ui.auth.AuthViewModelFactory
+import com.example.active_portfolio_mobile.ui.common.ViewModelFactory
 import com.example.active_portfolio_mobile.ui.auth.LoginPage
 
 //Sets up the app navigation using NavHost with three routes: LandingPage,
@@ -31,6 +31,10 @@ fun Router(modifier: Modifier) {
     val context = LocalContext.current
     val tokenManager =  remember { TokenManager(context) }
 
+    val authViewModel: AuthViewModel = viewModel(
+        factory = ViewModelFactory(tokenManager)
+    )
+
     CompositionLocalProvider(
         LocalNavController provides navController) {
         NavHost(navController = navController, startDestination = Routes.Main.route, modifier = modifier.fillMaxSize()) {
@@ -40,22 +44,12 @@ fun Router(modifier: Modifier) {
 
             // Auth
             composable(Routes.Login.route) {
-                val viewModel: AuthViewModel = viewModel(
-                    factory = AuthViewModelFactory(tokenManager)
-                )
-                LoginPage(
-                    viewModel,
-                    onNavigateToSignUp = { navController.navigate(Routes.SignUp.route)}
-                )
+                LoginPage(authViewModel)
             }
 
             // profile
             composable(Routes.Profile.route) {
-                val viewModel: AuthViewModel = viewModel(
-                    factory = AuthViewModelFactory(tokenManager)
-                )
-
-                ProfilePage(viewModel)
+                ProfilePage(authViewModel)
             }
         }
     }
