@@ -16,15 +16,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.active_portfolio_mobile.Navigation.LocalNavController
+import com.example.active_portfolio_mobile.navigation.LocalNavController
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import com.example.active_portfolio_mobile.Navigation.Routes
+import com.example.active_portfolio_mobile.navigation.Routes
 
 /**
  * The main layout to be shared across screens.
@@ -77,10 +75,17 @@ fun MainLayout(content: @Composable () -> Unit) {
                         }) {
                                 Text("Create Adv")
                         }
+                        IconButton( onClick = {
+                            navController.navigate(Routes.Profile.route)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.Person,
+                                contentDescription = "Profile"
+                            )
+                        }
                     }
                 }
             )
-
         }
     ) { innerPadding ->
         // The main content block
