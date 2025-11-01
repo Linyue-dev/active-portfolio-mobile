@@ -1,4 +1,4 @@
-package com.example.active_portfolio_mobile.model
+package com.example.active_portfolio_mobile.data.remote.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
