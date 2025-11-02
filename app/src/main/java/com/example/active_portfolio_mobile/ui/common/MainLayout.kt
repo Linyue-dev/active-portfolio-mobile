@@ -22,6 +22,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import com.example.active_portfolio_mobile.navigation.Routes
 
 /**
@@ -74,6 +75,11 @@ fun MainLayout(content: @Composable () -> Unit) {
                             navController.navigate(route = Routes.AdventureCreate.route)
                         }) {
                                 Text("Create Adv")
+                        }
+                        Button(onClick = {
+                            navController.navigate(route = Routes.SectionsUpdate.go("6907953bbb686888cade669f"))
+                        }) {
+                            Text("Update Sections")
                         }
                         IconButton( onClick = {
                             navController.navigate(Routes.Profile.route)

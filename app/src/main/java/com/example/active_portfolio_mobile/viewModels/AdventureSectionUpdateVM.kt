@@ -1,43 +1,42 @@
 package com.example.active_portfolio_mobile.viewModels
 
-import android.util.Log.e
 import androidx.lifecycle.ViewModel
-import com.example.active_portfolio_mobile.model.Adventure
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.example.active_portfolio_mobile.model.AdventureSection
-import com.example.active_portfolio_mobile.model.AdventureUpdateRequest
+import com.example.active_portfolio_mobile.data.remote.dto.Adventure
+import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
+import com.example.active_portfolio_mobile.data.remote.dto.AdventureSectionUpdateRequest
+import com.example.active_portfolio_mobile.data.remote.dto.AdventureUpdateRequest
 import com.example.active_portfolio_mobile.network.ActivePortfolioApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.example.active_portfolio_mobile.network.ActivePortfolioApi.adventure
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.Response
 
 class AdventureSectionUpdateVM : ViewModel() {
     private var _message = mutableStateOf<String?>(null)
     val message: State<String?>
         get() = _message
 
-    private var _adventureId = mutableStateOf("")
-    val adventureId: State<String>
-        get() = _adventureId
-    fun setAdventureId(adventureId: String) {
-        _adventureId = mutableStateOf(adventureId)
-    }
+//    private var _adventureId = mutableStateOf("")
+//    val adventureId: State<String>
+//        get() = _adventureId
+//    fun setAdventureId(adventureId: String) {
+//        _adventureId = mutableStateOf(adventureId)
+//    }
 
     var sections = mutableStateOf<List<AdventureSection>>(emptyList())
         private set
-    fun fetchSections() {
+    fun fetchSections(adventureId: String) {
         viewModelScope.launch {
             try {
                 val response = ActivePortfolioApi.adventureSection.getSectionsOfAdventure(
-                    adventureId = adventureId.value,
+                    adventureId = adventureId
                 )
                 if (response.isSuccessful) {
                     sections.value = response.body() ?: emptyList()
+                } else {
+                    _message.value = response.message()
                 }
             } catch(e: Exception) {
                 println(e)
@@ -45,107 +44,51 @@ class AdventureSectionUpdateVM : ViewModel() {
         }
     }
 
-//    private var _adventure = MutableStateFlow(Adventure("", "", "", "", emptyList()))
-//    val adventure: StateFlow<Adventure>
-//        get() = _adventure.asStateFlow()
-//
-//    fun setAdventure(adventure: Adventure) {
-//        _adventure = MutableStateFlow(adventure)
-//    }
-//
-//    fun setUserId(id: String) {
-//        viewModelScope.launch {
-//            _adventure.update { it.copy(userId = id) }
-//        }
-//    }
-//    fun setTitle(title: String) {
-//        viewModelScope.launch {
-//            _adventure.update { it.copy(title = title) }
-//        }
-//    }
-//    fun setVisibility(visibility: String) {
-//        viewModelScope.launch {
-//            _adventure.update { it.copy(visibility = visibility) }
-//        }
-//    }
-//
-//    /**
-//     * Add a portfolio to the list of portfolios in which the adventure is included.
-//     * @param portfolio The ID of the portfolio to add (24 hex characters).
-//     */
-//    fun addToPortfolios(portfolio: String) {
-//        viewModelScope.launch {
-//            _adventure.update { it.copy(portfolios = it.portfolios + portfolio) }
-//        }
-//    }
-//    /**
-//     * Remove a portfolio from the list of portfolios in which the adventure is included.
-//     * @param portfolioToRemove The ID of the portfolio to remove (24 hex characters).
-//     */
-//    fun removeFromPortfolios(portfolioToRemove: String) {
-//        viewModelScope.launch {
-//            _adventure.update {
-//                it.copy(
-//                    portfolios = it.portfolios.filterNot { portfolio -> portfolio == portfolioToRemove }
-//                )
-//            }
-//        }
-//    }
-//
-//    /**
-//     * Creates an Adventure or updates an existing one depending on whether the view model's
-//     * adventure has a set id. Sets the adventure id once a new Adventure is created so it can
-//     * proceed to be updated when this function is called again.
-//     */
-//    fun saveAdventure() {
-//        viewModelScope.launch {
-//            try {
-//                var response: Response<Adventure>
-//                if (adventure.value.id == "") {
-//                    response = ActivePortfolioApi.adventure.create(adventure.value)
-//                } else {
-//                    val updatedAdventure = AdventureUpdateRequest(
-//                        newTitle = adventure.value.title,
-//                        newVisibility = adventure.value.visibility,
-//                        newPortfolios = adventure.value.portfolios
-//                    )
-//                    response = ActivePortfolioApi.adventure.update(
-//                        id = adventure.value.id,
-//                        updatedAdventure = updatedAdventure
-//                    )
-//                }
-//                if (response.isSuccessful) {
-//                    if (adventure.value.id == "") {
-//                        _adventure.update { it.copy(id = response.body()!!.id) }
-//                    }
-//                    _message.value = "Success"
-//                } else {
-//                    _message.value = response.message()
-//                }
-//            } catch(err: Exception) {
-//                println("An error occurred while creating/updating the Adventure: $err")
-//            }
-//        }
-//    }
-//
-//    /**
-//     * Deletes an adventure through the Active Portfolio API using the current id value of view model's
-//     * adventure. The values for the view model's held adventure are then reset (except for userId),
-//     * allowing a new adventure to be defined and created.
-//     */
-//    fun deleteAdventure() {
-//        viewModelScope.launch {
-//            try {
-//                val response = ActivePortfolioApi.adventure.delete(adventure.value.id)
-//                if (response.isSuccessful) {
-//                    _adventure.update { it.copy(id = "", title = "", visibility = "", portfolios = emptyList()) }
-//                    _message.value = "Success"
-//                } else {
-//                    _message.value = response.message()
-//                }
-//            } catch(err: Exception) {
-//                println("An error occurred while trying to delete the Adventure: $err")
-//            }
-//        }
-//    }
+    /**
+     * Saves updates to an existing section in the database via the ActivePortfolio API.
+     * @param section the updated Adventure Section to be saved.
+     */
+    fun updateSection(section: AdventureSection, setMessage: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val updatedSection = AdventureSectionUpdateRequest(
+                    newLabel = section.label,
+                    newContentString = section.content,
+                    newDescription = section.description ?: "",
+                    newPortfolios = section.portfolios
+                )
+                val response = ActivePortfolioApi.adventureSection.updateSection(
+                    sectionId = section.id,
+                    updatedSection = updatedSection
+                )
+                if (response.isSuccessful) {
+                    setMessage("Success")
+                } else {
+                    setMessage(response.message())
+                }
+            } catch(err: Exception) {
+                println("An error occurred while creating/updating the Adventure Section: $err")
+            }
+        }
+    }
+
+    /**
+     * Deletes an adventure section through the Active Portfolio API.
+     * @param section the adventure section to be deleted.
+     */
+    fun deleteSection(section: AdventureSection, setMessage: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = ActivePortfolioApi.adventureSection.delete(section.id)
+                if (response.isSuccessful) {
+                   setMessage("Success")
+                    sections.value = sections.value.filterNot { it.id == section.id }
+                } else {
+                    setMessage(response.message())
+                }
+            } catch(err: Exception) {
+                println("An error occurred while trying to delete the Adventure: $err")
+            }
+        }
+    }
 }

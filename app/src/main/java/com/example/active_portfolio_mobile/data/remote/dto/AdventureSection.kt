@@ -1,31 +1,32 @@
-package com.example.active_portfolio_mobile.model
+package com.example.active_portfolio_mobile.data.remote.dto
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
 @Serializable
 data class AdventureSection(
-    var label: String,
+    @SerialName(value = "_id")
+    val id: String,
+    val label: String,
     val type: String,
-    var content: String,
+    val content: String,
     val adventureId: String,
-    var portfolios: List<String>,
-    var description: String?
+    val portfolios: List<String>,
+    val description: String? = ""
 )
 
 @Serializable
-data class AdventureSectionText(
-    val label: String,
-    val content: String,
-    val adventureId: String,
-    val portfolios: List<String>
+data class AdventureSectionUpdateRequest(
+    val newLabel: String,
+    val newContentString: String,
+    val newDescription: String = "",
+    val newPortfolios: List<String>
 )
 
-@Serializable
-data class AdventureSectionLink(
-    val label: String,
-    val content: String,
-    val description: String,
-    val adventureId: String,
-    val portfolios: List<String>
-)
+
+object SectionType {
+    const val TEXT = "text"
+    const val LINK = "link"
+    const val IMAGE = "image"
+}

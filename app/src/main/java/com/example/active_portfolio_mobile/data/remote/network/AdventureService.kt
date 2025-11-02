@@ -1,6 +1,8 @@
-package com.example.active_portfolio_mobile.network
+package com.example.active_portfolio_mobile.data.remote.network
 
 import com.example.active_portfolio_mobile.data.remote.dto.Adventure
+import com.example.active_portfolio_mobile.data.remote.dto.AdventureUpdateRequest
+import kotlinx.serialization.Serializable
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -10,6 +12,10 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface AdventureService {
+    @GET("adventures/id/{id}")
+    suspend fun getOne(
+        @Path("id") id: String
+    ) : Response<Adventure>
     @GET("adventures/all")
     suspend fun getAll() : Response<List<Adventure>>
 

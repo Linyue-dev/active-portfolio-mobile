@@ -14,25 +14,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.active_portfolio_mobile.composables.adventure.DeleteButtonWithConfirm
 import com.example.active_portfolio_mobile.composables.adventure.DropDownTab
 import com.example.active_portfolio_mobile.composables.adventure.MultiSelectList
 import com.example.active_portfolio_mobile.composables.adventure.SingleSelectList
+import com.example.active_portfolio_mobile.data.remote.dto.Adventure
 import com.example.active_portfolio_mobile.layouts.MainLayout
-import com.example.active_portfolio_mobile.model.Adventure
+import com.example.active_portfolio_mobile.navigation.LocalNavController
+import com.example.active_portfolio_mobile.navigation.Routes
 import com.example.active_portfolio_mobile.viewModels.AdventureCreationUpdateVM
 
 /**
  * The primary screen for creating, updating, and deleting an Adventure.
- * @param adventureToUpdate An existing Adventure object which is to be updated.
+ * @param adventureToUpdate The id of an existing Adventure which is to be updated.
  * If none supplied, the screen will seek to create a new adventure.
  */
 @Composable
 fun CreateAdventureScreen(
     modifier: Modifier,
-    adventureToUpdate: Adventure? = null,
+    adventureToUpdate: String? = null,
     adventureVM: AdventureCreationUpdateVM = viewModel()
 ) {
+    val navController: NavController = LocalNavController.current
     val adventure by adventureVM.adventure.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
         if (adventureToUpdate != null) {
@@ -57,8 +61,12 @@ fun CreateAdventureScreen(
             }
             // Navigate to Adventure Section creation/update/delete for this adventure
             item {
-                Button(onClick = {}) {
-                    Text("Build My Adventure") //TODO actually nav to section update screen (only when adventure already created)
+                if (adventure.id != "") {
+                    Button(onClick = {
+                        navController.navigate(Routes.SectionsUpdate.go(adventure.id))
+                    }) {
+                        Text("Build My Adventure") //TODO actually nav to section update screen (only when adventure already created)
+                    }
                 }
             }
             // Set visibility of Adventure

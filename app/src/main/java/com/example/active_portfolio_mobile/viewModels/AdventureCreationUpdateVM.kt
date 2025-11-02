@@ -1,11 +1,12 @@
 package com.example.active_portfolio_mobile.viewModels
 
+import android.util.Log.e
 import androidx.lifecycle.ViewModel
-import com.example.active_portfolio_mobile.model.Adventure
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.example.active_portfolio_mobile.model.AdventureUpdateRequest
+import com.example.active_portfolio_mobile.data.remote.dto.Adventure
+import com.example.active_portfolio_mobile.data.remote.dto.AdventureUpdateRequest
 import com.example.active_portfolio_mobile.network.ActivePortfolioApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,8 +27,19 @@ class AdventureCreationUpdateVM : ViewModel() {
     val adventure: StateFlow<Adventure>
         get() = _adventure.asStateFlow()
 
-    fun setAdventure(adventure: Adventure) {
-        _adventure = MutableStateFlow(adventure)
+    fun setAdventure(id: String) {
+        viewModelScope.launch {
+            try {
+                val response = ActivePortfolioApi.adventure.getOne(id)
+                if (response.isSuccessful) {
+                    _adventure.update { response.body()!! }
+                } else {
+                  _message.value = "There was an issue retrieving the adventure."
+                }
+            } catch(e: Exception) {
+                println(e)
+            }
+        }
     }
 
     fun setUserId(id: String) {

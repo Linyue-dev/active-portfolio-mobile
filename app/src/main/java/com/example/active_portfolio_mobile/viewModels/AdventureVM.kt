@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 
 class AdventureVM : ViewModel() {
     private val _adventures = MutableStateFlow<List<Adventure>>(emptyList())
-
     val adventures: StateFlow<List<Adventure>> = _adventures.asStateFlow()
 
     fun fetchAllAdventures() {
