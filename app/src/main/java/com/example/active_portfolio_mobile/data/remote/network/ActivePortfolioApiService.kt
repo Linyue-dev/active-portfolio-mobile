@@ -1,5 +1,7 @@
-package com.example.active_portfolio_mobile.network
+package com.example.active_portfolio_mobile.data.remote.network
 
+import com.example.active_portfolio_mobile.network.AdventureSectionService
+import com.example.active_portfolio_mobile.network.AdventureService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -28,5 +30,8 @@ object ActivePortfolioApi {
     }
     val adventureSection : AdventureSectionService by lazy {
         retrofit.create(AdventureSectionService::class.java)
+    }
+    val portfolio: PortfolioService by lazy{
+        retrofit.create(PortfolioService::class.java)
     }
 }
