@@ -10,7 +10,9 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.active_portfolio_mobile.composables.adventure.DropDownTab
+import com.example.active_portfolio_mobile.composables.adventure.UpdateImageSectionForm
 import com.example.active_portfolio_mobile.composables.adventure.UpdateSectionForm
+import com.example.active_portfolio_mobile.data.remote.dto.SectionType
 import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.viewModels.AdventureCreationUpdateVM
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionUpdateVM
@@ -34,8 +36,13 @@ fun UpdateSectionsScreen(
                 Text(adventure.title)
             }
             items(sections.value, key = {it.id}) { section ->
-                DropDownTab(section.label) {
-                    UpdateSectionForm(section, adventure, adventureSectionVM)
+                when (section.type) {
+                    SectionType.IMAGE -> DropDownTab(section.label) {
+                        UpdateImageSectionForm(section, adventure, adventureSectionVM)
+                    }
+                    else -> DropDownTab(section.label) {
+                        UpdateSectionForm(section, adventure, adventureSectionVM)
+                    }
                 }
             }
             item {
