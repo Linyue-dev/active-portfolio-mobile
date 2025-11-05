@@ -30,6 +30,13 @@ import com.example.active_portfolio_mobile.data.remote.dto.SectionType
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionImageUpdateVM
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionUpdateVM
 
+/**
+ * A form for updating a Text or Link Adventure Section.
+ * @param sectionToShow the section to update with the form.
+ * @param parentAdventure the adventure to which the section belongs.
+ * @param adventureSectionVM the View Model which contains the list of sections, used for accessing
+ * the ActivePortfolio API functions and removing deleted sections from the section list.
+ */
 @Composable
 fun UpdateSectionForm(
     sectionToShow: AdventureSection,
@@ -49,14 +56,17 @@ fun UpdateSectionForm(
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer
             ), modifier = Modifier.fillMaxWidth()
         )
+
         when (section.value.type) {
-            SectionType.TEXT -> UpdateTextSectionContent(section.value.content) {
+            SectionType.TEXT -> UpdateStringSectionContent("Text", section.value.content) {
                 section.value = section.value.copy( content = it)
             }
-            SectionType.LINK -> UpdateLinkSectionContent(section.value.content) {
+            SectionType.LINK -> UpdateStringSectionContent("Link", section.value.content) {
                 section.value = section.value.copy( content = it)
             }
         }
+
+        // Text type Adventure Sections are the only ones without a description.
         if (section.value.type != SectionType.TEXT) {
             TextField(
                 label = { Text("Description") },
@@ -68,6 +78,7 @@ fun UpdateSectionForm(
                 ), modifier = Modifier.fillMaxWidth()
             )
         }
+
         // if (parentAdventure.portfolios.isNotEmpty()) {
         // TODO Get the adventure's portfolios and set them here dynamically, using their names
         DropDownTab(name = "Portfolios") {
@@ -83,6 +94,7 @@ fun UpdateSectionForm(
             )
         }
         // }
+
         Button(onClick = {
             adventureSectionVM.updateSection(section.value) { newMessage ->
                 message = newMessage
@@ -91,21 +103,30 @@ fun UpdateSectionForm(
         }) {
             Text("Save")
         }
+
         DeleteButtonWithConfirm {
             adventureSectionVM.deleteSection(section.value) {
                 message = it
             }
         }
+
         if (message != "") {
             Text(message)
         }
     }
 }
 
+/**
+ * A field for editing a Section's content in the Update Section Form where that content is a string.
+ * @param contentType the name to be given to the content field's label, reflecting the content type
+ * of the section.
+ * @param content the actual content of the section to be updated in the field.
+ * @param setSectionContent a setter for updating the section's content.
+ */
 @Composable
-fun UpdateTextSectionContent(content: String, setSectionContent: (String) -> Unit) {
+fun UpdateStringSectionContent(contentType: String, content: String, setSectionContent: (String) -> Unit) {
     TextField(
-        label = { Text("Text") },
+        label = { Text(contentType) },
         value = content,
         onValueChange = setSectionContent,
         colors = TextFieldDefaults.colors(
@@ -115,19 +136,15 @@ fun UpdateTextSectionContent(content: String, setSectionContent: (String) -> Uni
     )
 }
 
-@Composable
-fun UpdateLinkSectionContent(content: String, setSectionContent: (String) -> Unit) {
-    TextField(
-        label = { Text("Link URL") },
-        value = content,
-        onValueChange = setSectionContent,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer
-        ), modifier = Modifier.fillMaxWidth()
-    )
-}
-
+/**
+ * A form for updating an Image Adventure Section.
+ * @param sectionToShow the section to update with the form.
+ * @param parentAdventure the adventure to which the section belongs.
+ * @param allSectionsVM the View Model which contains the list of sections, used for accessing
+ * certain ActivePortfolio API functions and removing deleted sections from the section list.
+ * @param adventureSectionVM the View Model for updating an image type Adventure Section. Creates
+ * a new View Model for this purpose by default.
+ */
 @Composable
 fun UpdateImageSectionForm(
     sectionToShow: AdventureSection,
@@ -153,7 +170,12 @@ fun UpdateImageSectionForm(
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer
             ), modifier = Modifier.fillMaxWidth()
         )
-        UpdateImageSectionContent(bitmaps.value, adventureSectionVM)
+
+        UpdateImageSectionContent(
+            bitmaps.value,
+            { adventureSectionVM.addImage(it) },
+            { adventureSectionVM.removeImage(it) }
+        )
 
         TextField(
             label = { Text("Description") },
@@ -164,6 +186,7 @@ fun UpdateImageSectionForm(
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer
             ), modifier = Modifier.fillMaxWidth()
         )
+
         // if (parentAdventure.portfolios.isNotEmpty()) {
         // TODO Get the adventure's portfolios and set them here dynamically, using their names
         DropDownTab(name = "Portfolios") {
@@ -179,6 +202,7 @@ fun UpdateImageSectionForm(
             )
         }
         // }
+
         Button(onClick = {
             adventureSectionVM.updateSection { newMessage ->
                 message = newMessage
@@ -187,20 +211,35 @@ fun UpdateImageSectionForm(
         }) {
             Text("Save")
         }
+
         DeleteButtonWithConfirm {
             allSectionsVM.deleteSection(section) {
                 message = it
             }
             if (message == "Success") {  }
         }
+
         if (message != "") {
             Text(message)
         }
     }
 }
 
+/**
+ * A field for editing a Section's content in the Update Section Form when that content is an array
+ * of bitmaps (representing image files).
+ * @param bitmaps the image files which are the content of the Section being updated.
+ * @param addImage a function to be run whenever a new image is added, passing that image bitmap
+ * as an argument.
+ * @param removeImage a function to be run whenever an image is removed, passing that image bitmap
+ * as an argument.
+ */
 @Composable
-fun UpdateImageSectionContent(bitmaps: List<Bitmap>, adventureSectionVM: AdventureSectionImageUpdateVM) {
+fun UpdateImageSectionContent(
+    bitmaps: List<Bitmap>,
+    addImage: (Bitmap) -> Unit,
+    removeImage: (Bitmap) -> Unit
+) {
     Card {
         Column {
             bitmaps.forEach { bitmap ->
@@ -212,13 +251,13 @@ fun UpdateImageSectionContent(bitmaps: List<Bitmap>, adventureSectionVM: Adventu
                             modifier = Modifier.width(200.dp)
                         )
                         DeleteButtonWithConfirm {
-                            adventureSectionVM.removeImage(bitmap)
+                            removeImage(bitmap)
                         }
                     }
                 }
             }
             ImagePicker {
-                adventureSectionVM.addImage(it)
+                addImage(it)
             }
         }
     }

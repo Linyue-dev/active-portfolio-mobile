@@ -17,6 +17,12 @@ import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.viewModels.AdventureCreationUpdateVM
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionUpdateVM
 
+/**
+ * The screen for updating and deleting the existing sections of a specific adventure.
+ * @param adventureId the id of the adventure whose sections are to be updated.
+ * @param adventureSectionVM
+ * @param adventureVM
+ */
 @Composable
 fun UpdateSectionsScreen(
     adventureId: String,
@@ -35,6 +41,7 @@ fun UpdateSectionsScreen(
             item {
                 Text(adventure.title)
             }
+            // List all the sections in the adventure.
             items(sections.value, key = {it.id}) { section ->
                 when (section.type) {
                     SectionType.IMAGE -> DropDownTab(section.label) {

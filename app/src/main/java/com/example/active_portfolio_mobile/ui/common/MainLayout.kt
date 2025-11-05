@@ -70,17 +70,17 @@ fun MainLayout(content: @Composable () -> Unit) {
                                 contentDescription = "Home"
                             )
                         }
-                        // Put nav buttons here
-                        Button(onClick = {
-                            navController.navigate(route = Routes.AdventureCreate.route)
-                        }) {
-                                Text("Create Adv")
-                        }
-                        Button(onClick = {
-                            navController.navigate(route = Routes.SectionsUpdate.go("6907953bbb686888cade669f"))
-                        }) {
-                            Text("Update Sections")
-                        }
+                        // Nav buttons for testing creation and update of adventures and sections.
+//                        Button(onClick = {
+//                            navController.navigate(route = Routes.AdventureCreate.route)
+//                        }) {
+//                                Text("Create Adv")
+//                        }
+//                        Button(onClick = {
+//                            navController.navigate(route = Routes.SectionsUpdate.go("6907953bbb686888cade669f"))
+//                        }) {
+//                            Text("Update Sections")
+//                        }
                         IconButton( onClick = {
                             navController.navigate(Routes.Profile.route)
                         }) {

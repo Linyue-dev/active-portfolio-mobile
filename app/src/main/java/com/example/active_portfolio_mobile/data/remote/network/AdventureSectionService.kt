@@ -1,7 +1,5 @@
 package com.example.active_portfolio_mobile.data.remote.network
 
-import android.app.wallpaper.WallpaperDescription
-import android.media.tv.SectionResponse
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSectionUpdateRequest
 import okhttp3.MultipartBody

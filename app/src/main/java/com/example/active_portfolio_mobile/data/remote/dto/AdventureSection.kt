@@ -37,7 +37,9 @@ data class AdventureSectionUpdateRequest(
     val newPortfolios: List<String>
 )
 
-
+/**
+ * An enumerator representing the types of Adventure Sections that are possible.
+ */
 object SectionType {
     const val TEXT = "text"
     const val LINK = "link"

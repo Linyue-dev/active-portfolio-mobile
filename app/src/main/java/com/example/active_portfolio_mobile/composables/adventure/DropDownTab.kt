@@ -1,6 +1,5 @@
 package com.example.active_portfolio_mobile.composables.adventure
 
-import android.R.attr.type
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

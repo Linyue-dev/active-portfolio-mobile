@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
@@ -17,7 +15,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 
 /**
@@ -31,10 +28,12 @@ import androidx.compose.ui.unit.dp
  * itself is passed as a parameter.
  */
 @Composable
-fun <T> MultiSelectList(list: List<T>,
-                        selectedItems: List<T>,
-                        selectItem: (T) -> Unit,
-                        deselectItem: (T) -> Unit) {
+fun <T> MultiSelectList(
+    list: List<T>,
+    selectedItems: List<T>,
+    selectItem: (T) -> Unit,
+    deselectItem: (T) -> Unit
+) {
     Column {
         list.forEach { item ->
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
