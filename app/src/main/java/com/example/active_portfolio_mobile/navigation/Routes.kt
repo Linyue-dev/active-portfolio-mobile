@@ -13,6 +13,7 @@ sealed class Routes(val route: String){
 
     // Auth
     object Login : Routes("LoginPageRoute")
+    object SignUp : Routes("SignUpPageRoute")
 
     // User
     object Profile : Routes("ProfilePageRoute")
