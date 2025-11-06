@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.navigation.Routes
+
 /**
  * Login page for existing user authentication.
  *
@@ -46,17 +47,17 @@ fun LoginPage(
     onLoginSuccess: () -> Unit
 ){
     MainLayout {
+        val navController = LocalNavController.current
         val uiState by viewModel.uiState.collectAsState()
 
-        // add
+        // Navigate to profile if login is successful
         LaunchedEffect(uiState.isLoggedIn) {
             if (uiState.isLoggedIn) {
                 onLoginSuccess()
             }
         }
 
-
-        var email by  rememberSaveable { mutableStateOf("") }
+        var email by rememberSaveable { mutableStateOf("") }
         var password by rememberSaveable { mutableStateOf("") }
 
         Column (
@@ -77,7 +78,7 @@ fun LoginPage(
                     email = it
                     if (uiState.error != null) viewModel.cleanError()
                 },
-                label = {Text ("Email")},
+                label = { Text ("Email") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -90,15 +91,14 @@ fun LoginPage(
                     if (uiState.error != null) viewModel.cleanError()
                 },
                 visualTransformation = PasswordVisualTransformation(),
-                label = { Text ("Password")},
+                label = { Text ("Password") },
                 modifier = Modifier.fillMaxWidth()
             )
-
 
             Spacer(Modifier.height(20.dp))
 
             Button(
-                onClick = { viewModel.login(email, password)},
+                onClick = { viewModel.login(email, password) },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             ) {
@@ -116,12 +116,15 @@ fun LoginPage(
                     color = Color.Red
                 )
             }
+
             TextButton(onClick = onNavigateToSignUp) {
                 Text("Don't have an account? Sign up")
             }
         }
     }
 }
+
+/* PREVIEW FUNCTIONS */
 
 @Composable
 fun LoginScreenContent(
@@ -133,7 +136,6 @@ fun LoginScreenContent(
     error: String? = null,
     onLoginClick: () -> Unit = {}
 ){
-
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -146,45 +148,4 @@ fun LoginScreenContent(
         Spacer(Modifier.height(20.dp))
 
         OutlinedTextField(
-            value = email,
-            onValueChange = onEmailChange,
-            label = {Text ("Email")},
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(20.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = onPasswordChange,
-            visualTransformation = PasswordVisualTransformation(),
-            label = { Text ("Password")},
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(20.dp))
-
-        Button(
-            onClick = {},
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text("Sign In")
-        }
-
-        TextButton({}) {
-            Text("Don't have an account? Sign up")
-        }
-    }
-}
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun LoginScreenPreview() {
-    LoginScreenContent(
-        email = "test@example.com",
-        password = "123456",
-        onEmailChange = {},
-        onPasswordChange =  {},
-        isLoading = false,
-        error = null
-    )
-}
+            value
