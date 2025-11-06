@@ -29,24 +29,33 @@ import androidx.compose.ui.unit.dp
 import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.navigation.Routes
-
+/**
+ * Login page for existing user authentication.
+ *
+ * Displays email and password input fields. Validates credentials and navigates
+ * to the profile page upon successful login.
+ *
+ * @param viewModel AuthViewModel that handles login logic and authentication state
+ * @param onNavigateToSignUp Callback to navigate to the sign up page
+ * @param onLoginSuccess Callback invoked when login is successful
+ */
 @Composable
 fun LoginPage(
     viewModel: AuthViewModel,
+    onNavigateToSignUp: () -> Unit,
+    onLoginSuccess: () -> Unit
 ){
     MainLayout {
-        val navController = LocalNavController.current
         val uiState by viewModel.uiState.collectAsState()
 
         // add
         LaunchedEffect(uiState.isLoggedIn) {
             if (uiState.isLoggedIn) {
-                navController.navigate(Routes.Profile.route) {
-                    popUpTo(Routes.Login.route) { inclusive = true }
-                    launchSingleTop = true
-                }
+                onLoginSuccess()
             }
         }
+
+
         var email by  rememberSaveable { mutableStateOf("") }
         var password by rememberSaveable { mutableStateOf("") }
 
@@ -106,6 +115,9 @@ fun LoginPage(
                     text = uiState.error ?: "",
                     color = Color.Red
                 )
+            }
+            TextButton(onClick = onNavigateToSignUp) {
+                Text("Don't have an account? Sign up")
             }
         }
     }
