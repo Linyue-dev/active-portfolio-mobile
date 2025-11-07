@@ -6,7 +6,15 @@ sealed class Routes(val route: String){
     object Main : Routes("LandingPageRoute")
     object Comment : Routes("CommentPageRoute")
     object About: Routes("AboutUsRoute")
+
+    // Adventures
     object AdventureCreate: Routes("AdventureCreateRoute")
+    object AdventureUpdate: Routes("AdventureUpdateRoute/{adventureId}") {
+        fun go(adventureId: String) = "AdventureUpdateRoute/$adventureId"
+    }
+    object AdventureView: Routes("AdventureViewRoute/{adventureId}") {
+        fun go(adventureId: String) = "AdventureViewRoute/$adventureId"
+    }
     object SectionsUpdate: Routes("SectionsUpdateRoute/{adventureId}") {
         fun go(adventureId: String) = "SectionsUpdateRoute/$adventureId"
     }

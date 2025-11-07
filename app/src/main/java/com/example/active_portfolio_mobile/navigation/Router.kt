@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.active_portfolio_mobile.Screen.CommentPage
 import com.example.active_portfolio_mobile.Screen.AboutUsPage
 import com.example.active_portfolio_mobile.Screen.LandingPage
+import com.example.active_portfolio_mobile.Screen.adventure.AdventureViewScreen
 import com.example.active_portfolio_mobile.Screen.adventure.CreateAdventureScreen
 import com.example.active_portfolio_mobile.Screen.adventure.UpdateSectionsScreen
 import com.example.active_portfolio_mobile.ui.profile.ProfilePage
@@ -46,6 +47,18 @@ fun Router(modifier: Modifier) {
             composable(Routes.About.route) {AboutUsPage(modifier)}
             // Adventure routes
             composable(Routes.AdventureCreate.route) { CreateAdventureScreen(modifier) }
+            composable(Routes.AdventureUpdate.route) {
+                val id = it.arguments?.getString("adventureId")
+                if (id != null) {
+                    CreateAdventureScreen(modifier, id)
+                }
+            }
+            composable(Routes.AdventureView.route) {
+                val id = it.arguments?.getString("adventureId")
+                if (id != null) {
+                    AdventureViewScreen(id)
+                }
+            }
             composable(Routes.SectionsUpdate.route) {
                 val id = it.arguments?.getString("adventureId")
                 if (id != null) {
