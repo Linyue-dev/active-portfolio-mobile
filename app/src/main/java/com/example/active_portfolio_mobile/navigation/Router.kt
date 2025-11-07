@@ -29,6 +29,7 @@ import com.example.active_portfolio_mobile.ui.auth.SignUpPage
 //Sets up the app navigation using NavHost with three routes: LandingPage,
 // CommentPage and AboutUsPage.
 val LocalNavController = compositionLocalOf<NavController> { error("No NavController found!") }
+val LocalAuthViewModel = compositionLocalOf<AuthViewModel> { error("No UserViewModel provided") }
 @Composable
 fun Router(modifier: Modifier) {
     val navController = rememberNavController()
@@ -38,63 +39,69 @@ fun Router(modifier: Modifier) {
     val authViewModel: AuthViewModel = viewModel(
         factory = ViewModelFactory(tokenManager)
     )
-
-    CompositionLocalProvider(
-        LocalNavController provides navController) {
-        NavHost(navController = navController, startDestination = Routes.Main.route, modifier = modifier.fillMaxSize()) {
-            composable(Routes.Main.route) { LandingPage(modifier)}
-            composable(Routes.Comment.route) {CommentPage(modifier)}
-            composable(Routes.About.route) {AboutUsPage(modifier)}
-            // Adventure routes
-            composable(Routes.AdventureCreate.route) { CreateAdventureScreen(modifier) }
-            composable(Routes.AdventureUpdate.route) {
-                val id = it.arguments?.getString("adventureId")
-                if (id != null) {
-                    CreateAdventureScreen(modifier, id)
-                }
-            }
-            composable(Routes.AdventureView.route) {
-                val id = it.arguments?.getString("adventureId")
-                if (id != null) {
-                    AdventureViewScreen(id)
-                }
-            }
-            composable(Routes.SectionsUpdate.route) {
-                val id = it.arguments?.getString("adventureId")
-                if (id != null) {
-                    UpdateSectionsScreen(id)
-                }
-            }
-
-            // Auth
-            composable(Routes.Login.route) {
-                LoginPage(
-                    authViewModel,
-                    onNavigateToSignUp = {navController.navigate(Routes.SignUp.route)},
-                    onLoginSuccess = {
-                        navController.navigate(Routes.Profile.route){
-                            popUpTo(Routes.Login.route) {inclusive = true}
-                            launchSingleTop = true
-                        }
+    CompositionLocalProvider(LocalAuthViewModel provides authViewModel) {
+        CompositionLocalProvider(
+            LocalNavController provides navController
+        ) {
+            NavHost(
+                navController = navController,
+                startDestination = Routes.Main.route,
+                modifier = modifier.fillMaxSize()
+            ) {
+                composable(Routes.Main.route) { LandingPage(modifier) }
+                composable(Routes.Comment.route) { CommentPage(modifier) }
+                composable(Routes.About.route) { AboutUsPage(modifier) }
+                // Adventure routes
+                composable(Routes.AdventureCreate.route) { CreateAdventureScreen(modifier) }
+                composable(Routes.AdventureUpdate.route) {
+                    val id = it.arguments?.getString("adventureId")
+                    if (id != null) {
+                        CreateAdventureScreen(modifier, id)
                     }
-                )
-            }
-            composable (Routes.SignUp.route){
-                SignUpPage(
-                    authViewModel,
-                    onNavigateToLogin = {navController.navigate(Routes.Login.route)},
-                    onSignUpSuccess = {
-                        navController.navigate(Routes.Main.route){
-                            popUpTo(Routes.SignUp.route) {inclusive = true}
-                            launchSingleTop = true
-                        }
+                }
+                composable(Routes.AdventureView.route) {
+                    val id = it.arguments?.getString("adventureId")
+                    if (id != null) {
+                        AdventureViewScreen(id)
                     }
-                )
-            }
+                }
+                composable(Routes.SectionsUpdate.route) {
+                    val id = it.arguments?.getString("adventureId")
+                    if (id != null) {
+                        UpdateSectionsScreen(id)
+                    }
+                }
 
-            // profile
-            composable(Routes.Profile.route) {
-                ProfilePage(authViewModel)
+                // Auth
+                composable(Routes.Login.route) {
+                    LoginPage(
+                        authViewModel,
+                        onNavigateToSignUp = { navController.navigate(Routes.SignUp.route) },
+                        onLoginSuccess = {
+                            navController.navigate(Routes.Profile.route) {
+                                popUpTo(Routes.Login.route) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+                composable(Routes.SignUp.route) {
+                    SignUpPage(
+                        authViewModel,
+                        onNavigateToLogin = { navController.navigate(Routes.Login.route) },
+                        onSignUpSuccess = {
+                            navController.navigate(Routes.Main.route) {
+                                popUpTo(Routes.SignUp.route) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+
+                // profile
+                composable(Routes.Profile.route) {
+                    ProfilePage(authViewModel)
+                }
             }
         }
     }
