@@ -28,3 +28,18 @@ data class LogInResponse(
     val token: String,
     val user: User
 )
+
+@Serializable
+data class SignUpRequest(
+    val firstName: String,
+    val lastName: String,
+    val email: String,
+    val program: String?,
+    val password: String,
+)
+
+@Serializable
+data class SignUpResponse(
+    val user: User,
+    val token: String
+)

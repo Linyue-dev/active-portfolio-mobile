@@ -16,11 +16,14 @@ import androidx.navigation.compose.rememberNavController
 import com.example.active_portfolio_mobile.Screen.CommentPage
 import com.example.active_portfolio_mobile.Screen.AboutUsPage
 import com.example.active_portfolio_mobile.Screen.LandingPage
+import com.example.active_portfolio_mobile.Screen.adventure.CreateAdventureScreen
+import com.example.active_portfolio_mobile.Screen.adventure.UpdateSectionsScreen
 import com.example.active_portfolio_mobile.ui.profile.ProfilePage
 import com.example.active_portfolio_mobile.data.local.TokenManager
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.ui.common.ViewModelFactory
 import com.example.active_portfolio_mobile.ui.auth.LoginPage
+import com.example.active_portfolio_mobile.ui.auth.SignUpPage
 
 //Sets up the app navigation using NavHost with three routes: LandingPage,
 // CommentPage and AboutUsPage.
@@ -41,10 +44,39 @@ fun Router(modifier: Modifier) {
             composable(Routes.Main.route) { LandingPage(modifier)}
             composable(Routes.Comment.route) {CommentPage(modifier)}
             composable(Routes.About.route) {AboutUsPage(modifier)}
+            // Adventure routes
+            composable(Routes.AdventureCreate.route) { CreateAdventureScreen(modifier) }
+            composable(Routes.SectionsUpdate.route) {
+                val id = it.arguments?.getString("adventureId")
+                if (id != null) {
+                    UpdateSectionsScreen(id)
+                }
+            }
 
             // Auth
             composable(Routes.Login.route) {
-                LoginPage(authViewModel)
+                LoginPage(
+                    authViewModel,
+                    onNavigateToSignUp = {navController.navigate(Routes.SignUp.route)},
+                    onLoginSuccess = {
+                        navController.navigate(Routes.Profile.route){
+                            popUpTo(Routes.Login.route) {inclusive = true}
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
+            composable (Routes.SignUp.route){
+                SignUpPage(
+                    authViewModel,
+                    onNavigateToLogin = {navController.navigate(Routes.Login.route)},
+                    onSignUpSuccess = {
+                        navController.navigate(Routes.Main.route){
+                            popUpTo(Routes.SignUp.route) {inclusive = true}
+                            launchSingleTop = true
+                        }
+                    }
+                )
             }
 
             // profile
