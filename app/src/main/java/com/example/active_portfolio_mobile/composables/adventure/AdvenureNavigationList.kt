@@ -18,6 +18,13 @@ import com.example.active_portfolio_mobile.navigation.Routes
 import com.example.active_portfolio_mobile.utilities.canViewWithRole
 import com.example.active_portfolio_mobile.viewModels.AdventureVM
 
+/**
+ * A list of buttons for navigating to the view and update pages of a specified user's adventures.
+ * The adventures which appear are based on the signed in user's role compared to the adventure's
+ * visibility level. The button to navigate to the update page is only accessible by the
+ * adventure's creator and admin users.
+ * @param userId the id of the user whose created adventures are to be listed.
+ */
 @Composable
 fun AdventureNavigationList(
     userId: String,
