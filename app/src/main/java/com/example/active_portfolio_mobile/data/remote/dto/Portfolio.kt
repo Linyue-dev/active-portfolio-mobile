@@ -28,3 +28,8 @@ data class UpdatePortfolioRequest(
     val newDescription: String? = null,
     val newVisibility : String
 )
+
+@Serializable
+data class DeleteResponse(
+    val success: Boolean
+)

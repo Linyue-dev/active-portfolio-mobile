@@ -2,6 +2,7 @@ package com.example.active_portfolio_mobile.data.remote.network
 
 
 import com.example.active_portfolio_mobile.data.remote.dto.CreatePortfolioRequest
+import com.example.active_portfolio_mobile.data.remote.dto.DeleteResponse
 import com.example.active_portfolio_mobile.data.remote.dto.Portfolio
 import com.example.active_portfolio_mobile.data.remote.dto.UpdatePortfolioRequest
 import retrofit2.Response
@@ -40,5 +41,5 @@ interface PortfolioService {
 
     //DELETE - DELETE
     @DELETE("portfolio/{portfolioId}")
-    suspend fun deletePortfolio(@Path("portfolioId") portfolioId: String) : Response<Boolean>
+    suspend fun deletePortfolio(@Path("portfolioId") portfolioId: String) : Response<DeleteResponse>
 }

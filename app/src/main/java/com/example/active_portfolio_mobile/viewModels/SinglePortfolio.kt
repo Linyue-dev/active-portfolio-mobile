@@ -79,7 +79,7 @@ class SinglePortfolioMV : ViewModel() {
                     ActivePortfolioApi.portfolio.deletePortfolio(portfolioId)
                 }
 
-                if (response.isSuccessful && response.body() == true) {
+                if (response.isSuccessful && response.body()?.success == true) {
                     _portfolio.value = null
                 } else {
                     _errorMessage.value = "Error ${response.code()}: ${response.message()}"
