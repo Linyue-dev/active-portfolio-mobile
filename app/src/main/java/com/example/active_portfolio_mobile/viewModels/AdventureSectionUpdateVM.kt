@@ -41,11 +41,12 @@ class AdventureSectionUpdateVM : ViewModel() {
 
     var sections = mutableStateOf<List<AdventureSection>>(emptyList())
         private set
-    fun fetchSections(adventureId: String) {
+    fun fetchSections(adventureId: String, filterPortfolioId: String = "") {
         viewModelScope.launch {
             try {
                 val response = ActivePortfolioApi.adventureSection.getSectionsOfAdventure(
-                    adventureId = adventureId
+                    adventureId = adventureId,
+                    filterPortfolio = filterPortfolioId
                 )
                 if (response.isSuccessful) {
                     sections.value = response.body() ?: emptyList()
