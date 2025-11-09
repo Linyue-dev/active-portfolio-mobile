@@ -8,6 +8,7 @@ import com.example.active_portfolio_mobile.data.remote.api.UserApiService
 import com.example.active_portfolio_mobile.data.remote.dto.LogInRequest
 import com.example.active_portfolio_mobile.data.remote.dto.SignUpRequest
 import com.example.active_portfolio_mobile.data.remote.dto.User
+import com.example.active_portfolio_mobile.ui.common.ErrorParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -82,7 +83,7 @@ class AuthViewModel(
 
             } catch (ex: HttpException) {
                 _uiState.update {
-                    it.copy(isLoading = false, error = parseErrorMessage(ex))
+                    it.copy(isLoading = false, error = ErrorParser.errorHttpError(ex))
                 }
             } catch (ex: IOException){
                 _uiState.update {
@@ -115,7 +116,7 @@ class AuthViewModel(
                 )
             } catch (ex: HttpException) {
                 _uiState.update {
-                    it.copy(isLoading = false, error = parseErrorMessage(ex))
+                    it.copy(isLoading = false, error = ErrorParser.errorHttpError(ex))
                 }
             } catch (ex: IOException){
                 _uiState.update {
@@ -134,30 +135,5 @@ class AuthViewModel(
     fun logout(){
         tokenManager.clearAll()
         _uiState.value = AuthUiState(isLoading = false)
-    }
-
-    /**
-     * Parses HTTP error response and extracts user-friendly error message.
-     * Converts backend error responses into clean, readable messages by:
-     * - Extracting the errorMessage field from JSON response body
-     * - Filtering out technical details and system error prefixes
-     * - Matching specific error patterns to return concise messages
-     */
-    private fun parseErrorMessage(ex: HttpException):String{
-        val errorBody = ex.response()?.errorBody()?.string()
-        return try{
-            val json = JSONObject(errorBody ?: "")
-            val fullMessage = json.optString("errorMessage", "Unexpected error")
-
-            when{
-                fullMessage.contains("Invalid email", ignoreCase = true) -> "Invalid email"
-                fullMessage.contains("email already exists", ignoreCase = true) -> "Email already exists"
-                fullMessage.contains("Invalid password", ignoreCase = true) -> "Invalid password"
-                fullMessage.contains("User not found", ignoreCase = true) -> "User not found"
-                else -> "Something went wrong. Please try again."
-            }
-        }catch (e: Exception) {
-            "Unexpected error"
-        }
     }
 }

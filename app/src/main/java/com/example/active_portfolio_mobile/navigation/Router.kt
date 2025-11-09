@@ -79,6 +79,31 @@ fun Router(modifier: Modifier) {
                     }
                 }
 
+            // Auth
+            composable(Routes.Login.route) {
+                LoginPage(
+                    authViewModel,
+                    onNavigateToSignUp = {navController.navigate(Routes.SignUp.route)},
+                    onLoginSuccess = {
+                        navController.navigate(Routes.Main.route){
+                            popUpTo(Routes.Login.route) {inclusive = true}
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
+            composable (Routes.SignUp.route){
+                SignUpPage(
+                    authViewModel,
+                    onNavigateToLogin = {navController.navigate(Routes.Login.route)},
+                    onSignUpSuccess = {
+                        navController.navigate(Routes.Main.route){
+                            popUpTo(Routes.SignUp.route) {inclusive = true}
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
                 // Auth
                 composable(Routes.Login.route) {
                     LoginPage(
@@ -125,7 +150,7 @@ fun Router(modifier: Modifier) {
                 composable(Routes.Profile.route) {
                     ProfilePage(authViewModel)
                 }
-            
+
 
                 //Portfolio
                 composable(Routes.CreateUpdatePortfolio.route,
@@ -142,7 +167,7 @@ fun Router(modifier: Modifier) {
                     backStackEntry ->
                     val isEditing = backStackEntry.arguments?.getBoolean("isEditing") ?: false
                     val portfolioId = backStackEntry.arguments?.getString("portfolioId") ?: ""
-    
+
                     val existingPortfolio =
                         if(isEditing ){
                             //REPLACE BY GET SINGLE PORTFOLIO

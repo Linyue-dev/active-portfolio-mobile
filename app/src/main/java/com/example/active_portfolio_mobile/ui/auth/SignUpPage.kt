@@ -82,6 +82,7 @@ fun SignUpPage(
                 onValueChange = {
                     email = it
                     emailError = null
+                    viewModel.cleanError()
                 },
                 label = {Text ("Email")},
                 singleLine = true,
@@ -100,6 +101,7 @@ fun SignUpPage(
                 onValueChange = {
                     firstName = it
                     firstNameError = null
+                    viewModel.cleanError()
                 },
                 label = {Text ("First Name")},
                 singleLine = true,
@@ -118,6 +120,7 @@ fun SignUpPage(
                 onValueChange = {
                     lastName = it
                     lastNameError = null
+                    viewModel.cleanError()
                 },
                 label = {Text ("Last Name")},
                 singleLine = true,
@@ -136,6 +139,7 @@ fun SignUpPage(
                 value = program,
                 onValueChange = {
                     program = it
+                    viewModel.cleanError()
                 },
                 label = {Text ("Program")},
                 singleLine = true,
@@ -148,6 +152,7 @@ fun SignUpPage(
                 onValueChange = {
                     password = it
                     passwordError = null
+                    viewModel.cleanError()
                 },
                 label = {Text ("Password")},
                 visualTransformation = PasswordVisualTransformation(),
@@ -167,6 +172,7 @@ fun SignUpPage(
                 onValueChange = {
                     confirmPassword = it
                     confirmPasswordError = null
+                    viewModel.cleanError()
                 },
                 label = {Text ("ConfirmPassword")},
                 visualTransformation = PasswordVisualTransformation(),

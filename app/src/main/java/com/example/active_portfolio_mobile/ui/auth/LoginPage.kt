@@ -76,6 +76,7 @@ fun LoginPage(
                 value = email,
                 onValueChange = {
                     email = it
+                    viewModel.cleanError()
                     if (uiState.error != null) viewModel.cleanError()
                 },
                 label = {Text ("Email")},
@@ -88,6 +89,7 @@ fun LoginPage(
                 value = password,
                 onValueChange = {
                     password = it
+                    viewModel.cleanError()
                     if (uiState.error != null) viewModel.cleanError()
                 },
                 visualTransformation = PasswordVisualTransformation(),
