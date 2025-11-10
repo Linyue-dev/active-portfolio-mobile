@@ -4,6 +4,8 @@ package com.example.active_portfolio_mobile.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -31,6 +33,7 @@ import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.ui.common.ViewModelFactory
 import com.example.active_portfolio_mobile.ui.auth.LoginPage
 import com.example.active_portfolio_mobile.ui.auth.SignUpPage
+import com.example.active_portfolio_mobile.ui.profile.ProfileViewModel
 
 //Sets up the app navigation using NavHost with three routes: LandingPage,
 // CommentPage and AboutUsPage.
@@ -80,18 +83,6 @@ fun Router(modifier: Modifier) {
                 }
 
             // Auth
-            composable(Routes.Login.route) {
-                LoginPage(
-                    authViewModel,
-                    onNavigateToSignUp = {navController.navigate(Routes.SignUp.route)},
-                    onLoginSuccess = {
-                        navController.navigate(Routes.Main.route){
-                            popUpTo(Routes.Login.route) {inclusive = true}
-                            launchSingleTop = true
-                        }
-                    }
-                )
-            }
             composable (Routes.SignUp.route){
                 SignUpPage(
                     authViewModel,
@@ -183,6 +174,29 @@ fun Router(modifier: Modifier) {
                     CreateOrEditPortfolioScreen(
                         isEditing = isEditing,
                         existingPortfolio  = existingPortfolio
+                    )
+                }
+            // profile
+            composable(Routes.Profile.route) {
+                val isLoggedIn = authViewModel.uiState.collectAsState().value.isLoggedIn
+                LaunchedEffect (isLoggedIn){
+                    if(!isLoggedIn){
+                        navController.navigate(Routes.Login.route){
+                            popUpTo(Routes.SignUp.route) {inclusive = true}
+                        }
+                    }
+                }
+
+                if (isLoggedIn){
+                    val profileViewModel: ProfileViewModel = viewModel(
+                        factory = ViewModelFactory(tokenManager)
+                    )
+                    ProfilePage(
+                        authViewModel,
+                        profileViewModel,
+                        onEditProfile = {
+                            navController.navigate(Routes.EditProfile.route)
+                        }
                     )
                 }
             }

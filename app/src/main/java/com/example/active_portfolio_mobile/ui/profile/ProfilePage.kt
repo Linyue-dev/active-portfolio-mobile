@@ -1,7 +1,11 @@
 package com.example.active_portfolio_mobile.ui.profile
 
+<<<<<<< HEAD
 import android.app.Activity
 import androidx.activity.ComponentActivity
+=======
+import androidx.compose.foundation.layout.Arrangement
+>>>>>>> 864b20f (refactor(profile): restructure ProfilePage ViewModel usage)
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,7 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+<<<<<<< HEAD
 import androidx.compose.ui.platform.LocalContext
+=======
+import androidx.compose.ui.text.style.TextAlign
+>>>>>>> 864b20f (refactor(profile): restructure ProfilePage ViewModel usage)
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.active_portfolio_mobile.layouts.MainLayout
@@ -35,24 +43,19 @@ import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 
 @Composable
 fun ProfilePage(
-    viewModel: AuthViewModel
+    authviewModel: AuthViewModel,
+    profileViewModel: ProfileViewModel,
+    onEditProfile: () -> Unit
 ){
+<<<<<<< HEAD
     val localContext = LocalContext.current
     val activity = localContext as ComponentActivity
     val uiState by viewModel.uiState.collectAsState()
     val navController = LocalNavController.current
+=======
+    val uiState by profileViewModel.uiState.collectAsState()
+>>>>>>> 864b20f (refactor(profile): restructure ProfilePage ViewModel usage)
     val user = uiState.user
-    LaunchedEffect(uiState.isLoggedIn) {
-        if (!uiState.isLoggedIn){
-            navController.navigate(Routes.Login.route){
-                popUpTo(0) {inclusive = true}
-            }
-        }
-    }
-
-    if (!uiState.isLoggedIn){
-        return
-    }
 
     if(user == null){
         Box(
@@ -92,18 +95,42 @@ fun ProfilePage(
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(10.dp)
                     )
+                    /**
+                     * if username is null, display nothing but it remain blank line
+                     */
 
-                    Text(
-                        text = "${user.role}",
-                        modifier = Modifier.padding(start = 10.dp, top = 5.dp)
-                    )
+                    user.username?.let {
+                        Text(
+                            text = it,
+                            modifier = Modifier.padding(start = 10.dp, top = 5.dp)
+                        )
+                    }
+
+                    user.bio?.let {
+                        Text(
+                            text = it,
+                            modifier = Modifier.padding(start = 10.dp, top = 5.dp)
+                        )
+                    }
 
                     Text(
                         text = "${user.email}",
                         modifier = Modifier.padding(start = 10.dp, top = 5.dp)
                     )
+
+                    user.program?.let {
+                        Text(
+                            text = it,
+                            modifier = Modifier.padding(start = 10.dp, top = 5.dp)
+                        )
+                    }
+                    Text(
+                        text = "${user.role}",
+                        modifier = Modifier.padding(start = 10.dp, top = 5.dp)
+                    )
                 }
             }
+<<<<<<< HEAD
             // Button to return the user's name and email to the log-in launcher app.
             // Only appears if the app is launched from the right launcher.
             if (activity.intent.getBooleanExtra("from_login_launcher", false)) {
@@ -119,14 +146,36 @@ fun ProfilePage(
                     Text("Save this User to the Launcher")
                 }
             }
+=======
+
+>>>>>>> 864b20f (refactor(profile): restructure ProfilePage ViewModel usage)
             Spacer(modifier = Modifier.height(15.dp))
-            Button(
-                onClick = {
-                    viewModel.logout()
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Logout")
+
+            Row (
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+
+                Button(
+                    onClick = onEditProfile
+                ){
+                    Text("Edit")
+                }
+
+                Button(
+                    onClick = {
+                    },
+                ) {
+                    Text("My Portfolio")
+                }
+                Button(
+                    onClick = {
+                        authviewModel.logout()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Logout")
+                }
             }
         }
     }
