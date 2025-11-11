@@ -25,4 +25,19 @@ class AdventureVM : ViewModel() {
             }
         }
     }
+
+    fun fetchAdventuresByUser(userId: String) {
+        viewModelScope.launch {
+            try {
+                val response = ActivePortfolioApi.adventure.getAllByUser(userId)
+                if (response.isSuccessful) {
+                    _adventures.value = response.body() ?: emptyList()
+                } else {
+                    println(response.errorBody().toString())
+                }
+            } catch(err: Exception) {
+                println("An error occurred when fetching all Adventures by user: $err")
+            }
+        }
+    }
 }

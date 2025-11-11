@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
@@ -70,17 +71,14 @@ fun MainLayout(content: @Composable () -> Unit) {
                                 contentDescription = "Home"
                             )
                         }
-                        // Nav buttons for testing creation and update of adventures and sections.
-//                        Button(onClick = {
-//                            navController.navigate(route = Routes.AdventureCreate.route)
-//                        }) {
-//                                Text("Create Adv")
-//                        }
-//                        Button(onClick = {
-//                            navController.navigate(route = Routes.SectionsUpdate.go("6907953bbb686888cade669f"))
-//                        }) {
-//                            Text("Update Sections")
-//                        }
+                        IconButton( onClick = {
+                            navController.navigate(Routes.Create.route)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = "Create a new Adventure or Portfolio"
+                            )
+                        }
                         IconButton( onClick = {
                             navController.navigate(Routes.Profile.route)
                         }) {

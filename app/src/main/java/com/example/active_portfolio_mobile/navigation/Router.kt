@@ -18,7 +18,9 @@ import androidx.navigation.navArgument
 import com.example.active_portfolio_mobile.Screen.CommentPage
 import com.example.active_portfolio_mobile.Screen.AboutUsPage
 import com.example.active_portfolio_mobile.Screen.CreateOrEditPortfolioScreen
+import com.example.active_portfolio_mobile.Screen.CreateScreen
 import com.example.active_portfolio_mobile.Screen.LandingPage
+import com.example.active_portfolio_mobile.Screen.adventure.AdventureViewScreen
 import com.example.active_portfolio_mobile.Screen.adventure.CreateAdventureScreen
 import com.example.active_portfolio_mobile.Screen.adventure.UpdateSectionsScreen
 import com.example.active_portfolio_mobile.ui.profile.ProfilePage
@@ -32,6 +34,7 @@ import com.example.active_portfolio_mobile.ui.auth.SignUpPage
 //Sets up the app navigation using NavHost with three routes: LandingPage,
 // CommentPage and AboutUsPage.
 val LocalNavController = compositionLocalOf<NavController> { error("No NavController found!") }
+val LocalAuthViewModel = compositionLocalOf<AuthViewModel> { error("No UserViewModel provided") }
 @Composable
 fun Router(modifier: Modifier) {
     val navController = rememberNavController()
@@ -41,85 +44,105 @@ fun Router(modifier: Modifier) {
     val authViewModel: AuthViewModel = viewModel(
         factory = ViewModelFactory(tokenManager)
     )
-
-    CompositionLocalProvider(
-        LocalNavController provides navController) {
-        NavHost(navController = navController, startDestination = Routes.Main.route, modifier = modifier.fillMaxSize()) {
-            composable(Routes.Main.route) { LandingPage(modifier)}
-            composable(Routes.Comment.route) {CommentPage(modifier)}
-            composable(Routes.About.route) {AboutUsPage(modifier)}
-            // Adventure routes
-            composable(Routes.AdventureCreate.route) { CreateAdventureScreen(modifier) }
-            composable(Routes.SectionsUpdate.route) {
-                val id = it.arguments?.getString("adventureId")
-                if (id != null) {
-                    UpdateSectionsScreen(id)
+    CompositionLocalProvider(LocalAuthViewModel provides authViewModel) {
+        CompositionLocalProvider(
+            LocalNavController provides navController
+        ) {
+            NavHost(
+                navController = navController,
+                startDestination = Routes.Main.route,
+                modifier = modifier.fillMaxSize()
+            ) {
+                composable(Routes.Main.route) { LandingPage(modifier) }
+                composable(Routes.Comment.route) { CommentPage(modifier) }
+                composable(Routes.About.route) { AboutUsPage(modifier) }
+                composable(Routes.Create.route) { CreateScreen() }
+                // Adventure routes
+                composable(Routes.AdventureCreate.route) { CreateAdventureScreen(modifier) }
+                composable(Routes.AdventureUpdate.route) {
+                    val id = it.arguments?.getString("adventureId")
+                    if (id != null) {
+                        CreateAdventureScreen(modifier, id)
+                    }
                 }
-            }
+                composable(Routes.AdventureView.route) {
+                    val id = it.arguments?.getString("adventureId")
+                    if (id != null) {
+                        AdventureViewScreen(id)
+                    }
+                }
+                composable(Routes.SectionsUpdate.route) {
+                    val id = it.arguments?.getString("adventureId")
+                    if (id != null) {
+                        UpdateSectionsScreen(id)
+                    }
+                }
 
-            // Auth
-            composable(Routes.Login.route) {
-                LoginPage(
-                    authViewModel,
-                    onNavigateToSignUp = {navController.navigate(Routes.SignUp.route)},
-                    onLoginSuccess = {
-                        navController.navigate(Routes.Profile.route){
-                            popUpTo(Routes.Login.route) {inclusive = true}
-                            launchSingleTop = true
+                // Auth
+                composable(Routes.Login.route) {
+                    LoginPage(
+                        authViewModel,
+                        onNavigateToSignUp = { navController.navigate(Routes.SignUp.route) },
+                        onLoginSuccess = {
+                            navController.navigate(Routes.Profile.route) {
+                                popUpTo(Routes.Login.route) { inclusive = true }
+                                launchSingleTop = true
+                            }
                         }
-                    }
-                )
-            }
-            composable (Routes.SignUp.route){
-                SignUpPage(
-                    authViewModel,
-                    onNavigateToLogin = {navController.navigate(Routes.Login.route)},
-                    onSignUpSuccess = {
-                        navController.navigate(Routes.Main.route){
-                            popUpTo(Routes.SignUp.route) {inclusive = true}
-                            launchSingleTop = true
+                    )
+                }
+                composable(Routes.SignUp.route) {
+                    SignUpPage(
+                        authViewModel,
+                        onNavigateToLogin = { navController.navigate(Routes.Login.route) },
+                        onSignUpSuccess = {
+                            navController.navigate(Routes.Main.route) {
+                                popUpTo(Routes.SignUp.route) { inclusive = true }
+                                launchSingleTop = true
+                            }
                         }
-                    }
-                )
-            }
+                    )
+                }
 
-            // profile
-            composable(Routes.Profile.route) {
-                ProfilePage(authViewModel)
-            }
+                // profile
+                composable(Routes.Profile.route) {
+                    ProfilePage(authViewModel)
+                }
+            
 
-            //Portfolio
-            composable(Routes.CreateUpdatePortfolio.route,
-                arguments = listOf(
-                    navArgument("isEditing"){
-                        type = NavType.BoolType
-                        defaultValue = false
-                    },
-                    navArgument("portfolioId"){
-                        type = NavType.StringType
-                        defaultValue = ""
-                    }
-                )){
-                backStackEntry ->
-                val isEditing = backStackEntry.arguments?.getBoolean("isEditing") ?: false
-                val portfolioId = backStackEntry.arguments?.getString("portfolioId") ?: ""
-
-                val existingPortfolio =
-                    if(isEditing ){
-                        //REPLACE BY GET SINGLE PORTFOLIO
-                        Portfolio(
-                            id = "690e53e88f09dccf0d758ede",
-                            title = "EH",
-                            createdBy = "690e3b61905d564736adf04f",
-                            shareToken = "55f068be88c7322f1aef3628a0049390",
-                            description = null,
-                            visibility = "link-only"
-                        )
-                    }else null
-                CreateOrEditPortfolioScreen(
-                    isEditing = isEditing,
-                    existingPortfolio  = existingPortfolio
-                )
+                //Portfolio
+                composable(Routes.CreateUpdatePortfolio.route,
+                    arguments = listOf(
+                        navArgument("isEditing"){
+                            type = NavType.BoolType
+                            defaultValue = false
+                        },
+                        navArgument("portfolioId"){
+                            type = NavType.StringType
+                            defaultValue = ""
+                        }
+                    )){
+                    backStackEntry ->
+                    val isEditing = backStackEntry.arguments?.getBoolean("isEditing") ?: false
+                    val portfolioId = backStackEntry.arguments?.getString("portfolioId") ?: ""
+    
+                    val existingPortfolio =
+                        if(isEditing ){
+                            //REPLACE BY GET SINGLE PORTFOLIO
+                            Portfolio(
+                                id = "690e53e88f09dccf0d758ede",
+                                title = "EH",
+                                createdBy = "690e3b61905d564736adf04f",
+                                shareToken = "55f068be88c7322f1aef3628a0049390",
+                                description = null,
+                                visibility = "link-only"
+                            )
+                        }else null
+                    CreateOrEditPortfolioScreen(
+                        isEditing = isEditing,
+                        existingPortfolio  = existingPortfolio
+                    )
+                }
             }
         }
     }

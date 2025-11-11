@@ -16,8 +16,14 @@ interface AdventureService {
     suspend fun getOne(
         @Path("id") id: String
     ) : Response<Adventure>
+
     @GET("adventures/all")
     suspend fun getAll() : Response<List<Adventure>>
+
+    @GET("adventures/allByUser/{userId}")
+    suspend fun getAllByUser(
+        @Path("userId") userId: String
+    ) : Response<List<Adventure>>
 
     @POST("adventures")
     suspend fun create(@Body adventureToCreate: Adventure) : Response<Adventure>
