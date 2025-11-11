@@ -7,6 +7,8 @@ sealed class Routes(val route: String){
     object Comment : Routes("CommentPageRoute")
     object About: Routes("AboutUsRoute")
 
+    object Create: Routes("CreateScreenRoute")
+
     // Adventures
     object AdventureCreate: Routes("AdventureCreateRoute")
     object AdventureUpdate: Routes("AdventureUpdateRoute/{adventureId}") {

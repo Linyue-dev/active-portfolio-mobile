@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.active_portfolio_mobile.Screen.CommentPage
 import com.example.active_portfolio_mobile.Screen.AboutUsPage
+import com.example.active_portfolio_mobile.Screen.CreateScreen
 import com.example.active_portfolio_mobile.Screen.LandingPage
 import com.example.active_portfolio_mobile.Screen.adventure.AdventureViewScreen
 import com.example.active_portfolio_mobile.Screen.adventure.CreateAdventureScreen
@@ -51,6 +52,7 @@ fun Router(modifier: Modifier) {
                 composable(Routes.Main.route) { LandingPage(modifier) }
                 composable(Routes.Comment.route) { CommentPage(modifier) }
                 composable(Routes.About.route) { AboutUsPage(modifier) }
+                composable(Routes.Create.route) { CreateScreen() }
                 // Adventure routes
                 composable(Routes.AdventureCreate.route) { CreateAdventureScreen(modifier) }
                 composable(Routes.AdventureUpdate.route) {
