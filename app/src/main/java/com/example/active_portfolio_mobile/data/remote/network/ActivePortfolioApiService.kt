@@ -1,4 +1,4 @@
-package com.example.active_portfolio_mobile.network
+package com.example.active_portfolio_mobile.data.remote.network
 
 import com.example.active_portfolio_mobile.data.remote.network.AdventureSectionService
 import com.example.active_portfolio_mobile.data.remote.network.AdventureService
@@ -14,8 +14,7 @@ private val json = Json {
     coerceInputValues = true
 }
 
-// private const val BASE_URL = "https://activeportfolio.onrender.com/"
-private const val BASE_URL = "http://10.0.2.2:1339"
+private const val BASE_URL = "https://activeportfolio.onrender.com/"
 
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
@@ -31,5 +30,8 @@ object ActivePortfolioApi {
     }
     val adventureSection : AdventureSectionService by lazy {
         retrofit.create(AdventureSectionService::class.java)
+    }
+    val portfolio: PortfolioService by lazy{
+        retrofit.create(PortfolioService::class.java)
     }
 }

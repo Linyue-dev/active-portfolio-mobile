@@ -10,11 +10,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.active_portfolio_mobile.Screen.CommentPage
 import com.example.active_portfolio_mobile.Screen.AboutUsPage
+import com.example.active_portfolio_mobile.Screen.CreateOrEditPortfolioScreen
 import com.example.active_portfolio_mobile.Screen.CreateScreen
 import com.example.active_portfolio_mobile.Screen.LandingPage
 import com.example.active_portfolio_mobile.Screen.adventure.AdventureViewScreen
@@ -22,6 +25,7 @@ import com.example.active_portfolio_mobile.Screen.adventure.CreateAdventureScree
 import com.example.active_portfolio_mobile.Screen.adventure.UpdateSectionsScreen
 import com.example.active_portfolio_mobile.ui.profile.ProfilePage
 import com.example.active_portfolio_mobile.data.local.TokenManager
+import com.example.active_portfolio_mobile.data.remote.dto.Portfolio
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.ui.common.ViewModelFactory
 import com.example.active_portfolio_mobile.ui.auth.LoginPage
@@ -103,6 +107,41 @@ fun Router(modifier: Modifier) {
                 // profile
                 composable(Routes.Profile.route) {
                     ProfilePage(authViewModel)
+                }
+            
+
+                //Portfolio
+                composable(Routes.CreateUpdatePortfolio.route,
+                    arguments = listOf(
+                        navArgument("isEditing"){
+                            type = NavType.BoolType
+                            defaultValue = false
+                        },
+                        navArgument("portfolioId"){
+                            type = NavType.StringType
+                            defaultValue = ""
+                        }
+                    )){
+                    backStackEntry ->
+                    val isEditing = backStackEntry.arguments?.getBoolean("isEditing") ?: false
+                    val portfolioId = backStackEntry.arguments?.getString("portfolioId") ?: ""
+    
+                    val existingPortfolio =
+                        if(isEditing ){
+                            //REPLACE BY GET SINGLE PORTFOLIO
+                            Portfolio(
+                                id = "690e53e88f09dccf0d758ede",
+                                title = "EH",
+                                createdBy = "690e3b61905d564736adf04f",
+                                shareToken = "55f068be88c7322f1aef3628a0049390",
+                                description = null,
+                                visibility = "link-only"
+                            )
+                        }else null
+                    CreateOrEditPortfolioScreen(
+                        isEditing = isEditing,
+                        existingPortfolio  = existingPortfolio
+                    )
                 }
             }
         }
