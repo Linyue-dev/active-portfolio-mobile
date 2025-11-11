@@ -16,18 +16,14 @@ import androidx.compose.ui.unit.dp
  * When isEditing is false, it show a single Create button.
  * When isEditing is true, it show two button: Save and Delete.
  *
- * The buttons are disabled while isLoading is true to prevent multiple actions.
- *
  * @param isEditing True if we are trying to edit a existing portfolio, false if we are
  * trying to create a new Portfolio.
- * @param isLoading True, is an action is currently processing.
  * @param onSaveClick Callback that is called when the user clicks Save or Create button.
  * @param onDeleteClick Optional callback called when the user clicks the Delete button.
  */
 @Composable
 fun PortfolioActionButtons(
     isEditing: Boolean,
-    isLoading: Boolean,
     onSaveClick: () -> Unit,
     onDeleteClick: (() -> Unit) ? =  null,
 ) {
@@ -35,7 +31,6 @@ fun PortfolioActionButtons(
     //Save and Create button.
     Button(
         onClick = onSaveClick,
-        enabled = !isLoading,
         modifier = Modifier.fillMaxWidth()
     ){
         Text( if (isEditing) "Save" else "Create")
@@ -45,7 +40,6 @@ fun PortfolioActionButtons(
     if(isEditing && onDeleteClick != null){
         Spacer(modifier = Modifier.height(12.dp))
         Button(onClick = onDeleteClick,
-            enabled = !isLoading,
             modifier = Modifier.fillMaxWidth()
         ){
             Text("Delete")

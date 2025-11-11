@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -20,13 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.active_portfolio_mobile.composables.portfolio.GetAllPortfolio
+import com.example.active_portfolio_mobile.composables.portfolio.PopUpMessage
 import com.example.active_portfolio_mobile.composables.portfolio.PortfolioActionButtons
 import com.example.active_portfolio_mobile.composables.portfolio.PortfolioFormFields
 import com.example.active_portfolio_mobile.composables.portfolio.VisibilitySelector
 import com.example.active_portfolio_mobile.data.remote.dto.CreatePortfolioRequest
 import com.example.active_portfolio_mobile.data.remote.dto.Portfolio
 import com.example.active_portfolio_mobile.data.remote.dto.UpdatePortfolioRequest
+import com.example.active_portfolio_mobile.layouts.MainLayout
+import com.example.active_portfolio_mobile.navigation.LocalNavController
+import com.example.active_portfolio_mobile.navigation.Routes
 import com.example.active_portfolio_mobile.viewModels.SinglePortfolioMV
 
 
@@ -40,16 +42,14 @@ import com.example.active_portfolio_mobile.viewModels.SinglePortfolioMV
  * If isEditing is false, the user can create a new portfolio.
  *
  * @param isEditing Boolean flag indicating if the screen is in edit mode.
- * @param isLoading Boolean flag indicting if an action is in progress and to not load the button.
- * @param singlePortfolioMV The viewModel handling portfolio operations and state.
  * @param existingPortfolio Optional portfolio object. If it is provided, the screen pre-fills fields for editing.
+ * @param singlePortfolioMV The viewModel handling portfolio operations and state.
  */
 @Composable
 fun CreateOrEditPortfolioScreen(
     isEditing : Boolean,
-    isLoading: Boolean,
-    singlePortfolioMV: SinglePortfolioMV = viewModel(),
-    existingPortfolio: Portfolio? = null
+    existingPortfolio: Portfolio? = null,
+    singlePortfolioMV: SinglePortfolioMV = viewModel()
 ){
     //Local state for form fields.
     var title by remember { mutableStateOf(existingPortfolio?.title ?: "") }
@@ -60,81 +60,107 @@ fun CreateOrEditPortfolioScreen(
     //Observing error and connection messages for the viewModel
     val errorMessage by singlePortfolioMV.errorMessage.collectAsState()
     val connectionStatus by singlePortfolioMV.connectionStatus.collectAsState()
+    val popupMessage by singlePortfolioMV.popUpMessage.collectAsState()
 
-
-    Surface(modifier = Modifier.padding(16.dp)) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            //Portfolio title and description input fields
-            PortfolioFormFields(
-                title = title,
-                onTitleChange = { title = it },
-                description = description,
-                onDescriptionChange = { description = it }
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-
-            //Visibility selection dropdown
-            VisibilitySelector(
-                visibility,
-                onVisibilityChange = { visibility = it })
-
-            //Display error message if present
-            errorMessage?.let {
-                    msg ->
-                Text(
-                    text = msg,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(vertical = 8.dp)
+    val navController = LocalNavController.current
+    MainLayout {  
+        //The surface for the fields, visibility and action button.
+        Surface(modifier = Modifier.padding(16.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
+            ) {
+                //Portfolio title and description input fields
+                PortfolioFormFields(
+                    title = title,
+                    onTitleChange = { title = it },
+                    description = description,
+                    onDescriptionChange = { description = it }
                 )
-            }
-
-            //Action buttons for Save/Create and Delete
-            PortfolioActionButtons(
-                isEditing, isLoading, onSaveClick = {
-                    /*Handles both create and update logic*/
-                    if (isEditing && existingPortfolio != null) {
-                        val portfolio = UpdatePortfolioRequest(
-                            newTitle = title,
-                            newDescription = description,
-                            newVisibility = visibility.lowercase()
-                        )
-                        singlePortfolioMV.updatePortfolio(existingPortfolio.id, portfolio)
-                    } else {
-                        val portfolio = CreatePortfolioRequest(
-                            title = title,
-                            userId = "68d60237d20ee7d551a9a7d3",
-                            description = description,
-                            visibility = visibility.lowercase()
-                        )
-                        singlePortfolioMV.createPortfolio(portfolio)
-                    }
-                }, onDeleteClick = if (isEditing) {
-                    {
-                        existingPortfolio?.let {
-                            singlePortfolioMV.deletePortfolio(it.id)
+                Spacer(modifier = Modifier.height(12.dp))
+    
+                //Visibility selection dropdown
+                VisibilitySelector(
+                    visibility,
+                    onVisibilityChange = { visibility = it })
+    
+                //Display error message if present
+                errorMessage?.let {
+                        msg ->
+                    Text(
+                        text = msg,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+    
+                Spacer(modifier = Modifier.padding(10.dp))
+                //Action buttons for Save/Create and Delete
+                PortfolioActionButtons(
+                    isEditing, onSaveClick = {
+                        /*Handles both create and update logic*/
+                        if (isEditing && existingPortfolio != null) {
+                            /* Handle the update part*/
+                            val portfolio = UpdatePortfolioRequest(
+                                newTitle = title,
+                                newDescription = description,
+                                newVisibility = visibility.lowercase()
+                            )
+                            singlePortfolioMV.updatePortfolio(existingPortfolio.id, portfolio)
+                        } else {
+                            /* Handle the creation part*/
+                            val portfolio = CreatePortfolioRequest(
+                                title = title,
+                                userId = "690e3b61905d564736adf04f",
+                                description = description,
+                                visibility = visibility.lowercase()
+                            )
+                            singlePortfolioMV.createPortfolio(portfolio)
+                        }
+                    },
+                    /* Handle the delete part*/
+                    onDeleteClick = if (isEditing) {
+                        {
+                            existingPortfolio?.let {
+                                singlePortfolioMV.deletePortfolio(it.id)
+                            }
+                        }
+                    } else null
+                )
+    
+//                //Test fetch composable (for debugging) !!!
+//                GetAllPortfolio()
+//                //Display connection status if present
+//                connectionStatus?.let { status ->
+//                    Text(
+//                        text = status,
+//                        color = if (status.startsWith("✅")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        modifier = Modifier.padding(vertical = 8.dp)
+//                    )
+//                }
+//    
+//                // Button to test the backend connection manually
+//                Button(onClick = { singlePortfolioMV.testBackendConnection() }) {
+//                    Text("Test Backend Connection")
+//                }
+//            }
+                //The pop up message that appears when the user clicks
+                //on the action button. If the message is successful
+                //return the user to the landing page.
+                PopUpMessage(popupMessage) {
+                    val isSuccess = popupMessage?.startsWith("SUCCESS:") == true
+                    singlePortfolioMV.ClearPopUpMessage()
+        
+                    if(isSuccess){
+                        //Navigate back
+                        navController.navigate(Routes.Main.route){
+                            popUpTo(Routes.Main.route) {inclusive = true}
                         }
                     }
-                } else null
-            )
-
-            //Test fetch composable (for debugging) !!!
-            GetAllPortfolio()
-            //Display connection status if present
-            connectionStatus?.let { status ->
-                Text(
-                    text = status,
-                    color = if (status.startsWith("✅")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-            }
-
-            // Button to test the backend connection manually
-            Button(onClick = { singlePortfolioMV.testBackendConnection() }) {
-                Text("Test Backend Connection")
+                }
             }
         }
     }
@@ -148,14 +174,13 @@ fun PreviewCreatePortfolioScreen(){
 
     CreateOrEditPortfolioScreen(
         isEditing = false,
-        isLoading = false,
         singlePortfolioMV = fakeViewModel,
-        existingPortfolio  = null
+        existingPortfolio   = null
     )
 }
 
 @SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true, name = "Edit Portfolio Screen")
+@Preview(name = "Edit Portfolio Screen")
 @Composable
 fun PreviewEditPortfolioScreen(){
     val fakeViewModel = SinglePortfolioMV()
@@ -171,7 +196,6 @@ fun PreviewEditPortfolioScreen(){
 
     CreateOrEditPortfolioScreen(
         isEditing = true,
-        isLoading = false,
         singlePortfolioMV = fakeViewModel,
         existingPortfolio  = fakePortfolio
     )

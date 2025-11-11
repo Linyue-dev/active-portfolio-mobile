@@ -28,7 +28,10 @@ class SinglePortfolioMV : ViewModel() {
     // Error messages
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
-
+    //Pop up message
+    private val _popUpMessage = MutableStateFlow<String?>(null)
+    val popUpMessage : StateFlow<String?>  = _popUpMessage.asStateFlow()
+    
     private val _connectionStatus = MutableStateFlow<String?>(null)
     val connectionStatus: StateFlow<String?> = _connectionStatus.asStateFlow()
     /**
@@ -43,8 +46,11 @@ class SinglePortfolioMV : ViewModel() {
 
                 if (response.isSuccessful) {
                     _portfolio.value = response.body()
+                    _popUpMessage.value = "SUCCESS: Portfolio created successfully!"
                 } else {
                     _errorMessage.value = "Error ${response.code()}: ${response.message()}"
+                    _popUpMessage.value = "Failed to create portfolio. ${response.message()} " +
+                            "Please try again! "
                 }
             }
         }
@@ -62,8 +68,10 @@ class SinglePortfolioMV : ViewModel() {
 
                 if (response.isSuccessful) {
                     _portfolio.value = response.body()
+                    _popUpMessage.value = "SUCCESS: Portfolio updated successfully!"
                 } else {
                     _errorMessage.value = "Error ${response.code()}: ${response.message()}"
+                    _popUpMessage.value = "Failed to update portfolio."
                 }
             }
         }
@@ -81,19 +89,27 @@ class SinglePortfolioMV : ViewModel() {
 
                 if (response.isSuccessful && response.body()?.success == true) {
                     _portfolio.value = null
+                    _popUpMessage.value = "SUCCESS: Portfolio deleted successfully."
                 } else {
                     _errorMessage.value = "Error ${response.code()}: ${response.message()}"
+                    _popUpMessage.value = "Failed to delete portfolio."
                 }
             }
         }
     }
 
+    //Helper to reset 
     fun resetState() {
         _portfolio.value = null
         _errorMessage.value = null
         _isLoading.value = false
     }
 
+    //Helper to reset message after showing
+    fun ClearPopUpMessage(){
+        _popUpMessage.value = null
+    }
+    
     private suspend fun runSafeOperation(block: suspend() -> Unit){
         _isLoading.value = true
         _errorMessage.value = null
