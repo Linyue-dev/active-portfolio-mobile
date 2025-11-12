@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.remote.dto.Adventure
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureUpdateRequest
-import com.example.active_portfolio_mobile.network.ActivePortfolioApi
+import com.example.active_portfolio_mobile.data.remote.network.ActivePortfolioApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
