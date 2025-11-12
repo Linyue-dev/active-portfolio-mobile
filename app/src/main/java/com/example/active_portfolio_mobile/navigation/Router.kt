@@ -82,20 +82,6 @@ fun Router(modifier: Modifier) {
                         UpdateSectionsScreen(id)
                     }
                 }
-
-                // Auth
-                composable(Routes.SignUp.route) {
-                    SignUpPage(
-                        authViewModel,
-                        onNavigateToLogin = { navController.navigate(Routes.Login.route) },
-                        onSignUpSuccess = {
-                            navController.navigate(Routes.Main.route) {
-                                popUpTo(Routes.SignUp.route) { inclusive = true }
-                                launchSingleTop = true
-                            }
-                        }
-                    )
-                }
                 // Auth
                 composable(Routes.Login.route) {
                     LoginPage(
