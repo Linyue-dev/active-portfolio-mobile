@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -57,8 +58,12 @@ fun LoginPage(
         }
 
 
+//        var email by  rememberSaveable { mutableStateOf("") }
+        var emailError by rememberSaveable { mutableStateOf<String?>(null) }
+
         var email by  rememberSaveable { mutableStateOf(startingEmail) }
         var password by rememberSaveable { mutableStateOf("") }
+        var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
 
         Column (
             modifier = Modifier
@@ -76,11 +81,20 @@ fun LoginPage(
                 value = email,
                 onValueChange = {
                     email = it
+                    emailError = null
                     viewModel.cleanError()
-                    if (uiState.error != null) viewModel.cleanError()
                 },
                 label = {Text ("Email")},
-                modifier = Modifier.fillMaxWidth()
+                enabled = !uiState.isLoading,
+                isError = emailError != null,
+                supportingText = {
+                    if (emailError != null){
+                        Text(
+                            text = emailError!!,
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
             )
 
             Spacer(Modifier.height(20.dp))
@@ -89,19 +103,43 @@ fun LoginPage(
                 value = password,
                 onValueChange = {
                     password = it
+                    passwordError = null
                     viewModel.cleanError()
-                    if (uiState.error != null) viewModel.cleanError()
                 },
                 visualTransformation = PasswordVisualTransformation(),
                 label = { Text ("Password")},
+                enabled = !uiState.isLoading,
+                isError = passwordError != null,
+                supportingText = {
+                    if (passwordError != null){
+                        Text(passwordError!!)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             )
-
 
             Spacer(Modifier.height(20.dp))
 
             Button(
-                onClick = { viewModel.login(email, password)},
+                onClick = {
+                    emailError = null
+                    passwordError = null
+
+                    var hasError = false
+                    if (email.isBlank()){
+                        emailError = "Email required"
+                        hasError = true
+                    }
+
+                    if (password.isBlank()){
+                        passwordError = "Password required"
+                        hasError = true
+                    }
+
+                    if(!hasError){
+                        viewModel.login(email, password)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             ) {
@@ -116,7 +154,8 @@ fun LoginPage(
                 Spacer(Modifier.height(16.dp))
                 Text(
                     text = uiState.error ?: "",
-                    color = Color.Red
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
             TextButton(onClick = onNavigateToSignUp) {
