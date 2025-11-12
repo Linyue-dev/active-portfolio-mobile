@@ -27,7 +27,6 @@ sealed class Routes(val route: String){
     object SignUp : Routes("signup")
 
     // User
-<<<<<<< HEAD
     object Profile : Routes("ProfilePageRoute")
 
     //Portfolio
@@ -36,8 +35,10 @@ sealed class Routes(val route: String){
 
         fun goEdit(portfolioId: String) = "ProfileCreateUpdateRoute?isEditing=true?portfolioId=$portfolioId"
     }
-=======
-    object Profile : Routes("profile")
+
     object EditProfile : Routes("edit_profile")
->>>>>>> 864b20f (refactor(profile): restructure ProfilePage ViewModel usage)
+
+    object EditField : Routes("edit_field/{field}") {
+        fun routeWithField(field: String) = "edit_field/$field"
+    }
 }

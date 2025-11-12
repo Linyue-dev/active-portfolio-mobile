@@ -1,11 +1,8 @@
 package com.example.active_portfolio_mobile.ui.profile
 
-<<<<<<< HEAD
 import android.app.Activity
 import androidx.activity.ComponentActivity
-=======
 import androidx.compose.foundation.layout.Arrangement
->>>>>>> 864b20f (refactor(profile): restructure ProfilePage ViewModel usage)
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,32 +26,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-<<<<<<< HEAD
 import androidx.compose.ui.platform.LocalContext
-=======
 import androidx.compose.ui.text.style.TextAlign
->>>>>>> 864b20f (refactor(profile): restructure ProfilePage ViewModel usage)
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.navigation.Routes
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
-
+/**
+ * Displays the logged-in user's profile.
+ *
+ * @param authViewModel Handles logout.
+ * @param profileViewModel Provides user profile data.
+ * @param onEditProfile Navigates to the edit profile screen.
+ */
 @Composable
 fun ProfilePage(
     authviewModel: AuthViewModel,
     profileViewModel: ProfileViewModel,
     onEditProfile: () -> Unit
 ){
-<<<<<<< HEAD
     val localContext = LocalContext.current
     val activity = localContext as ComponentActivity
-    val uiState by viewModel.uiState.collectAsState()
     val navController = LocalNavController.current
-=======
     val uiState by profileViewModel.uiState.collectAsState()
->>>>>>> 864b20f (refactor(profile): restructure ProfilePage ViewModel usage)
     val user = uiState.user
 
     if(user == null){
@@ -67,7 +63,6 @@ fun ProfilePage(
         return
     }
     MainLayout {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -96,17 +91,18 @@ fun ProfilePage(
                         modifier = Modifier.padding(10.dp)
                     )
                     /**
-                     * if username is null, display nothing but it remain blank line
+                     * Display username only when it is not null.
+                     * If null, no Text composable is shown and no space is reserved.
                      */
 
-                    user.username?.let {
+                    user.username?.takeIf { it.isNotBlank() }?.let {
                         Text(
                             text = it,
                             modifier = Modifier.padding(start = 10.dp, top = 5.dp)
                         )
                     }
 
-                    user.bio?.let {
+                    user.bio?.takeIf { it.isNotBlank() }?.let {
                         Text(
                             text = it,
                             modifier = Modifier.padding(start = 10.dp, top = 5.dp)
@@ -118,7 +114,7 @@ fun ProfilePage(
                         modifier = Modifier.padding(start = 10.dp, top = 5.dp)
                     )
 
-                    user.program?.let {
+                    user.program?.takeIf { it.isNotBlank() }?.let {
                         Text(
                             text = it,
                             modifier = Modifier.padding(start = 10.dp, top = 5.dp)
@@ -130,7 +126,6 @@ fun ProfilePage(
                     )
                 }
             }
-<<<<<<< HEAD
             // Button to return the user's name and email to the log-in launcher app.
             // Only appears if the app is launched from the right launcher.
             if (activity.intent.getBooleanExtra("from_login_launcher", false)) {
@@ -141,23 +136,24 @@ fun ProfilePage(
                     resultIntent.putExtra("email", user.email)
                     localContext.setResult(Activity.RESULT_OK, resultIntent)
                     localContext.finish()
-                    viewModel.logout()
+                    authviewModel.logout()
                 }) {
                     Text("Save this User to the Launcher")
                 }
             }
-=======
-
->>>>>>> 864b20f (refactor(profile): restructure ProfilePage ViewModel usage)
             Spacer(modifier = Modifier.height(15.dp))
 
             Row (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ){
 
                 Button(
-                    onClick = onEditProfile
+                    onClick = onEditProfile,
+                    modifier = Modifier.weight(1f)
                 ){
                     Text("Edit")
                 }
@@ -165,14 +161,15 @@ fun ProfilePage(
                 Button(
                     onClick = {
                     },
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text("My Portfolio")
+                    Text("Portfolio")
                 }
                 Button(
                     onClick = {
                         authviewModel.logout()
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.weight(1f)
                 ) {
                     Text("Logout")
                 }

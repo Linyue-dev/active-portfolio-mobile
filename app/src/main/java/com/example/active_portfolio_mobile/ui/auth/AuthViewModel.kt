@@ -16,9 +16,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.IOException
 import retrofit2.HttpException
-
 /**
- * Data class to hold authentication UI state
+ * UI state for authentication-related screens.
+ *
+ * @property isLoading  Indicates whether an authentication request is in progress.
+ * @property isLoggedIn True when a valid token/user is stored.
+ * @property user       The authenticated user, or null when logged out.
+ * @property error      Error message for login/signup failures, null when no error.
  */
 data class AuthUiState(
     val isLoading: Boolean = false,
@@ -28,8 +32,21 @@ data class AuthUiState(
 )
 
 /**
- * ViewModel for handling authentication logic (login, signup, logout)
+ * ViewModel for handling user authentication.
+ *
+ * Responsibilities:
+ * - Manage authentication UI state (loading, error, user, isLoggedIn).
+ * - Perform login and signup through UserApiService.
+ * - Save and load token/user data from TokenManager.
+ * - Restore login state when the app starts.
+ *
+ * Functions:
+ * - login(): Authenticate and save token + user.
+ * - signup(): Register new user and save token + user.
+ * - logout(): Clear stored auth data.
+ * - cleanError(): Clear error when user edits input.
  */
+
 class AuthViewModel(
     private val tokenManager: TokenManager
 ) : ViewModel() {
@@ -44,7 +61,11 @@ class AuthViewModel(
 
     val uiState: StateFlow<AuthUiState> = _uiState
 
-    // During initialization, check whether to automatically log in
+    /**
+     * On initialization:
+     * - Check if token exists.
+     * - If so, restore user and mark state as logged-in.
+     */
     init {
         if (tokenManager.isLoggedIn()){
             _uiState.value = _uiState.value.copy(
