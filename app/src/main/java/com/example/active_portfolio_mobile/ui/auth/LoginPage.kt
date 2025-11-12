@@ -41,6 +41,7 @@ import com.example.active_portfolio_mobile.navigation.Routes
  */
 @Composable
 fun LoginPage(
+    startingEmail: String = "",
     viewModel: AuthViewModel,
     onNavigateToSignUp: () -> Unit,
     onLoginSuccess: () -> Unit
@@ -56,7 +57,7 @@ fun LoginPage(
         }
 
 
-        var email by  rememberSaveable { mutableStateOf("") }
+        var email by  rememberSaveable { mutableStateOf(startingEmail) }
         var password by rememberSaveable { mutableStateOf("") }
 
         Column (

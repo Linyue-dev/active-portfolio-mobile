@@ -1,5 +1,7 @@
 package com.example.active_portfolio_mobile.ui.profile
 
+import android.app.Activity
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.active_portfolio_mobile.layouts.MainLayout
@@ -34,6 +37,8 @@ import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 fun ProfilePage(
     viewModel: AuthViewModel
 ){
+    val localContext = LocalContext.current
+    val activity = localContext as ComponentActivity
     val uiState by viewModel.uiState.collectAsState()
     val navController = LocalNavController.current
     val user = uiState.user
@@ -97,6 +102,21 @@ fun ProfilePage(
                         text = "${user.email}",
                         modifier = Modifier.padding(start = 10.dp, top = 5.dp)
                     )
+                }
+            }
+            // Button to return the user's name and email to the log-in launcher app.
+            // Only appears if the app is launched from the right launcher.
+            if (activity.intent.getBooleanExtra("from_login_launcher", false)) {
+                Spacer(modifier = Modifier.height(15.dp))
+                Button(onClick = {
+                    val resultIntent = activity.intent
+                    resultIntent.putExtra("name", user.firstName)
+                    resultIntent.putExtra("email", user.email)
+                    localContext.setResult(Activity.RESULT_OK, resultIntent)
+                    localContext.finish()
+                    viewModel.logout()
+                }) {
+                    Text("Save this User to the Launcher")
                 }
             }
             Spacer(modifier = Modifier.height(15.dp))

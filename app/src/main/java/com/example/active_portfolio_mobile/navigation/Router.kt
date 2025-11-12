@@ -14,6 +14,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import androidx.navigation.navArgument
 import com.example.active_portfolio_mobile.Screen.CommentPage
 import com.example.active_portfolio_mobile.Screen.AboutUsPage
@@ -81,7 +82,7 @@ fun Router(modifier: Modifier) {
                 // Auth
                 composable(Routes.Login.route) {
                     LoginPage(
-                        authViewModel,
+                        viewModel = authViewModel,
                         onNavigateToSignUp = { navController.navigate(Routes.SignUp.route) },
                         onLoginSuccess = {
                             navController.navigate(Routes.Profile.route) {
@@ -93,11 +94,27 @@ fun Router(modifier: Modifier) {
                 }
                 composable(Routes.SignUp.route) {
                     SignUpPage(
-                        authViewModel,
+                        viewModel = authViewModel,
                         onNavigateToLogin = { navController.navigate(Routes.Login.route) },
                         onSignUpSuccess = {
                             navController.navigate(Routes.Main.route) {
                                 popUpTo(Routes.SignUp.route) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+                // Deep link for log-in launcher
+                composable("sign-in?email={email}",
+                    deepLinks = listOf(navDeepLink { uriPattern = "project://ap.sign-in/?email={email}" })
+                ) { backStackEntry ->
+                    LoginPage(
+                        startingEmail = backStackEntry.arguments?.getString("email") ?: "",
+                        viewModel = authViewModel,
+                        onNavigateToSignUp = { navController.navigate(Routes.SignUp.route) },
+                        onLoginSuccess = {
+                            navController.navigate(Routes.Profile.route) {
+                                popUpTo(Routes.Login.route) { inclusive = true }
                                 launchSingleTop = true
                             }
                         }
