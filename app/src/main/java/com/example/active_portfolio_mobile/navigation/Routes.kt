@@ -23,8 +23,8 @@ sealed class Routes(val route: String){
     }
 
     // Auth
-    object Login : Routes("LoginPageRoute")
-    object SignUp : Routes("SignUpPageRoute")
+    object Login : Routes("login")
+    object SignUp : Routes("signup")
 
     // User
     object Profile : Routes("ProfilePageRoute")
@@ -34,5 +34,11 @@ sealed class Routes(val route: String){
         fun goCreate() = "ProfileCreateUpdateRoute?isEditing=false?portfolioID="
 
         fun goEdit(portfolioId: String) = "ProfileCreateUpdateRoute?isEditing=true?portfolioId=$portfolioId"
+    }
+
+    object EditProfile : Routes("edit_profile")
+
+    object EditField : Routes("edit_field/{field}") {
+        fun routeWithField(field: String) = "edit_field/$field"
     }
 }

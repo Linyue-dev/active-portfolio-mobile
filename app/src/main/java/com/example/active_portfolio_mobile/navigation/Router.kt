@@ -1,9 +1,10 @@
 package com.example.active_portfolio_mobile.navigation
 
-
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -31,6 +32,9 @@ import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.ui.common.ViewModelFactory
 import com.example.active_portfolio_mobile.ui.auth.LoginPage
 import com.example.active_portfolio_mobile.ui.auth.SignUpPage
+import com.example.active_portfolio_mobile.ui.profile.EditFieldPage
+import com.example.active_portfolio_mobile.ui.profile.EditProfilePage
+import com.example.active_portfolio_mobile.ui.profile.ProfileViewModel
 
 //Sets up the app navigation using NavHost with three routes: LandingPage,
 // CommentPage and AboutUsPage.
@@ -78,7 +82,6 @@ fun Router(modifier: Modifier) {
                         UpdateSectionsScreen(id)
                     }
                 }
-
                 // Auth
                 composable(Routes.Login.route) {
                     LoginPage(
@@ -105,8 +108,11 @@ fun Router(modifier: Modifier) {
                     )
                 }
                 // Deep link for log-in launcher
-                composable("sign-in?email={email}",
-                    deepLinks = listOf(navDeepLink { uriPattern = "project://ap.sign-in/?email={email}" })
+                composable(
+                    "sign-in?email={email}",
+                    deepLinks = listOf(navDeepLink {
+                        uriPattern = "project://ap.sign-in/?email={email}"
+                    })
                 ) { backStackEntry ->
                     LoginPage(
                         startingEmail = backStackEntry.arguments?.getString("email") ?: "",
@@ -120,31 +126,25 @@ fun Router(modifier: Modifier) {
                         }
                     )
                 }
-
-                // profile
-                composable(Routes.Profile.route) {
-                    ProfilePage(authViewModel)
-                }
-            
-
+                
                 //Portfolio
-                composable(Routes.CreateUpdatePortfolio.route,
+                composable(
+                    Routes.CreateUpdatePortfolio.route,
                     arguments = listOf(
-                        navArgument("isEditing"){
+                        navArgument("isEditing") {
                             type = NavType.BoolType
                             defaultValue = false
                         },
-                        navArgument("portfolioId"){
+                        navArgument("portfolioId") {
                             type = NavType.StringType
                             defaultValue = ""
                         }
-                    )){
-                    backStackEntry ->
+                    )) { backStackEntry ->
                     val isEditing = backStackEntry.arguments?.getBoolean("isEditing") ?: false
                     val portfolioId = backStackEntry.arguments?.getString("portfolioId") ?: ""
-    
+
                     val existingPortfolio =
-                        if(isEditing ){
+                        if (isEditing) {
                             //REPLACE BY GET SINGLE PORTFOLIO
                             Portfolio(
                                 id = "690e53e88f09dccf0d758ede",
@@ -154,10 +154,67 @@ fun Router(modifier: Modifier) {
                                 description = null,
                                 visibility = "link-only"
                             )
-                        }else null
+                        } else null
                     CreateOrEditPortfolioScreen(
                         isEditing = isEditing,
-                        existingPortfolio  = existingPortfolio
+                        existingPortfolio = existingPortfolio
+                    )
+                }
+
+
+                /**
+                 * Profile
+                 */
+                composable(Routes.Profile.route) {
+                    val isLoggedIn = authViewModel.uiState.collectAsState().value.isLoggedIn
+                    LaunchedEffect(isLoggedIn) {
+                        if (!isLoggedIn) {
+                            navController.navigate(Routes.Login.route) {
+                                popUpTo(Routes.SignUp.route) { inclusive = true }
+                            }
+                        }
+                    }
+
+                    if (isLoggedIn) {
+                        val profileViewModel: ProfileViewModel = viewModel(
+                            factory = ViewModelFactory(tokenManager)
+                        )
+                        ProfilePage(
+                            authViewModel,
+                            profileViewModel,
+                            onEditProfile = {
+                                navController.navigate(Routes.EditProfile.route)
+                            }
+                        )
+                    }
+                }
+                composable(Routes.EditProfile.route) {
+                    val profileViewModel: ProfileViewModel = viewModel(
+                        factory = ViewModelFactory(tokenManager)
+                    )
+                    EditProfilePage(
+                        viewModel = profileViewModel,
+                        onEdit = { field ->
+                            navController.navigate(Routes.EditField.routeWithField(field))
+                        }
+                    )
+                }
+
+                composable(
+                    route = Routes.EditField.route,
+                    arguments = listOf(
+                        navArgument("field") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val field = backStackEntry.arguments?.getString("field") ?: ""
+                    val profileViewModel: ProfileViewModel = viewModel(
+                        factory = ViewModelFactory(tokenManager)
+                    )
+                    EditFieldPage(
+                        viewModel = profileViewModel,
+                        field = field
                     )
                 }
             }
