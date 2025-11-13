@@ -19,7 +19,6 @@ How to install and launch your application.
 ⚙️ (By Sprint 1: update this section with full build requirements, e.g., SDK version, Gradle version, dependencies.)
 
 ## Screenshots of application
-- (By Sprint 1): Screenshots from each of the main screens of your application.
   
 **The landing page:**
   
@@ -28,9 +27,21 @@ How to install and launch your application.
 **The About us page:**
   - ![img_1.png](img_1.png)
     
-**The Comment page:**
+[//]: # (**The Comment page:**)
 
-  - ![img_2.png](img_2.png)
+[//]: # ()
+[//]: # (  - ![img_2.png]&#40;img_2.png&#41;)
+
+**Adventure View page:**
+ - ![The adventure view screen for a specific adventure](./readme_images/adventure_view.PNG)
+
+**Adventure Creation and Update page:**
+ - ![The adventure creation/update screen](./readme_images/adventure_update.PNG)
+
+**Adventure Sections Update page:**
+ - ![The section update page, updating a text section](./readme_images/section_update_text.PNG)
+ - ![The section update page, updating a link section](./readme_images/section_update_link.PNG)
+ - ![The section update page, updating an image section](./readme_images/section_update_image.PNG)
 
 ## Team members
 - Adam Laurin  
