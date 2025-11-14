@@ -42,7 +42,7 @@ fun CreateAdventureScreen(
         if (adventureToUpdate != null) {
             adventureVM.setAdventure(adventureToUpdate)
         }
-        adventureVM.setUserId("68ff6707223ec2d08217d54d") //TODO set to the signed in user's id
+        adventureVM.setUserId("6915f21c2827463bfd56186b") //TODO set to the signed in user's id
     }
 
     MainLayout {
