@@ -29,6 +29,7 @@ How to install and launch your application.
     
 [//]: # (**The Comment page:**)
 
+
 [//]: # ()
 [//]: # (  - ![img_2.png]&#40;img_2.png&#41;)
 
@@ -67,6 +68,20 @@ How to install and launch your application.
 **Portfolio Update page:**
  - ![The portfolio update page with delete button](./readme_images/profile_update_field.png)
 
+
+[//]: # ()
+[//]: # (  - ![img_2.png]&#40;img_2.png&#41;)
+
+**Adventure View page:**
+ - ![The adventure view screen for a specific adventure](./readme_images/adventure_view.PNG)
+
+**Adventure Creation and Update page:**
+ - ![The adventure creation/update screen](./readme_images/adventure_update.PNG)
+
+**Adventure Sections Update page:**
+ - ![The section update page, updating a text section](./readme_images/section_update_text.PNG)
+ - ![The section update page, updating a link section](./readme_images/section_update_link.PNG)
+ - ![The section update page, updating an image section](./readme_images/section_update_image.PNG)
 
 ## Team members
 - Adam Laurin  
