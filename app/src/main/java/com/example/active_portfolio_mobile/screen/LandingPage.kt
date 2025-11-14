@@ -93,6 +93,11 @@ fun LandingPage(modifier : Modifier){
                 }) {
                     Text("Demo Adventure View")
                 }
+                Button(onClick = {
+                    navController.navigate(Routes.CreateUpdatePortfolio.goEdit(""))
+                }) {
+                    Text("Update an existing Portfolio")
+                }
             }
         }
     }

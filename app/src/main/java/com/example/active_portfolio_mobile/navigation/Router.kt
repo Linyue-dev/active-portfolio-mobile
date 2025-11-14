@@ -128,8 +128,9 @@ fun Router(modifier: Modifier) {
                 }
                 
                 //Portfolio
+                //Portfolio
                 composable(
-                    Routes.CreateUpdatePortfolio.route,
+                    route = "PortfolioCreateUpdateRoute?isEditing={isEditing}&portfolioId={portfolioId}",
                     arguments = listOf(
                         navArgument("isEditing") {
                             type = NavType.BoolType
@@ -139,7 +140,8 @@ fun Router(modifier: Modifier) {
                             type = NavType.StringType
                             defaultValue = ""
                         }
-                    )) { backStackEntry ->
+                    )
+                ) { backStackEntry ->
                     val isEditing = backStackEntry.arguments?.getBoolean("isEditing") ?: false
                     val portfolioId = backStackEntry.arguments?.getString("portfolioId") ?: ""
 
@@ -147,12 +149,12 @@ fun Router(modifier: Modifier) {
                         if (isEditing) {
                             //REPLACE BY GET SINGLE PORTFOLIO
                             Portfolio(
-                                id = "690e53e88f09dccf0d758ede",
-                                title = "EH",
+                                id = "691767476b9839658fef2917",
+                                title = "Final new f",
                                 createdBy = "690e3b61905d564736adf04f",
-                                shareToken = "55f068be88c7322f1aef3628a0049390",
-                                description = null,
-                                visibility = "link-only"
+                                shareToken = null,
+                                description = "for good or now ",
+                                visibility = "public"
                             )
                         } else null
                     CreateOrEditPortfolioScreen(
