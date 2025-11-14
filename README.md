@@ -43,6 +43,24 @@ How to install and launch your application.
  - ![The section update page, updating a link section](./readme_images/section_update_link.PNG)
  - ![The section update page, updating an image section](./readme_images/section_update_image.PNG)
 
+**Sign Up page:**
+ - ![The signup page, updating a text section](./readme_images/signup_view.png)
+
+**Login page:**
+ - ![The login page, updating a text section](./readme_images/login_view.png)
+
+**Profile page:**
+ - ![The profile page, updating a text section](./readme_images/profile_view.png)
+
+**Profile Edit page:**
+ - ![The profile edit page, updating a text section](./readme_images/profile_edit.png)
+
+**Profile Edit Field page:**
+ - ![The profile edit field page, updating a text section](./readme_images/profile_update_field.png)
+
+
+
+
 ## Team members
 - Adam Laurin  
 - Labiba Ali  
