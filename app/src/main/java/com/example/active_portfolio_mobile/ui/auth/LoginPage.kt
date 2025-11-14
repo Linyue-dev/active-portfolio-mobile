@@ -8,9 +8,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -45,7 +51,7 @@ fun LoginPage(
     startingEmail: String = "",
     viewModel: AuthViewModel,
     onNavigateToSignUp: () -> Unit,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
 ){
     MainLayout {
         val uiState by viewModel.uiState.collectAsState()
@@ -57,11 +63,8 @@ fun LoginPage(
             }
         }
 
-
-//        var email by  rememberSaveable { mutableStateOf("") }
-        var emailError by rememberSaveable { mutableStateOf<String?>(null) }
-
         var email by  rememberSaveable { mutableStateOf(startingEmail) }
+        var emailError by rememberSaveable { mutableStateOf<String?>(null) }
         var password by rememberSaveable { mutableStateOf("") }
         var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
 

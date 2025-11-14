@@ -19,7 +19,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,14 +30,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.active_portfolio_mobile.layouts.MainLayout
-import com.example.active_portfolio_mobile.navigation.LocalNavController
-import com.example.active_portfolio_mobile.navigation.Routes
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
+import android.content.Intent
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import com.example.active_portfolio_mobile.viewModels.UserPortfolio
 import kotlinx.coroutines.launch
 
@@ -51,13 +52,12 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun ProfilePage(
-    authviewModel: AuthViewModel,
+    authViewModel: AuthViewModel,
     profileViewModel: ProfileViewModel,
     onEditProfile: () -> Unit
 ){
     val localContext = LocalContext.current
     val activity = localContext as ComponentActivity
-    val navController = LocalNavController.current
     val uiState by profileViewModel.uiState.collectAsState()
     val user = uiState.user
     val userPortfolio : UserPortfolio = viewModel()
@@ -145,7 +145,7 @@ fun ProfilePage(
                     resultIntent.putExtra("email", user.email)
                     localContext.setResult(Activity.RESULT_OK, resultIntent)
                     localContext.finish()
-                    authviewModel.logout()
+                    authViewModel.logout()
                 }) {
                     Text("Save this User to the Launcher")
                 }
@@ -225,12 +225,33 @@ fun ProfilePage(
                 }
                 Button(
                     onClick = {
-                        authviewModel.logout()
+                        authViewModel.logout()
                     },
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("Logout")
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            OutlinedButton(
+                onClick = {
+                    val resultIntent = Intent().apply {
+                        putExtra(
+                            "resultMessage",
+                            authViewModel.uiState.value.user?.firstName ?: "User"
+                        )
+                    }
+                    activity.setResult(Activity.RESULT_OK, resultIntent)
+                    activity.finish()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ){
+                Icon(Icons.Default.ArrowBack, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Return to Launcher")
             }
         }
     }
