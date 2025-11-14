@@ -58,7 +58,14 @@ How to install and launch your application.
 **Profile Edit Field page:**
  - ![The profile edit field page, updating a text section](./readme_images/profile_update_field.png)
 
+**Portfolio Creation page:**
+ - ![The portfolio creation field page](./readme_images/portfolio_creation)
 
+**Portfolio Creation page with visibility:**
+ - ![The portfolio creation page with the visibility choice down](./readme_images/portfolio_creation_visibility)
+
+**Portfolio Update page:**
+ - ![The portfolio update page with delete button](./readme_images/profile_update_field.png)
 
 
 ## Team members
