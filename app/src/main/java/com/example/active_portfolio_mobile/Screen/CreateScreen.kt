@@ -40,7 +40,7 @@ fun CreateScreen() {
             }
             item {
                 Button(onClick = {
-                    navController.navigate(Routes.CreateUpdatePortfolio.route)
+                    navController.navigate(Routes.CreateUpdatePortfolio.goCreate())
                 }) {
                     Text("Create new Portfolio")
                 }
