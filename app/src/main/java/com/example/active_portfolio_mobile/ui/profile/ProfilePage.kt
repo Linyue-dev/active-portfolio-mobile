@@ -99,10 +99,10 @@ fun ProfilePage(
     }
 
     MainLayout {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
         ) {
             // ===== Banner + Profile Picture =====
@@ -110,6 +110,14 @@ fun ProfilePage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.primaryContainer
+                            )
+                        )
+                    )
             ){
                 if (user.banner.isNullOrEmpty()){
                     Box(
