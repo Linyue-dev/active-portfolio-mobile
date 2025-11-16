@@ -27,7 +27,16 @@ interface AdventureSectionService {
     suspend fun createSection(
         @Body sectionToCreate: AdventureSectionCreationRequest
     ): Response<String>
-    // TODO make a multipart POST for image sections.
+
+    @Multipart
+    @POST("sections")
+    suspend fun createImageSection(
+        @Part("label") label: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("type") type: RequestBody,
+        @Part("adventureId") adventureId: RequestBody,
+        @Part contentFiles: List<MultipartBody.Part>
+    ): Response<String>
 
     @PUT("sections/{id}")
     suspend fun updateSection(

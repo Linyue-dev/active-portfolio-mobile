@@ -1,24 +1,16 @@
 package com.example.active_portfolio_mobile.viewModels
 
-import android.R.attr.description
-import android.R.attr.label
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
-import com.example.active_portfolio_mobile.data.remote.dto.Adventure
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSectionUpdateRequest
-import com.example.active_portfolio_mobile.data.remote.dto.AdventureUpdateRequest
 import com.example.active_portfolio_mobile.network.ActivePortfolioApi
-import com.example.active_portfolio_mobile.network.ActivePortfolioApi.adventure
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -235,7 +227,9 @@ class AdventureSectionImageUpdateVM : ViewModel() {
     }
 }
 
-
+/**
+ * Turns a list of bitmap images into byte arrays which can be processed by the backend database.
+ */
 fun convertImagesForRequest(
     id: String,
     images: List<Bitmap>,

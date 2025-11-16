@@ -20,7 +20,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
 import com.example.active_portfolio_mobile.data.remote.dto.SectionType
+import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.utilities.rememberMutableStateListOf
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionCreationVM
 import kotlin.collections.forEach
@@ -30,7 +33,9 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
     var label by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
     var stringContent by rememberSaveable { mutableStateOf("") }
-    var imageContent = rememberMutableStateListOf<Bitmap>()
+    val imageContent = rememberMutableStateListOf<Bitmap>()
+    val portfolios = rememberMutableStateListOf<String>()
+    val navController: NavController = LocalNavController.current
 
     Column {
         // Create the Section's label.
@@ -84,17 +89,44 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
                 selectedItems = emptyList(),
                 list = listOf("Portfolio 1", "Portfolio 2", "Portfolio 3"),
                 selectItem = {
-                    sectionVM.addToPortfolios(it)
+                    portfolios.add(it)
                 },
                 deselectItem = {
-                    sectionVM.removeFromPortfolios(it)
+                    portfolios.remove(it)
                 }
             )
         }
         // }
 
         Button(onClick = {
-            // TODO save the section. Navigate back to adventure section update.
+            var success = false
+            val sectionToSave = AdventureSection(
+                label = label,
+                type = type,
+                description = description,
+                portfolios = portfolios,
+                content = stringContent,
+                id = "",
+                adventureId = ""
+            )
+            // Save the section according to its type
+            when (type) {
+                SectionType.IMAGE -> sectionVM.saveNewImageSection(
+                    sectionToSave, 
+                    imageContent
+                ){
+                    success = it
+                }
+                else -> sectionVM.saveNewSection(sectionToSave) {
+                    success = it
+                }
+            }
+
+            if (success) {
+                navController.navigateUp() // ToDo, make sure previous screen updates w/ new content
+            } else {
+                // Todo, error popup
+            }
         }) {
             Text("Save")
         }

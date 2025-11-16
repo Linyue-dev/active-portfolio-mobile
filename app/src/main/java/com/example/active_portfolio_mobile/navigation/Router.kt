@@ -19,6 +19,7 @@ import com.example.active_portfolio_mobile.Screen.CreateScreen
 import com.example.active_portfolio_mobile.Screen.LandingPage
 import com.example.active_portfolio_mobile.Screen.adventure.AdventureViewScreen
 import com.example.active_portfolio_mobile.Screen.adventure.CreateAdventureScreen
+import com.example.active_portfolio_mobile.Screen.adventure.CreateSectionScreen
 import com.example.active_portfolio_mobile.Screen.adventure.UpdateSectionsScreen
 import com.example.active_portfolio_mobile.ui.profile.ProfilePage
 import com.example.active_portfolio_mobile.data.local.TokenManager
@@ -65,6 +66,12 @@ fun Router(modifier: Modifier) {
                     val id = it.arguments?.getString("adventureId")
                     if (id != null) {
                         AdventureViewScreen(id)
+                    }
+                }
+                composable(Routes.SectionsCreate.route) {
+                    val id = it.arguments?.getString("adventureId")
+                    if (id != null) {
+                        CreateSectionScreen(id)
                     }
                 }
                 composable(Routes.SectionsUpdate.route) {

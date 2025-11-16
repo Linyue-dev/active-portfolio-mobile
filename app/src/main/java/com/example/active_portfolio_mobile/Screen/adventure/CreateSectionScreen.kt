@@ -4,6 +4,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.active_portfolio_mobile.composables.adventure.CreateSectionForm
 import com.example.active_portfolio_mobile.composables.adventure.DropDownTab
 import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionCreationVM
@@ -21,10 +22,19 @@ fun CreateSectionScreen(
         LazyColumn {
             item {
                 DropDownTab("New Text Section") {
-
+                    CreateSectionForm("text", adventureSectionVM)
                 }
             }
-
+            item {
+                DropDownTab("New Link Section") {
+                    CreateSectionForm("link", adventureSectionVM)
+                }
+            }
+            item {
+                DropDownTab("New Image Section") {
+                    CreateSectionForm("image", adventureSectionVM)
+                }
+            }
         }
     }
 }

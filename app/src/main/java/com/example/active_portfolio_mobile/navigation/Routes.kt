@@ -17,6 +17,9 @@ sealed class Routes(val route: String){
     object AdventureView: Routes("AdventureViewRoute/{adventureId}") {
         fun go(adventureId: String) = "AdventureViewRoute/$adventureId"
     }
+    object SectionsCreate: Routes("SectionsCreateRoute/{adventureId}") {
+        fun go(adventureId: String) = "SectionsCreateRoute/$adventureId"
+    }
     object SectionsUpdate: Routes("SectionsUpdateRoute/{adventureId}") {
         fun go(adventureId: String) = "SectionsUpdateRoute/$adventureId"
     }
