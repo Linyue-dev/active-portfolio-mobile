@@ -19,7 +19,6 @@ import com.example.active_portfolio_mobile.composables.adventure.DeleteButtonWit
 import com.example.active_portfolio_mobile.composables.adventure.DropDownTab
 import com.example.active_portfolio_mobile.composables.adventure.MultiSelectList
 import com.example.active_portfolio_mobile.composables.adventure.SingleSelectList
-import com.example.active_portfolio_mobile.data.remote.dto.Adventure
 import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.navigation.Routes
@@ -65,7 +64,7 @@ fun CreateAdventureScreen(
                     Button(onClick = {
                         navController.navigate(Routes.SectionsUpdate.go(adventure.id))
                     }) {
-                        Text("Build My Adventure") //TODO actually nav to section update screen (only when adventure already created)
+                        Text("Build My Adventure")
                     }
                 }
             }

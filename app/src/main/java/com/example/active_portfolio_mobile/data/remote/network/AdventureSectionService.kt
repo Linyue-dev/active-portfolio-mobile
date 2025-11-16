@@ -1,6 +1,7 @@
 package com.example.active_portfolio_mobile.data.remote.network
 
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
+import com.example.active_portfolio_mobile.data.remote.dto.AdventureSectionCreationRequest
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSectionUpdateRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -21,6 +22,21 @@ interface AdventureSectionService {
         @Path("adventureId") adventureId: String,
         @Query("filterPortfolio") filterPortfolio: String = ""
     ): Response<List<AdventureSection>>
+
+    @POST("sections")
+    suspend fun createSection(
+        @Body sectionToCreate: AdventureSectionCreationRequest
+    ): Response<String>
+
+    @Multipart
+    @POST("sections")
+    suspend fun createImageSection(
+        @Part("label") label: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("type") type: RequestBody,
+        @Part("adventureId") adventureId: RequestBody,
+        @Part contentFiles: List<MultipartBody.Part>
+    ): Response<String>
 
     @PUT("sections/{id}")
     suspend fun updateSection(
