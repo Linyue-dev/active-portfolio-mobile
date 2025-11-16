@@ -50,6 +50,10 @@ class ProfileViewModel(
     val uiState : StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
+        val cached = tokenManager.getUser()
+        if (cached != null){
+            _uiState.value = _uiState.value.copy(user = cached)
+        }
         // fetch lastest user from backend
         getMyProfile()
     }
