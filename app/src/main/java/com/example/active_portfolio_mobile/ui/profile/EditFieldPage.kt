@@ -1,12 +1,18 @@
 package com.example.active_portfolio_mobile.ui.profile
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,8 +47,8 @@ fun EditFieldPage(
             "firstName" -> user?.firstName ?: ""
             "lastName" -> user?.lastName ?: ""
             "username" -> user?.username ?: ""
-            "bio" -> user?.bio ?: ""
             "program" -> user?.program ?: ""
+            "bio" -> user?.bio ?: ""
             else ->  ""
         }
     }
@@ -53,10 +59,13 @@ fun EditFieldPage(
         "firstName" -> "First Name"
         "lastName" -> "Last Name"
         "username" -> "Username"
-        "bio" -> "Bio"
         "program" ->  "Program"
+        "bio" -> "Bio"
         else -> field
     }
+
+    // add flag to make user firstname and lastname cannot be null
+    val isRequired = field == "firstName" || field == "lastName"
 
     MainLayout {
         Column (
@@ -65,19 +74,31 @@ fun EditFieldPage(
                 .padding(16.dp)
         ){
             if(field == "bio"){
+                Text(
+                    "Tell others about yourself",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
+            if(field == "bio"){
                 OutlinedTextField(
                     value= value,
                     onValueChange = { value = it},
                     label = { Text (fieldLabel) },
                     modifier = Modifier.fillMaxWidth(),
                     minLines= 4,
-                    maxLines = 6
+                    maxLines = 6,
+                    supportingText = {
+                        Text("${value.length} / 500")
+                    }
                 )
             } else {
                 OutlinedTextField(
                     value = value,
                     onValueChange = { value = it},
-                    label = { fieldLabel},
+                    label = { Text(fieldLabel)},
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -85,17 +106,51 @@ fun EditFieldPage(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = {
-                    viewModel.updateField(field, value){
-                        navController.popBackStack()
-                    }
-                },
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                enabled = value != currentValue // only change can save
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ){
+                // cancel button
+                OutlinedButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Cancel")
+                }
 
-            ) {
-                Text("Save")
+                // save button
+                Button(
+                    onClick = {
+                        if (value != currentValue){
+                            viewModel.updateField(field, value){
+                                navController.popBackStack()
+                            }
+                        } else{
+                            navController.popBackStack()
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    enabled = value != currentValue // only change can save
+                            && !uiState.isLoading
+                            && !(isRequired && value.isBlank())
+                ) {
+                    if(uiState.isLoading){
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text("Save")
+                    }
+                }
+            }
+            uiState.error?.let{ error ->
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         }
     }

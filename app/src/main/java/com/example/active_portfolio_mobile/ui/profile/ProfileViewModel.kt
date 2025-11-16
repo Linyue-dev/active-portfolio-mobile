@@ -1,5 +1,6 @@
 package com.example.active_portfolio_mobile.ui.profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.local.TokenManager
@@ -49,8 +50,6 @@ class ProfileViewModel(
     val uiState : StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
-
-        // load cached user from token
         val cached = tokenManager.getUser()
         if (cached != null){
             _uiState.value = _uiState.value.copy(user = cached)
@@ -109,11 +108,12 @@ class ProfileViewModel(
 
             try {
                 val request = when (field){
-                    "firstName" -> UpdateUserRequest(firstName = value)
-                    "lastName" -> UpdateUserRequest(lastName = value)
-                    "username" -> UpdateUserRequest(username = value)
-                    "bio" -> UpdateUserRequest(bio = value)
-                    else -> throw IllegalArgumentException("Unknown field")
+                    "firstName" -> UpdateUserRequest(firstName = value.trim())
+                    "lastName" -> UpdateUserRequest(lastName = value.trim())
+                    "username" -> UpdateUserRequest(username = value.trim())
+                    "program" -> UpdateUserRequest(program = value.trim())
+                    "bio" -> UpdateUserRequest(bio = value.trim())
+                    else -> throw IllegalArgumentException("Unknown field: $field")
                 }
 
                 val updateUser = apiService.updateUser(request)
@@ -127,6 +127,8 @@ class ProfileViewModel(
                 onSuccess()
 
             } catch (ex: HttpException){
+                val errorBody = ex.response()?.errorBody()?.string()
+                Log.e("ProfileViewModel", "HTTP ${ex.code()}: $errorBody")
                 _uiState.update {
                     it.copy( isLoading = false, error = ErrorParser.errorHttpError(ex))
                 }
