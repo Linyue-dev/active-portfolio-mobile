@@ -1,5 +1,6 @@
 package com.example.active_portfolio_mobile.ui.profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.local.TokenManager
@@ -49,12 +50,6 @@ class ProfileViewModel(
     val uiState : StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
-
-        // load cached user from token
-        val cached = tokenManager.getUser()
-        if (cached != null){
-            _uiState.value = _uiState.value.copy(user = cached)
-        }
         // fetch lastest user from backend
         getMyProfile()
     }
@@ -112,8 +107,9 @@ class ProfileViewModel(
                     "firstName" -> UpdateUserRequest(firstName = value)
                     "lastName" -> UpdateUserRequest(lastName = value)
                     "username" -> UpdateUserRequest(username = value)
+                    "program" -> UpdateUserRequest(program = value)
                     "bio" -> UpdateUserRequest(bio = value)
-                    else -> throw IllegalArgumentException("Unknown field")
+                    else -> throw IllegalArgumentException("Unknown field: $field")
                 }
 
                 val updateUser = apiService.updateUser(request)

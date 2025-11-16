@@ -154,6 +154,11 @@ class AuthViewModel(
      */
     fun logout(){
         tokenManager.clearAll()
-        _uiState.value = AuthUiState(isLoading = false)
+        _uiState.value = AuthUiState(
+            isLoading = false,
+            isLoggedIn = false,
+            user = null,
+            error = null
+        )
     }
 }

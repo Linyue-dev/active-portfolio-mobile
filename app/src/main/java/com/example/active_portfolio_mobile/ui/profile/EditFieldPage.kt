@@ -41,8 +41,8 @@ fun EditFieldPage(
             "firstName" -> user?.firstName ?: ""
             "lastName" -> user?.lastName ?: ""
             "username" -> user?.username ?: ""
-            "bio" -> user?.bio ?: ""
             "program" -> user?.program ?: ""
+            "bio" -> user?.bio ?: ""
             else ->  ""
         }
     }
@@ -53,8 +53,8 @@ fun EditFieldPage(
         "firstName" -> "First Name"
         "lastName" -> "Last Name"
         "username" -> "Username"
-        "bio" -> "Bio"
         "program" ->  "Program"
+        "bio" -> "Bio"
         else -> field
     }
 
@@ -77,7 +77,7 @@ fun EditFieldPage(
                 OutlinedTextField(
                     value = value,
                     onValueChange = { value = it},
-                    label = { fieldLabel},
+                    label = { Text(fieldLabel)},
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
