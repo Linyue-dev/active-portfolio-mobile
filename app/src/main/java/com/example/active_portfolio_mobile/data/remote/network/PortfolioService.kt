@@ -26,9 +26,9 @@ interface PortfolioService {
     @GET("portfolio/users/{userId}")
     suspend fun getAllUsersPortfolio(@Path("userId") userId: String) : Response<List<Portfolio>>
 
-    @GET("portfolio/visibility/{visibility}")
+    @GET("portfolio/visibility/{visibility}/{userId}")
     suspend fun getAllPortfolioByVisibility(@Path("visibility") visibility: String,
-                                            @Query("userId") userId: String? = null
+                                            @Path("userId") userId: String
     ): Response<List<Portfolio>>
 
     //POST - CREATE

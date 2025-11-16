@@ -40,6 +40,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,6 +57,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
+//import com.example.active_portfolio_mobile.viewModels.UserPortfolio
+
 /**
  * Displays the logged-in user's profile.
  *
@@ -71,6 +77,7 @@ fun ProfilePage(
     val uiState by profileViewModel.uiState.collectAsState()
     val authState by authViewModel.uiState.collectAsState()
     val user = uiState.user
+//    val userPortfolio : UserPortfolio = viewModel()
 
     // Listen for changes in the logged-in user's email and reload the profile
     LaunchedEffect(authState.user?.email) {
@@ -90,6 +97,7 @@ fun ProfilePage(
     }
 
     MainLayout {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -235,6 +243,55 @@ fun ProfilePage(
                 }
             }
             // ===== Button =====
+
+            //Check if it was opened by Labiba launcher app.
+            if(activity.intent.getBooleanExtra("from_portfolio_launcher", false)){
+
+                //Mutable states to hold portfolio statistic,\
+                var totalCount by remember { mutableStateOf<Int?>(null) }
+                var countPrivate by remember { mutableStateOf<Int?>(null) }
+                var countPublic by remember { mutableStateOf<Int?>(null) }
+                var countLink by remember { mutableStateOf<Int?>(null) }
+
+                val scope = rememberCoroutineScope()
+                /**
+                 * Launched effect runs once when the user.id changes.
+                 * It loads all portfolio statistics.
+                 */
+//                LaunchedEffect(user.id){
+//                    scope.launch {
+//                        totalCount = userPortfolio.getPortfolioCount(user.id)
+//                        countPrivate = userPortfolio.getPortfolioCountByVisibility(user.id, "private")
+//                        countPublic = userPortfolio.getPortfolioCountByVisibility(user.id, "public")
+//                        countLink = userPortfolio.getPortfolioCountByVisibility(user.id, "link-only")
+//                    }
+//                }
+
+                Spacer(modifier = Modifier.height(15.dp))
+                //All data must be fully loaded before enabling the button
+                val allLoaded = totalCount != null && countPrivate != null && countPublic != null && countLink != null
+
+                /**
+                 * Button sends the result back to the launcher app.
+                 * Enabled only after every things has loaded.
+                 */
+                Button(onClick = {
+                    val resultIntent = activity.intent
+                    resultIntent.putExtra("result", "Success")
+                    resultIntent.putExtra("total", totalCount)
+                    resultIntent.putExtra("public", countPublic)
+                    resultIntent.putExtra("private", countPrivate)
+                    resultIntent.putExtra("link", countLink)
+                    localContext.setResult(Activity.RESULT_OK, resultIntent)
+                    authViewModel.logout()
+                    localContext.finish()
+                }, enabled = allLoaded
+                ){
+                    Text("Get Portfolio static!!")
+                }
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+
             Row (
                 modifier = Modifier
                     .fillMaxWidth()

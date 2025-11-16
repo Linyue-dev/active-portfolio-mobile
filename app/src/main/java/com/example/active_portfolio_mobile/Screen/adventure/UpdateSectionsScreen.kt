@@ -9,11 +9,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.active_portfolio_mobile.composables.adventure.DropDownTab
 import com.example.active_portfolio_mobile.composables.adventure.UpdateImageSectionForm
 import com.example.active_portfolio_mobile.composables.adventure.UpdateSectionForm
 import com.example.active_portfolio_mobile.data.remote.dto.SectionType
 import com.example.active_portfolio_mobile.layouts.MainLayout
+import com.example.active_portfolio_mobile.navigation.LocalNavController
+import com.example.active_portfolio_mobile.navigation.Routes
 import com.example.active_portfolio_mobile.viewModels.AdventureCreationUpdateVM
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionUpdateVM
 
@@ -33,6 +36,7 @@ fun UpdateSectionsScreen(
         adventureSectionVM.fetchSections(adventureId)
         adventureVM.setAdventure(adventureId)
     }
+    val navController: NavController = LocalNavController.current
     val sections = adventureSectionVM.sections
     val adventure by adventureVM.adventure.collectAsStateWithLifecycle()
 
@@ -45,7 +49,12 @@ fun UpdateSectionsScreen(
             items(sections.value, key = {it.id}) { section ->
                 when (section.type) {
                     SectionType.IMAGE -> DropDownTab(section.label) {
-                        UpdateImageSectionForm(section, adventure, adventureSectionVM)
+                        UpdateImageSectionForm(
+                            section,
+                            adventure,
+                            adventureSectionVM,
+                            viewModel(key = section.id)
+                        )
                     }
                     else -> DropDownTab(section.label) {
                         UpdateSectionForm(section, adventure, adventureSectionVM)
@@ -53,7 +62,9 @@ fun UpdateSectionsScreen(
                 }
             }
             item {
-                Button(onClick = {}) {
+                Button(onClick = {
+                    navController.navigate(Routes.SectionsCreate.go(adventureId))
+                }) {
                     Text("Add New Section")
                 }
             }

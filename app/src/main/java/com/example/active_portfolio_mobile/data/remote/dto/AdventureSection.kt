@@ -12,7 +12,6 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonPrimitive
 
-
 @Serializable
 data class AdventureSection(
     @SerialName(value = "_id")
@@ -27,6 +26,16 @@ data class AdventureSection(
     // string for now and parse it later as needed.
     @Serializable(with = FlexibleStringSerializer::class)
     val content: String
+)
+
+@Serializable
+data class AdventureSectionCreationRequest(
+    val label: String,
+    val contentString: String = "",
+    val description: String = "",
+    val portfolios: List<String>,
+    val adventureId: String,
+    val type: String
 )
 
 @Serializable
