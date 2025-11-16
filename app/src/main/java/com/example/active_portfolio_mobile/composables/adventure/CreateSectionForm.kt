@@ -28,6 +28,11 @@ import com.example.active_portfolio_mobile.utilities.rememberMutableStateListOf
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionCreationVM
 import kotlin.collections.forEach
 
+/**
+ * A form for the creation of an Adventure Section.
+ * @param type the type of the section being created with this form (text, image, link, etc.)
+ * @param sectionVM the View Model for creating sections from the creation screen.
+ */
 @Composable
 fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
     var label by rememberSaveable { mutableStateOf("") }
@@ -98,6 +103,7 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
         }
         // }
 
+        // Save the created section.
         Button(onClick = {
             var success = false
             val sectionToSave = AdventureSection(
@@ -109,7 +115,7 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
                 id = "",
                 adventureId = ""
             )
-            // Save the section according to its type
+            // Save the section according to its type.
             when (type) {
                 SectionType.IMAGE -> sectionVM.saveNewImageSection(
                     sectionToSave, 
@@ -133,6 +139,9 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
     }
 }
 
+/**
+ * A field for defining the section's content in section types whose content is a string.
+ */
 @Composable
 fun CreateStringSectionContent(contentType: String, content: String, setSectionContent: (String) -> Unit) {
     TextField(
@@ -146,6 +155,12 @@ fun CreateStringSectionContent(contentType: String, content: String, setSectionC
     )
 }
 
+/**
+ * A field for defining the content of an image section.
+ * @param bitmaps the list of bitmap image files to which new images will be added.
+ * @param addImage a function for adding an image to the list of bitmaps.
+ * @param removeImage a function for removing an image from the list of bitmaps.
+ */
 @Composable
 fun CreateImageSectionContent(
     bitmaps: List<Bitmap>,

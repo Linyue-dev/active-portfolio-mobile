@@ -9,6 +9,10 @@ import com.example.active_portfolio_mobile.composables.adventure.DropDownTab
 import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionCreationVM
 
+/**
+ * The primary screen for creating new sections of an adventure.
+ * @param adventureId the id of the adventure to which the created section will belong.
+ */
 @Composable
 fun CreateSectionScreen(
     adventureId: String,

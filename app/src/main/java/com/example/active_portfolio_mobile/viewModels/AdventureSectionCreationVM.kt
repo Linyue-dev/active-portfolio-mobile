@@ -58,6 +58,9 @@ class AdventureSectionCreationVM : ViewModel() {
         }
     }
 
+    /**
+     * The function for saving an image adventure section to the database.
+     */
     fun saveNewImageSection(
         sectionToSave: AdventureSection,
         images: List<Bitmap>,
@@ -65,6 +68,7 @@ class AdventureSectionCreationVM : ViewModel() {
     ) {
         viewModelScope.launch{
             try {
+                // convert the images to byte array
                 val convertedImages = convertImagesForRequest(
                     id = _section.value.id,
                     images = images
