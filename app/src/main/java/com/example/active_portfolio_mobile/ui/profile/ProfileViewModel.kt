@@ -104,11 +104,11 @@ class ProfileViewModel(
 
             try {
                 val request = when (field){
-                    "firstName" -> UpdateUserRequest(firstName = value)
-                    "lastName" -> UpdateUserRequest(lastName = value)
-                    "username" -> UpdateUserRequest(username = value)
-                    "program" -> UpdateUserRequest(program = value)
-                    "bio" -> UpdateUserRequest(bio = value)
+                    "firstName" -> UpdateUserRequest(firstName = value.trim())
+                    "lastName" -> UpdateUserRequest(lastName = value.trim())
+                    "username" -> UpdateUserRequest(username = value.trim())
+                    "program" -> UpdateUserRequest(program = value.trim())
+                    "bio" -> UpdateUserRequest(bio = value.trim())
                     else -> throw IllegalArgumentException("Unknown field: $field")
                 }
 
@@ -123,6 +123,8 @@ class ProfileViewModel(
                 onSuccess()
 
             } catch (ex: HttpException){
+                val errorBody = ex.response()?.errorBody()?.string()
+                Log.e("ProfileViewModel", "HTTP ${ex.code()}: $errorBody")
                 _uiState.update {
                     it.copy( isLoading = false, error = ErrorParser.errorHttpError(ex))
                 }
