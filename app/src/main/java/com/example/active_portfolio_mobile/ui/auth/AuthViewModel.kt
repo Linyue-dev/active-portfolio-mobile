@@ -8,17 +8,21 @@ import com.example.active_portfolio_mobile.data.remote.api.UserApiService
 import com.example.active_portfolio_mobile.data.remote.dto.LogInRequest
 import com.example.active_portfolio_mobile.data.remote.dto.SignUpRequest
 import com.example.active_portfolio_mobile.data.remote.dto.User
+import com.example.active_portfolio_mobile.ui.common.ErrorParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.IOException
-import org.json.JSONObject
 import retrofit2.HttpException
-
 /**
- * Data class to hold authentication UI state
+ * UI state for authentication-related screens.
+ *
+ * @property isLoading  Indicates whether an authentication request is in progress.
+ * @property isLoggedIn True when a valid token/user is stored.
+ * @property user       The authenticated user, or null when logged out.
+ * @property error      Error message for login/signup failures, null when no error.
  */
 data class AuthUiState(
     val isLoading: Boolean = false,
@@ -28,8 +32,21 @@ data class AuthUiState(
 )
 
 /**
- * ViewModel for handling authentication logic (login, signup, logout)
+ * ViewModel for handling user authentication.
+ *
+ * Responsibilities:
+ * - Manage authentication UI state (loading, error, user, isLoggedIn).
+ * - Perform login and signup through UserApiService.
+ * - Save and load token/user data from TokenManager.
+ * - Restore login state when the app starts.
+ *
+ * Functions:
+ * - login(): Authenticate and save token + user.
+ * - signup(): Register new user and save token + user.
+ * - logout(): Clear stored auth data.
+ * - cleanError(): Clear error when user edits input.
  */
+
 class AuthViewModel(
     private val tokenManager: TokenManager
 ) : ViewModel() {
@@ -44,7 +61,11 @@ class AuthViewModel(
 
     val uiState: StateFlow<AuthUiState> = _uiState
 
-    // During initialization, check whether to automatically log in
+    /**
+     * On initialization:
+     * - Check if token exists.
+     * - If so, restore user and mark state as logged-in.
+     */
     init {
         if (tokenManager.isLoggedIn()){
             _uiState.value = _uiState.value.copy(
@@ -82,7 +103,7 @@ class AuthViewModel(
 
             } catch (ex: HttpException) {
                 _uiState.update {
-                    it.copy(isLoading = false, error = parseErrorMessage(ex))
+                    it.copy(isLoading = false, error = ErrorParser.errorHttpError(ex))
                 }
             } catch (ex: IOException){
                 _uiState.update {
@@ -115,7 +136,7 @@ class AuthViewModel(
                 )
             } catch (ex: HttpException) {
                 _uiState.update {
-                    it.copy(isLoading = false, error = parseErrorMessage(ex))
+                    it.copy(isLoading = false, error = ErrorParser.errorHttpError(ex))
                 }
             } catch (ex: IOException){
                 _uiState.update {
@@ -134,30 +155,5 @@ class AuthViewModel(
     fun logout(){
         tokenManager.clearAll()
         _uiState.value = AuthUiState(isLoading = false)
-    }
-
-    /**
-     * Parses HTTP error response and extracts user-friendly error message.
-     * Converts backend error responses into clean, readable messages by:
-     * - Extracting the errorMessage field from JSON response body
-     * - Filtering out technical details and system error prefixes
-     * - Matching specific error patterns to return concise messages
-     */
-    private fun parseErrorMessage(ex: HttpException):String{
-        val errorBody = ex.response()?.errorBody()?.string()
-        return try{
-            val json = JSONObject(errorBody ?: "")
-            val fullMessage = json.optString("errorMessage", "Unexpected error")
-
-            when{
-                fullMessage.contains("Invalid email", ignoreCase = true) -> "Invalid email"
-                fullMessage.contains("email already exists", ignoreCase = true) -> "Email already exists"
-                fullMessage.contains("Invalid password", ignoreCase = true) -> "Invalid password"
-                fullMessage.contains("User not found", ignoreCase = true) -> "User not found"
-                else -> "Something went wrong. Please try again."
-            }
-        }catch (e: Exception) {
-            "Unexpected error"
-        }
     }
 }

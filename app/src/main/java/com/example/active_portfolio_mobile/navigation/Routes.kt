@@ -1,5 +1,6 @@
 package com.example.active_portfolio_mobile.navigation
 
+
 //Defines the navigation routes used in the app.
 //Each object represents a specific screen route for navigation
 sealed class Routes(val route: String){
@@ -25,9 +26,22 @@ sealed class Routes(val route: String){
     }
 
     // Auth
-    object Login : Routes("LoginPageRoute")
-    object SignUp : Routes("SignUpPageRoute")
+    object Login : Routes("login")
+    object SignUp : Routes("signup")
 
     // User
     object Profile : Routes("ProfilePageRoute")
+
+    //Portfolio
+    object CreateUpdatePortfolio: Routes("PortfolioCreateUpdateRoute"){
+        fun goCreate() = "ProfileCreateUpdateRoute?isEditing=false?portfolioID="
+
+        fun goEdit(portfolioId: String) = "ProfileCreateUpdateRoute?isEditing=true?portfolioId=$portfolioId"
+    }
+
+    object EditProfile : Routes("edit_profile")
+
+    object EditField : Routes("edit_field/{field}") {
+        fun routeWithField(field: String) = "edit_field/$field"
+    }
 }

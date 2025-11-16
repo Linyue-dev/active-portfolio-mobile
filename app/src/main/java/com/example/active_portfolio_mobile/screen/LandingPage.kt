@@ -82,6 +82,17 @@ fun LandingPage(modifier : Modifier){
                     TestAdventuresFetch()
                 }
 
+                // Demo buttons
+                Button(onClick = {
+                    navController.navigate(Routes.AdventureUpdate.go("6915f42db4bdb25ac6a42fae"))
+                }) {
+                    Text("Demo Adventure Update")
+                }
+                Button(onClick = {
+                    navController.navigate(Routes.AdventureView.go("6915f42db4bdb25ac6a42fae"))
+                }) {
+                    Text("Demo Adventure View")
+                }
             }
         }
     }

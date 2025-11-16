@@ -15,7 +15,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class AdventureSectionCreationVM : ViewModel() {
-
     private var _section = MutableStateFlow(AdventureSection("", "", "", "", emptyList(), "", ""))
     val section: StateFlow<AdventureSection>
         get() = _section.asStateFlow()

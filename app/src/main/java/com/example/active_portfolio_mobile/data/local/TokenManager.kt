@@ -34,7 +34,7 @@ class TokenManager (context: Context) {
         prefs.edit().clear().apply()
     }
     fun isLoggedIn(): Boolean{
-        return getToken() !=null
+        return getToken() != null
     }
 }
 

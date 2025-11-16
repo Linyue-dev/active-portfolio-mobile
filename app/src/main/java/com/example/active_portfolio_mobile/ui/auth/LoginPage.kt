@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -41,6 +42,7 @@ import com.example.active_portfolio_mobile.navigation.Routes
  */
 @Composable
 fun LoginPage(
+    startingEmail: String = "",
     viewModel: AuthViewModel,
     onNavigateToSignUp: () -> Unit,
     onLoginSuccess: () -> Unit
@@ -56,8 +58,12 @@ fun LoginPage(
         }
 
 
-        var email by  rememberSaveable { mutableStateOf("") }
+//        var email by  rememberSaveable { mutableStateOf("") }
+        var emailError by rememberSaveable { mutableStateOf<String?>(null) }
+
+        var email by  rememberSaveable { mutableStateOf(startingEmail) }
         var password by rememberSaveable { mutableStateOf("") }
+        var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
 
         Column (
             modifier = Modifier
@@ -75,10 +81,20 @@ fun LoginPage(
                 value = email,
                 onValueChange = {
                     email = it
-                    if (uiState.error != null) viewModel.cleanError()
+                    emailError = null
+                    viewModel.cleanError()
                 },
                 label = {Text ("Email")},
-                modifier = Modifier.fillMaxWidth()
+                enabled = !uiState.isLoading,
+                isError = emailError != null,
+                supportingText = {
+                    if (emailError != null){
+                        Text(
+                            text = emailError!!,
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
             )
 
             Spacer(Modifier.height(20.dp))
@@ -87,18 +103,43 @@ fun LoginPage(
                 value = password,
                 onValueChange = {
                     password = it
-                    if (uiState.error != null) viewModel.cleanError()
+                    passwordError = null
+                    viewModel.cleanError()
                 },
                 visualTransformation = PasswordVisualTransformation(),
                 label = { Text ("Password")},
+                enabled = !uiState.isLoading,
+                isError = passwordError != null,
+                supportingText = {
+                    if (passwordError != null){
+                        Text(passwordError!!)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             )
-
 
             Spacer(Modifier.height(20.dp))
 
             Button(
-                onClick = { viewModel.login(email, password)},
+                onClick = {
+                    emailError = null
+                    passwordError = null
+
+                    var hasError = false
+                    if (email.isBlank()){
+                        emailError = "Email required"
+                        hasError = true
+                    }
+
+                    if (password.isBlank()){
+                        passwordError = "Password required"
+                        hasError = true
+                    }
+
+                    if(!hasError){
+                        viewModel.login(email, password)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             ) {
@@ -113,7 +154,8 @@ fun LoginPage(
                 Spacer(Modifier.height(16.dp))
                 Text(
                     text = uiState.error ?: "",
-                    color = Color.Red
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
             TextButton(onClick = onNavigateToSignUp) {
@@ -121,70 +163,4 @@ fun LoginPage(
             }
         }
     }
-}
-
-@Composable
-fun LoginScreenContent(
-    email: String,
-    password: String,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    isLoading: Boolean = false,
-    error: String? = null,
-    onLoginClick: () -> Unit = {}
-){
-
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ){
-        Text("Sign In")
-
-        Spacer(Modifier.height(20.dp))
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = onEmailChange,
-            label = {Text ("Email")},
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(20.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = onPasswordChange,
-            visualTransformation = PasswordVisualTransformation(),
-            label = { Text ("Password")},
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(20.dp))
-
-        Button(
-            onClick = {},
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text("Sign In")
-        }
-
-        TextButton({}) {
-            Text("Don't have an account? Sign up")
-        }
-    }
-}
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun LoginScreenPreview() {
-    LoginScreenContent(
-        email = "test@example.com",
-        password = "123456",
-        onEmailChange = {},
-        onPasswordChange =  {},
-        isLoading = false,
-        error = null
-    )
 }
