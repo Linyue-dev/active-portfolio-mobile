@@ -33,6 +33,7 @@ import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.ui.common.ViewModelFactory
 import com.example.active_portfolio_mobile.ui.auth.LoginPage
 import com.example.active_portfolio_mobile.ui.auth.SignUpPage
+import com.example.active_portfolio_mobile.ui.profile.ChangePasswordPage
 import com.example.active_portfolio_mobile.ui.profile.EditFieldPage
 import com.example.active_portfolio_mobile.ui.profile.EditProfilePage
 import com.example.active_portfolio_mobile.ui.profile.ProfileViewModel
@@ -168,7 +169,6 @@ fun Router(modifier: Modifier) {
                     )
                 }
 
-
                 /**
                  * Profile
                  */
@@ -222,6 +222,17 @@ fun Router(modifier: Modifier) {
                     EditFieldPage(
                         viewModel = profileViewModel,
                         field = field
+                    )
+                }
+
+                composable (
+                    route = Routes.ChangePassword.route
+                ){
+                    val profileViewModel: ProfileViewModel = viewModel(
+                        factory = ViewModelFactory(tokenManager)
+                    )
+                    ChangePasswordPage(
+                        viewModel = profileViewModel
                     )
                 }
             }

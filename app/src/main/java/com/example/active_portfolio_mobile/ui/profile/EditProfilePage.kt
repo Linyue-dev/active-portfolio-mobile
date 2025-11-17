@@ -19,6 +19,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -37,6 +39,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.active_portfolio_mobile.layouts.MainLayout
+import com.example.active_portfolio_mobile.navigation.LocalNavController
+import com.example.active_portfolio_mobile.navigation.Routes
 
 /**
  * Displays editable fields of the user profile.
@@ -51,6 +55,7 @@ fun EditProfilePage(
 ){
     val uiState by viewModel.uiState.collectAsState()
     val user = uiState.user
+    val navController = LocalNavController.current
 
     if (user == null){
         Box(
@@ -182,6 +187,22 @@ fun EditProfilePage(
             }
             HorizontalDivider()
 
+            // change password
+            Text(
+                text = "Security",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            Button(
+                onClick = { navController.navigate( Routes.ChangePassword.route)},
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.Lock, null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Change Password")
+            }
         }
     }
 }

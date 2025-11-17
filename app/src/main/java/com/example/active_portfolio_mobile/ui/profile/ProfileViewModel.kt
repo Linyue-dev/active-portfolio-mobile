@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.local.TokenManager
 import com.example.active_portfolio_mobile.data.remote.RetrofitClient
 import com.example.active_portfolio_mobile.data.remote.api.UserApiService
+import com.example.active_portfolio_mobile.data.remote.dto.ChangePasswordRequest
 import com.example.active_portfolio_mobile.data.remote.dto.UpdateUserRequest
 import com.example.active_portfolio_mobile.data.remote.dto.User
 import com.example.active_portfolio_mobile.ui.common.ErrorParser
@@ -97,6 +98,7 @@ class ProfileViewModel(
      * @param field Field name to update.
      * @param value New field value.
      * @param onSuccess Callback invoked after successful update.
+     *
      */
     fun updateField(
         field : String,
@@ -138,5 +140,55 @@ class ProfileViewModel(
                 }
             }
         }
+    }
+
+    /**
+     *  Changes the authenticated user's password.
+     *
+     * Validates and updates the user's password by sending the old and new passwords
+     * to the backend API. Updates UI state to reflect loading, success, or error states.
+     *
+     * @param oldPassword The user's current password for verification
+     * @param newPassword The new password (minimum 6 characters)
+     * @param onSuccess Callback invoked after successful password change
+     *
+     */
+    fun changePassword(
+        oldPassword: String,
+        newPassword: String,
+        onSuccess: () -> Unit
+    ){
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+
+            try{
+                val request = ChangePasswordRequest(
+                    oldPassword = oldPassword.trim(),
+                    newPassword = newPassword.trim()
+                )
+                apiService.changePassword(request)
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = null
+                )
+                onSuccess()
+
+            } catch (ex: HttpException){
+                _uiState.update {
+                    it.copy(isLoading = false, error = ErrorParser.errorHttpError(ex))
+                }
+            } catch (ex: Exception){
+                _uiState.update {
+                    it.copy(isLoading = false, error = "An unexpected error occurred.")
+                }
+            }
+        }
+    }
+    /**
+     * Clear error message from UI state
+     */
+    fun cleanError(){
+        _uiState.value = _uiState.value.copy(error = null)
     }
 }

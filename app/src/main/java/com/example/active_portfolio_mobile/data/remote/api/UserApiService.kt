@@ -1,5 +1,7 @@
 package com.example.active_portfolio_mobile.data.remote.api
 
+import com.example.active_portfolio_mobile.data.remote.dto.ChangePasswordRequest
+import com.example.active_portfolio_mobile.data.remote.dto.ChangePasswordResponse
 import com.example.active_portfolio_mobile.data.remote.dto.LogInRequest
 import com.example.active_portfolio_mobile.data.remote.dto.LogInResponse
 import com.example.active_portfolio_mobile.data.remote.dto.SignUpRequest
@@ -56,4 +58,10 @@ interface UserApiService {
      */
     @PATCH("users/me")
     suspend fun updateUser(@Body updateData: UpdateUserRequest) : User
+
+    /**
+     * Changes the authenticated user's password.
+     */
+    @PATCH("/users/change-password")
+    suspend fun changePassword(@Body request: ChangePasswordRequest) : ChangePasswordResponse
 }

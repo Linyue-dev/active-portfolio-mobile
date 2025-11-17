@@ -1,8 +1,17 @@
 package com.example.active_portfolio_mobile.ui.common
 
-import retrofit2.HttpException
 import org.json.JSONObject
+import retrofit2.HttpException
 
+/**
+ * Parses HTTP error responses and converts them into user-friendly error messages.
+ *
+ * Extracts the errorMessage field from the response body and maps common error patterns
+ * to localized, readable messages for display in the UI.
+ *
+ * @param ex The HttpException containing the error response
+ * @return A user-friendly error message string
+ */
 object ErrorParser{
     fun errorHttpError(ex: HttpException) : String{
         val errorBody = ex.response()?.errorBody()?.string()
@@ -17,6 +26,12 @@ object ErrorParser{
                     "Please enter a valid email address"
                 fullMessage.contains("User not found", ignoreCase = true) ->
                     "User not found"
+                fullMessage.contains("password is incorrect", ignoreCase = true) ->
+                    "Current password is incorrect"
+                fullMessage.contains("password does not meet",  ignoreCase = true) ->
+                    "Password must be at least 6 characters"
+                fullMessage.contains("must be different",  ignoreCase = true) ->
+                    "New password must be different from current password"
                 else ->
                     "Something went wrong. Please try again."
             }
