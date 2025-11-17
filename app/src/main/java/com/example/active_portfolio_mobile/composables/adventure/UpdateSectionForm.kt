@@ -27,22 +27,22 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.active_portfolio_mobile.data.remote.dto.Adventure
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
 import com.example.active_portfolio_mobile.data.remote.dto.SectionType
+import com.example.active_portfolio_mobile.data.remote.network.ActivePortfolioApi.adventure
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionImageUpdateVM
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionUpdateVM
 
 /**
  * A form for updating a Text or Link Adventure Section.
  * @param sectionToShow the section to update with the form.
- * @param parentAdventure the adventure to which the section belongs.
  * @param adventureSectionVM the View Model which contains the list of sections, used for accessing
  * the ActivePortfolio API functions and removing deleted sections from the section list.
  */
 @Composable
 fun UpdateSectionForm(
     sectionToShow: AdventureSection,
-    parentAdventure: Adventure,
     adventureSectionVM: AdventureSectionUpdateVM
 ) {
+    val parentPortfolios = adventureSectionVM.portfolios
     val section = remember { mutableStateOf(sectionToShow) }
     var message by rememberSaveable { mutableStateOf("") }
 
@@ -79,21 +79,21 @@ fun UpdateSectionForm(
             )
         }
 
-        // if (parentAdventure.portfolios.isNotEmpty()) {
-        // TODO Get the adventure's portfolios and set them here dynamically, using their names
-        DropDownTab(name = "Portfolios") {
-            MultiSelectList(
-                selectedItems = section.value.portfolios,
-                list = listOf("Portfolio 1", "Portfolio 2", "Portfolio 3"),
-                selectItem = {
-                    section.value = section.value.copy(portfolios = section.value.portfolios + it)
-                },
-                deselectItem = {
-                    section.value = section.value.copy(portfolios = section.value.portfolios - it)
-                }
-            )
+        if (parentPortfolios.value.isNotEmpty()) {
+            DropDownTab(name = "Portfolios") {
+                MultiSelectList(
+                    selectedItems = parentPortfolios.value.filter { it.id in section.value.portfolios },
+                    list = parentPortfolios.value,
+                    displayText = { it.title },
+                    selectItem = {
+                        section.value = section.value.copy(portfolios = section.value.portfolios + it.id)
+                    },
+                    deselectItem = {
+                        section.value = section.value.copy(portfolios = section.value.portfolios - it.id)
+                    }
+                )
+            }
         }
-        // }
 
         Button(onClick = {
             adventureSectionVM.updateSection(section.value) { newMessage ->
@@ -148,14 +148,14 @@ fun UpdateStringSectionContent(contentType: String, content: String, setSectionC
 @Composable
 fun UpdateImageSectionForm(
     sectionToShow: AdventureSection,
-    parentAdventure: Adventure,
+//    parentAdventure: Adventure,
     allSectionsVM: AdventureSectionUpdateVM,
     adventureSectionVM: AdventureSectionImageUpdateVM = viewModel()
 ) {
     LaunchedEffect(Unit) {
         adventureSectionVM.setSection(sectionToShow)
     }
-
+    val parentPortfolios = allSectionsVM.portfolios
     val section by adventureSectionVM.section.collectAsStateWithLifecycle()
     val bitmaps = adventureSectionVM.bitmapImages.collectAsStateWithLifecycle()
     var message by rememberSaveable { mutableStateOf("") }
@@ -187,21 +187,21 @@ fun UpdateImageSectionForm(
             ), modifier = Modifier.fillMaxWidth()
         )
 
-        // if (parentAdventure.portfolios.isNotEmpty()) {
-        // TODO Get the adventure's portfolios and set them here dynamically, using their names
-        DropDownTab(name = "Portfolios") {
-            MultiSelectList(
-                selectedItems = section.portfolios,
-                list = listOf("Portfolio 1", "Portfolio 2", "Portfolio 3"),
-                selectItem = {
-                    adventureSectionVM.addToPortfolios(it)
-                },
-                deselectItem = {
-                    adventureSectionVM.removeFromPortfolios(it)
-                }
-            )
+        if (parentPortfolios.value.isNotEmpty()) {
+            DropDownTab(name = "Portfolios") {
+                MultiSelectList(
+                    selectedItems = parentPortfolios.value.filter { it.id in section.portfolios },
+                    list = parentPortfolios.value,
+                    displayText = { it.title },
+                    selectItem = {
+                        adventureSectionVM.addToPortfolios(it.id)
+                    },
+                    deselectItem = {
+                        adventureSectionVM.removeFromPortfolios(it.id)
+                    }
+                )
+            }
         }
-        // }
 
         Button(onClick = {
             adventureSectionVM.updateSection { newMessage ->

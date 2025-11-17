@@ -34,6 +34,7 @@ fun UpdateSectionsScreen(
 ) {
     LaunchedEffect(Unit) {
         adventureSectionVM.fetchSections(adventureId)
+        adventureSectionVM.fetchPortfolios(adventureId)
         adventureVM.setAdventure(adventureId)
     }
     val navController: NavController = LocalNavController.current

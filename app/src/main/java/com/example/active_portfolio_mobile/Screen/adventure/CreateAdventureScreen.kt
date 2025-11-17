@@ -20,8 +20,10 @@ import com.example.active_portfolio_mobile.composables.adventure.DropDownTab
 import com.example.active_portfolio_mobile.composables.adventure.MultiSelectList
 import com.example.active_portfolio_mobile.composables.adventure.SingleSelectList
 import com.example.active_portfolio_mobile.layouts.MainLayout
+import com.example.active_portfolio_mobile.navigation.LocalAuthViewModel
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.navigation.Routes
+import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.viewModels.AdventureCreationUpdateVM
 
 /**
@@ -35,13 +37,18 @@ fun CreateAdventureScreen(
     adventureToUpdate: String? = null,
     adventureVM: AdventureCreationUpdateVM = viewModel()
 ) {
+    val authViewModel: AuthViewModel = LocalAuthViewModel.current
+    val user = authViewModel.uiState.collectAsStateWithLifecycle().value.user
     val navController: NavController = LocalNavController.current
     val adventure by adventureVM.adventure.collectAsStateWithLifecycle()
+    val portfolios = adventureVM.portfolios
     LaunchedEffect(Unit) {
         if (adventureToUpdate != null) {
             adventureVM.setAdventure(adventureToUpdate)
         }
-        adventureVM.setUserId("6915f21c2827463bfd56186b") //TODO set to the signed in user's id
+    }
+    LaunchedEffect(user) {
+        adventureVM.setUserId(user?.id ?: "")
     }
 
     MainLayout {
@@ -80,16 +87,16 @@ fun CreateAdventureScreen(
             }
             // Select Portfolios in which to include this Adventure.
             item {
-                // TODO Get the user's portfolios and set them here dynamically, using their names
-                DropDownTab(name = "Portfolios (TO UPDATE WITH REAL PORTFOLIOS)") {
+                DropDownTab(name = "Portfolios") {
                     MultiSelectList(
-                        selectedItems = adventure.portfolios,
-                        list = listOf("Portfolio 1", "Portfolio 2", "Portfolio 3"),
+                        selectedItems = portfolios.value.filter { it.id in adventure.portfolios },
+                        list = portfolios.value,
+                        displayText = { it.title },
                         selectItem = {
-                            adventureVM.addToPortfolios(it)
+                            adventureVM.addToPortfolios(it.id)
                         },
                         deselectItem = {
-                            adventureVM.removeFromPortfolios(it)
+                            adventureVM.removeFromPortfolios(it.id)
                         }
                     )
                 }

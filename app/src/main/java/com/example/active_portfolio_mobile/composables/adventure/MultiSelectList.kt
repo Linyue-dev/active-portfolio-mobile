@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
  * @param list The list of items to be displayed and selected.
  * Display is based on the item's toString() value.
  * @param selectedItems A list of items to be pre-selected.
+ * @param displayText A function which returns the string value which is to be displayed in the ui
+ * for the item being selected by the user.
  * @param selectItem A function that will be called whenever an item is selected. The item itself
  * is passed as a parameter.
  * @param deselectItem A function that will be called whenever an item is deselected. The item
@@ -31,6 +33,7 @@ import androidx.compose.ui.unit.dp
 fun <T> MultiSelectList(
     list: List<T>,
     selectedItems: List<T>,
+    displayText: (T) -> String,
     selectItem: (T) -> Unit,
     deselectItem: (T) -> Unit
 ) {
@@ -44,7 +47,7 @@ fun <T> MultiSelectList(
                         var checkedState by rememberSaveable {
                             mutableStateOf(item in selectedItems)
                         }
-                        Text(item.toString())
+                        Text(displayText(item))
                         Checkbox(
                             checked = checkedState,
                             onCheckedChange = { isChecked ->
