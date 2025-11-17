@@ -66,6 +66,7 @@ fun ChangePasswordPage(viewModel: ProfileViewModel){
     var newPasswordVisible by  remember() {  mutableStateOf(false)}
     var confirmPasswordVisible by remember() {  mutableStateOf(false)}
 
+    // display error messages via Snackbar
     LaunchedEffect(uiState.error) {
         uiState.error?.let{ error ->
             snackbarHostState.showSnackbar(

@@ -1,6 +1,7 @@
 package com.example.active_portfolio_mobile.ui.auth
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -19,11 +23,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,120 +53,129 @@ fun LoginPage(
     onNavigateToSignUp: () -> Unit,
     onLoginSuccess: () -> Unit
 ){
-    MainLayout {
-        val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val uiState by viewModel.uiState.collectAsState()
+    var email by  rememberSaveable { mutableStateOf(startingEmail) }
+    var emailError by rememberSaveable { mutableStateOf<String?>(null) }
+    var password by rememberSaveable { mutableStateOf("") }
+    var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
 
-        // add
-        LaunchedEffect(uiState.isLoggedIn) {
-            if (uiState.isLoggedIn) {
-                onLoginSuccess()
-            }
+    // Navigate to profile when login succeeds
+    LaunchedEffect(uiState.isLoggedIn) {
+        if (uiState.isLoggedIn) {
+            onLoginSuccess()
         }
-
-
-//        var email by  rememberSaveable { mutableStateOf("") }
-        var emailError by rememberSaveable { mutableStateOf<String?>(null) }
-
-        var email by  rememberSaveable { mutableStateOf(startingEmail) }
-        var password by rememberSaveable { mutableStateOf("") }
-        var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
-
-        Column (
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ){
-
-            Text("Sign In")
-
-            Spacer(Modifier.height(20.dp))
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = {
-                    email = it
-                    emailError = null
-                    viewModel.cleanError()
-                },
-                label = {Text ("Email")},
-                enabled = !uiState.isLoading,
-                isError = emailError != null,
-                supportingText = {
-                    if (emailError != null){
-                        Text(
-                            text = emailError!!,
-                        )
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
+    }
+    // display error messages via Snackbar
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let{ error ->
+            snackbarHostState.showSnackbar(
+                message = error,
+                duration = SnackbarDuration.Long
             )
+            viewModel.cleanError()
+        }
+    }
+    MainLayout {
 
-            Spacer(Modifier.height(20.dp))
+        Box(modifier = Modifier.fillMaxSize()){
+            Column (
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ){
+                Text(
+                    text = "Sign In",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
 
-            OutlinedTextField(
-                value = password,
-                onValueChange = {
-                    password = it
-                    passwordError = null
-                    viewModel.cleanError()
-                },
-                visualTransformation = PasswordVisualTransformation(),
-                label = { Text ("Password")},
-                enabled = !uiState.isLoading,
-                isError = passwordError != null,
-                supportingText = {
-                    if (passwordError != null){
-                        Text(passwordError!!)
+                Spacer(Modifier.height(20.dp))
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = {
+                        email = it
+                        emailError = null
+                        viewModel.cleanError()
+                    },
+                    label = {Text ("Email")},
+                    enabled = !uiState.isLoading,
+                    isError = emailError != null,
+                    supportingText = {
+                        if (emailError != null){
+                            Text(
+                                text = emailError!!,
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Spacer(Modifier.height(20.dp))
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = {
+                        password = it
+                        passwordError = null
+                        viewModel.cleanError()
+                    },
+                    visualTransformation = PasswordVisualTransformation(),
+                    label = { Text ("Password")},
+                    enabled = !uiState.isLoading,
+                    isError = passwordError != null,
+                    supportingText = {
+                        if (passwordError != null){
+                            Text(passwordError!!)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(20.dp))
+
+                Button(
+                    onClick = {
+                        emailError = null
+                        passwordError = null
+
+                        var hasError = false
+                        if (email.isBlank()){
+                            emailError = "Email required"
+                            hasError = true
+                        }
+
+                        if (password.isBlank()){
+                            passwordError = "Password required"
+                            hasError = true
+                        }
+
+                        if(!hasError){
+                            viewModel.login(email, password)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !uiState.isLoading
+                ) {
+                    if (uiState.isLoading){
+                        CircularProgressIndicator(Modifier.size(20.dp))
+                    } else {
+                        Text ("Sign In")
                     }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
+                }
 
-            Spacer(Modifier.height(20.dp))
-
-            Button(
-                onClick = {
-                    emailError = null
-                    passwordError = null
-
-                    var hasError = false
-                    if (email.isBlank()){
-                        emailError = "Email required"
-                        hasError = true
-                    }
-
-                    if (password.isBlank()){
-                        passwordError = "Password required"
-                        hasError = true
-                    }
-
-                    if(!hasError){
-                        viewModel.login(email, password)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !uiState.isLoading
-            ) {
-                if (uiState.isLoading){
-                    CircularProgressIndicator(Modifier.size(20.dp))
-                } else {
-                    Text ("Sign In")
+                TextButton(onClick = onNavigateToSignUp) {
+                    Text("Don't have an account? Sign up")
                 }
             }
-
-            if (uiState.error != null) {
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = uiState.error ?: "",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-            TextButton(onClick = onNavigateToSignUp) {
-                Text("Don't have an account? Sign up")
-            }
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
     }
 }
