@@ -51,14 +51,13 @@ fun UpdateSectionsScreen(
                 when (section.type) {
                     SectionType.IMAGE -> DropDownTab(section.label) {
                         UpdateImageSectionForm(
-                            section,
-                            adventure,
-                            adventureSectionVM,
-                            viewModel(key = section.id)
+                            sectionToShow = section,
+                            allSectionsVM = adventureSectionVM,
+                            adventureSectionVM = viewModel(key = section.id)
                         )
                     }
                     else -> DropDownTab(section.label) {
-                        UpdateSectionForm(section, adventure, adventureSectionVM)
+                        UpdateSectionForm(section, adventureSectionVM)
                     }
                 }
             }

@@ -139,7 +139,6 @@ fun UpdateStringSectionContent(contentType: String, content: String, setSectionC
 /**
  * A form for updating an Image Adventure Section.
  * @param sectionToShow the section to update with the form.
- * @param parentAdventure the adventure to which the section belongs.
  * @param allSectionsVM the View Model which contains the list of sections, used for accessing
  * certain ActivePortfolio API functions and removing deleted sections from the section list.
  * @param adventureSectionVM the View Model for updating an image type Adventure Section. Creates
@@ -148,7 +147,6 @@ fun UpdateStringSectionContent(contentType: String, content: String, setSectionC
 @Composable
 fun UpdateImageSectionForm(
     sectionToShow: AdventureSection,
-//    parentAdventure: Adventure,
     allSectionsVM: AdventureSectionUpdateVM,
     adventureSectionVM: AdventureSectionImageUpdateVM = viewModel()
 ) {

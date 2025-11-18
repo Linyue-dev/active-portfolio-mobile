@@ -88,7 +88,6 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
         }
 
         // Set the portfolios in which to include this Section.
-        // TODO TEST THE PORTFOLIO STUFF EVERYWHERE (ADVENTURE AND SECTION CREATION AND UPDATE)
         if (parentPortfolios.value.isNotEmpty()) {
             DropDownTab(name = "Portfolios") {
                 MultiSelectList(
