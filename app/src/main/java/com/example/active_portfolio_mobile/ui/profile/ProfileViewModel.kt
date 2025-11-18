@@ -18,11 +18,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * UI state for profile-related screens.
+ * UI state for all profile-related screens.
  *
- * @property isLoading Indicates whether a profile request is in progress.
- * @property user      The current user profile, or null while loading.
- * @property error     Error message for profile operations, null when no error.
+ * @property isLoading  Whether a profile-related request is currently in progress.
+ * @property user       The authenticated user's profile, or `null` before fetched.
+ * @property error      Error message produced by profile operations, or `null` when there is no error.
  */
 data class ProfileUiState(
     val isLoading: Boolean = false,
@@ -30,16 +30,13 @@ data class ProfileUiState(
     val error: String? = null
 )
 /**
- * ViewModel responsible for loading and updating user profile data.
+ * ViewModel responsible for retrieving and updating user profile information.
  *
- * Responsibilities:
- * - Keep cached user data in TokenManager synchronized with latest backend state
- * - Update individual profile fields (first name, last name, username, bio, etc.)
- * - Expose reactive UI state via StateFlow
+ * Lifecycle:
+ * - On init, loads cached user from [TokenManager] (if exists)
+ * - Immediately fetches the latest user profile from the backend to ensure freshness
  *
- * Functions:
- * - getMyProfile(): Fetch the latest profile from the backend and update local cache
- * - updateField(): Update a single profile field on the server and refresh local state
+ * @param tokenManager Handles secure storage of tokens and cached user data
  */
 class ProfileViewModel(
     private val tokenManager: TokenManager
@@ -60,8 +57,16 @@ class ProfileViewModel(
     }
 
     /**
-     * Load the authenticated user's profile from backend.
-     * Also updates local cached user in TokenManager.
+     * Retrieves the authenticated user's latest profile from the backend.
+     *
+     * Behavior:
+     * - Shows loading indicator in UI
+     * - Updates the local cached user stored in [TokenManager]
+     * - Updates UI state with fresh user data
+     * - Emits human-readable error messages on failure
+     *
+     * Error Handling:
+     * - [HttpException] → parsed into meaningful messages using [ErrorParser]
      */
     fun getMyProfile(){
         val token = tokenManager.getToken()
@@ -93,12 +98,15 @@ class ProfileViewModel(
     }
 
     /**
-     * Update a single user profile field.
+     * Updates a single field of the user's profile.
      *
-     * @param field Field name to update.
-     * @param value New field value.
-     * @param onSuccess Callback invoked after successful update.
+     * @param field The profile field name to update (e.g., `"firstName"`, `"username"`, `"bio"`, `"program"`).
+     * @param value The new string value for this field. Value is trimmed before sending.
+     * @param onSuccess Callback invoked when the update finishes successfully.
      *
+     * Error Handling:
+     * - Backend errors → converted with [ErrorParser.errorHttpError]
+     * - Network errors → “Network error”
      */
     fun updateField(
         field : String,
@@ -143,15 +151,15 @@ class ProfileViewModel(
     }
 
     /**
-     *  Changes the authenticated user's password.
+     * Changes the authenticated user's password.
      *
-     * Validates and updates the user's password by sending the old and new passwords
-     * to the backend API. Updates UI state to reflect loading, success, or error states.
+     * @param oldPassword The user's current password (required for verification).
+     * @param newPassword The new password to set. Must meet backend validation rules.
+     * @param onSuccess   Callback invoked when the password is successfully changed.
      *
-     * @param oldPassword The user's current password for verification
-     * @param newPassword The new password (minimum 6 characters)
-     * @param onSuccess Callback invoked after successful password change
-     *
+     * Error Handling:
+     * - [HttpException] → parsed to user-friendly message
+     * - Unexpected errors → generic error message
      */
     fun changePassword(
         oldPassword: String,
@@ -186,7 +194,8 @@ class ProfileViewModel(
         }
     }
     /**
-     * Clear error message from UI state
+     * Clears the current error message from the UI state.
+     * Used after displaying the error in a Snackbar or dialog.
      */
     fun cleanError(){
         _uiState.value = _uiState.value.copy(error = null)

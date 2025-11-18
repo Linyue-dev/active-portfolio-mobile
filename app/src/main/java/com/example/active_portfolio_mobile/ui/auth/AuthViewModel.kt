@@ -32,19 +32,13 @@ data class AuthUiState(
 )
 
 /**
- * ViewModel for handling user authentication.
- *
- * Responsibilities:
- * - Manage authentication UI state (loading, error, user, isLoggedIn).
- * - Perform login and signup through UserApiService.
- * - Save and load token/user data from TokenManager.
- * - Restore login state when the app starts.
+ * ViewModel responsible for all authentication operations such as login, signup, and logout.
  *
  * Functions:
- * - login(): Authenticate and save token + user.
- * - signup(): Register new user and save token + user.
- * - logout(): Clear stored auth data.
- * - cleanError(): Clear error when user edits input.
+ * - [login] Authenticate an existing user with email and password.
+ * - [signup] Register a new user with provided account information.
+ * - [logout] Clear stored credentials and reset authentication state.
+ * - [cleanError] Clear error from UI state (called when editing inputs).
  */
 
 class AuthViewModel(

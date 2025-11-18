@@ -61,7 +61,7 @@ fun LoginPage(
     onNavigateToSignUp: () -> Unit,
     onLoginSuccess: () -> Unit
 ){
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = remember { SnackbarHostState()}
     val uiState by viewModel.uiState.collectAsState()
     var email by  rememberSaveable { mutableStateOf(startingEmail) }
     var emailError by rememberSaveable { mutableStateOf<String?>(null) }
@@ -86,7 +86,6 @@ fun LoginPage(
         }
     }
     MainLayout {
-
         Box(modifier = Modifier.fillMaxSize()){
             Column (
                 modifier = Modifier
