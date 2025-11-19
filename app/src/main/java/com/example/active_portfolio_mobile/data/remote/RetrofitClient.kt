@@ -24,9 +24,9 @@ import okhttp3.MediaType.Companion.toMediaType
  */
 object RetrofitClient {
     // Base URL for Android emulator to access local development backend
-    private const val DEV_BASE_URL = "http://10.0.2.2:3000/"
+//    private const val DEV_BASE_URL = "http://10.0.2.2:3000/"
     private const val PROD_BASE_URL = "https://activeportfolio.onrender.com/"
-//    private const val DEV_BASE_URL = "http://10.0.2.2:1339/"
+    private const val DEV_BASE_URL = "http://10.0.2.2:1339/"
 
     private const val BASE_URL = DEV_BASE_URL
 

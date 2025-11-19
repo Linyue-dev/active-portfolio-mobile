@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.active_portfolio_mobile.composables.adventure.AdventureNavigationList
 import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.viewModels.UserPortfolio
@@ -277,6 +278,16 @@ fun ProfilePage(
                 ) {
                     Icon(Icons.Default.Work, null, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(4.dp))
+                    Text("Adventure", maxLines = 1)
+                }
+
+                OutlinedButton(
+                    onClick = {
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.Work, null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(4.dp))
                     Text("Portfolio", maxLines = 1)
                 }
                 OutlinedButton(
@@ -356,6 +367,7 @@ fun ProfilePage(
                     Text("Get Portfolio static!!")
                 }
             }
+            AdventureNavigationList(user.id )
         }
     }
 }
