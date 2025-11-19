@@ -52,3 +52,14 @@ data class UpdateUserRequest(
     val bio: String? = null,
     val program: String? = null,
 )
+
+@Serializable
+data class ChangePasswordRequest(
+    val oldPassword: String,
+    val newPassword: String
+)
+
+@Serializable
+data class ChangePasswordResponse(
+    val message: String
+)

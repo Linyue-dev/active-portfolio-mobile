@@ -10,7 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSectionUpdateRequest
-import com.example.active_portfolio_mobile.data.remote.dto.AdventureUpdateRequest
+import com.example.active_portfolio_mobile.data.remote.dto.Portfolio
 import com.example.active_portfolio_mobile.data.remote.network.ActivePortfolioApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,6 +47,26 @@ class AdventureSectionUpdateVM : ViewModel() {
                     _message.value = response.message()
                 }
             } catch(e: Exception) {
+                println(e)
+            }
+        }
+    }
+
+    var portfolios = mutableStateOf<List<Portfolio>>(emptyList())
+        private set
+    fun fetchPortfolios(adventureId: String) {
+        viewModelScope.launch {
+            try {
+                val response = ActivePortfolioApi.portfolio.getPortfoliosByAdventure(
+                    adventureId
+                )
+                if (response.isSuccessful) {
+                    portfolios.value = response.body() ?: emptyList()
+                } else {
+                    _message.value = "There was an issue retrieving the user's portfolios."
+                    println(response.errorBody())
+                }
+            } catch (e: Exception) {
                 println(e)
             }
         }

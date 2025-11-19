@@ -24,7 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.Button
@@ -62,11 +61,21 @@ import com.example.active_portfolio_mobile.viewModels.UserPortfolio
 import kotlinx.coroutines.launch
 
 /**
- * Displays the logged-in user's profile.
+ * Displays the currently authenticated user's profile page.
  *
- * @param authViewModel Handles logout.
- * @param profileViewModel Provides user profile data.
- * @param onEditProfile Navigates to the edit profile screen.
+ * This screen shows:
+ * - Banner and profile picture
+ * - User's name, username, email, program, and bio
+ * - Buttons for editing profile, viewing portfolio, and logging out
+ * - Optional return-data buttons when launched from external "launcher" apps
+ *
+ * Reactive Behavior:
+ * - Automatically refreshes the profile whenever the logged-in user's email changes
+ * - Shows a loading indicator while the profile is being fetched
+ *
+ * @param authViewModel Handles authentication actions such as logout.
+ * @param profileViewModel Provides user profile data and refresh logic.
+ * @param onEditProfile Callback invoked when user taps the “Edit” button.
  */
 @Composable
 fun ProfilePage(
@@ -352,12 +361,14 @@ fun ProfilePage(
 }
 
 /**
- * Displays a circular profile picture. If no image URL is provided,
- * it shows the first letter of the user's first name instead.
+ * Renders a circular profile picture.
  *
- * @param imageUrl URL of the profile image. If null or empty, a placeholder is shown.
- * @param firstName User's first name, used to generate placeholder text.
- * @param modifier Modifier applied to the image or placeholder container.
+ * If [imageUrl] is provided, displays the image.
+ * Otherwise, shows a circular placeholder containing the capitalized first letter of the user's first name.
+ *
+ * @param imageUrl URL of the profile picture, or null/empty for placeholder.
+ * @param firstName Used to generate placeholder text when there is no image.
+ * @param modifier Optional [Modifier] applied to the outer image container.
  */
 @Composable
 private fun ProfilePicture(

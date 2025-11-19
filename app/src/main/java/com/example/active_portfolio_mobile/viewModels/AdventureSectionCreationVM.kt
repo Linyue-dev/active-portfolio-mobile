@@ -1,10 +1,12 @@
 package com.example.active_portfolio_mobile.viewModels
 
 import android.graphics.Bitmap
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSectionCreationRequest
+import com.example.active_portfolio_mobile.data.remote.dto.Portfolio
 import com.example.active_portfolio_mobile.data.remote.network.ActivePortfolioApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +20,25 @@ class AdventureSectionCreationVM : ViewModel() {
     private var _section = MutableStateFlow(AdventureSection("", "", "", "", emptyList(), "", ""))
     val section: StateFlow<AdventureSection>
         get() = _section.asStateFlow()
+
+    var portfolios = mutableStateOf<List<Portfolio>>(emptyList())
+        private set
+    fun fetchPortfolios(adventureId: String) {
+        viewModelScope.launch {
+            try {
+                val response = ActivePortfolioApi.portfolio.getPortfoliosByAdventure(
+                    adventureId
+                )
+                if (response.isSuccessful) {
+                    portfolios.value = response.body() ?: emptyList()
+                } else {
+                    println(response.errorBody())
+                }
+            } catch (e: Exception) {
+                println(e)
+            }
+        }
+    }
 
     fun setAdventureId(adventureId: String) {
         viewModelScope.launch {

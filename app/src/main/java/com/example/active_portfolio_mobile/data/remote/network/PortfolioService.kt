@@ -31,6 +31,11 @@ interface PortfolioService {
                                             @Path("userId") userId: String
     ): Response<List<Portfolio>>
 
+    @GET("portfolio/byAdventure/{adventureId}")
+    suspend fun getPortfoliosByAdventure(
+        @Path("adventureId") adventureId: String
+    ): Response<List<Portfolio>>
+
     //POST - CREATE
     @POST("portfolio")
     suspend fun createPortfolio(@Body portfolio: CreatePortfolioRequest) : Response<Portfolio>

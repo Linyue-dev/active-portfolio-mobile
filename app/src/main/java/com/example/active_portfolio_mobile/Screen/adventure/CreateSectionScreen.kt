@@ -20,6 +20,7 @@ fun CreateSectionScreen(
 ) {
     LaunchedEffect(Unit) {
         adventureSectionVM.setAdventureId(adventureId)
+        adventureSectionVM.fetchPortfolios(adventureId)
     }
 
     MainLayout {

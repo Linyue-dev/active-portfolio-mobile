@@ -41,6 +41,7 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
     val imageContent = rememberMutableStateListOf<Bitmap>()
     val portfolios = rememberMutableStateListOf<String>()
     val navController: NavController = LocalNavController.current
+    val parentPortfolios = sectionVM.portfolios
 
     Column {
         // Create the Section's label.
@@ -87,21 +88,21 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
         }
 
         // Set the portfolios in which to include this Section.
-        // if (parentAdventure.portfolios.isNotEmpty()) {
-        // TODO Get the adventure's portfolios and set them here dynamically, using their names
-        DropDownTab(name = "Portfolios") {
-            MultiSelectList(
-                selectedItems = emptyList(),
-                list = listOf("Portfolio 1", "Portfolio 2", "Portfolio 3"),
-                selectItem = {
-                    portfolios.add(it)
-                },
-                deselectItem = {
-                    portfolios.remove(it)
-                }
-            )
+        if (parentPortfolios.value.isNotEmpty()) {
+            DropDownTab(name = "Portfolios") {
+                MultiSelectList(
+                    selectedItems = parentPortfolios.value.filter{ it.id in portfolios },
+                    list = parentPortfolios.value,
+                    displayText = { it.title },
+                    selectItem = {
+                        portfolios.add(it.id)
+                    },
+                    deselectItem = {
+                        portfolios.remove(it.id)
+                    }
+                )
+            }
         }
-        // }
 
         // Save the created section.
         Button(onClick = {
