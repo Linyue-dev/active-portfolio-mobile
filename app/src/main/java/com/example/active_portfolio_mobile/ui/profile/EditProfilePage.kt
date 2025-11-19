@@ -19,6 +19,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -37,12 +39,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.active_portfolio_mobile.layouts.MainLayout
+import com.example.active_portfolio_mobile.navigation.LocalNavController
+import com.example.active_portfolio_mobile.navigation.Routes
 
 /**
- * Displays editable fields of the user profile.
+ * Screen for displaying and editing the user's profile fields.
  *
- * @param viewModel Provides and updates profile data.
- * @param onEdit Navigates to the field-specific edit screen.
+ * Features:
+ * - Shows current profile information (name, username, program, bio)
+ * - Provides navigation to field-specific edit pages
+ * - Refreshes profile data on entrance to ensure latest values
+ * - Supports changing profile picture and navigating to password change
+ *
+ * @param viewModel ProfileViewModel providing user data and update operations
+ * @param onEdit Callback invoked with the field key when a field row is tapped
  */
 @Composable
 fun EditProfilePage(
@@ -51,6 +61,7 @@ fun EditProfilePage(
 ){
     val uiState by viewModel.uiState.collectAsState()
     val user = uiState.user
+    val navController = LocalNavController.current
 
     if (user == null){
         Box(
@@ -182,20 +193,33 @@ fun EditProfilePage(
             }
             HorizontalDivider()
 
+            // change password
+            Text(
+                text = "Security",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            Button(
+                onClick = { navController.navigate( Routes.ChangePassword.route)},
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.Lock, null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Change Password")
+            }
         }
     }
 }
 
 /**
- * A row item representing an editable user profile field.
+ * A reusable row representing a single editable profile field.
  *
- * Displays a label on the left and the current value (or a placeholder)
- * on the right. The entire row is clickable and triggers the edit action.
- *
- * @param label The text label for the field (e.g., "First Name").
- * @param value The current value of the field. Empty means no value set.
- * @param placeholder Text to show when `value` is empty. Default is "Add".
- * @param onClick Called when the user taps the row to edit the field.
+ * @param label Display label for the field.
+ * @param value Current value of the field; empty implies no value set.
+ * @param placeholder Text shown when [value] is empty. Default is "Add".
+ * @param onClick Called when the row is tapped to navigate to the edit page.
  */
 @Composable
 private fun EditableField(
