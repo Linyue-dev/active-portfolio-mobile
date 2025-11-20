@@ -22,10 +22,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -270,23 +271,12 @@ fun ProfilePage(
                     Spacer(Modifier.width(4.dp))
                     Text("Edit")
                 }
-
                 OutlinedButton(
                     onClick = {
                     },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Icon(Icons.Default.Work, null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text("Adventure", maxLines = 1)
-                }
-
-                OutlinedButton(
-                    onClick = {
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Icon(Icons.Default.Work, null, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.Collections , null, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(4.dp))
                     Text("Portfolio", maxLines = 1)
                 }
