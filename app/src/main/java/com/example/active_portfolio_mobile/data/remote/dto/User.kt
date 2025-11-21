@@ -36,6 +36,7 @@ data class SignUpRequest(
     val email: String,
     val program: String?,
     val password: String,
+    val username: String
 )
 
 @Serializable
