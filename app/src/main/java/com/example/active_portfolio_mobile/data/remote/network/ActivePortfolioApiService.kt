@@ -1,7 +1,5 @@
 package com.example.active_portfolio_mobile.data.remote.network
 
-import com.example.active_portfolio_mobile.data.remote.network.AdventureSectionService
-import com.example.active_portfolio_mobile.data.remote.network.AdventureService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType

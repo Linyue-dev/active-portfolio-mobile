@@ -28,6 +28,7 @@ import com.example.active_portfolio_mobile.data.remote.dto.Adventure
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
 import com.example.active_portfolio_mobile.data.remote.dto.SectionType
 import com.example.active_portfolio_mobile.data.remote.network.ActivePortfolioApi.adventure
+import com.example.active_portfolio_mobile.navigation.LocalAuthViewModel
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionImageUpdateVM
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionUpdateVM
 
@@ -45,6 +46,7 @@ fun UpdateSectionForm(
     val parentPortfolios = adventureSectionVM.portfolios
     val section = remember { mutableStateOf(sectionToShow) }
     var message by rememberSaveable { mutableStateOf("") }
+    val authViewModel = LocalAuthViewModel.current
 
     Column {
         TextField(
@@ -96,7 +98,10 @@ fun UpdateSectionForm(
         }
 
         Button(onClick = {
-            adventureSectionVM.updateSection(section.value) { newMessage ->
+            adventureSectionVM.updateSection(
+                section.value,
+                authViewModel.tokenManager.getToken()
+            ) { newMessage ->
                 message = newMessage
                 println(message)
             }
@@ -105,7 +110,10 @@ fun UpdateSectionForm(
         }
 
         DeleteButtonWithConfirm {
-            adventureSectionVM.deleteSection(section.value) {
+            adventureSectionVM.deleteSection(
+                section.value,
+                authViewModel.tokenManager.getToken()
+            ) {
                 message = it
             }
         }
@@ -157,6 +165,7 @@ fun UpdateImageSectionForm(
     val section by adventureSectionVM.section.collectAsStateWithLifecycle()
     val bitmaps = adventureSectionVM.bitmapImages.collectAsStateWithLifecycle()
     var message by rememberSaveable { mutableStateOf("") }
+    val authViewModel = LocalAuthViewModel.current
 
     Column {
         TextField(
@@ -202,7 +211,9 @@ fun UpdateImageSectionForm(
         }
 
         Button(onClick = {
-            adventureSectionVM.updateSection { newMessage ->
+            adventureSectionVM.updateSection(
+                authViewModel.tokenManager.getToken()
+            ) { newMessage ->
                 message = newMessage
                 println(message)
             }
@@ -211,7 +222,10 @@ fun UpdateImageSectionForm(
         }
 
         DeleteButtonWithConfirm {
-            allSectionsVM.deleteSection(section) {
+            allSectionsVM.deleteSection(
+                section = section,
+                token = authViewModel.tokenManager.getToken()
+            ) {
                 message = it
             }
             if (message == "Success") {  }
