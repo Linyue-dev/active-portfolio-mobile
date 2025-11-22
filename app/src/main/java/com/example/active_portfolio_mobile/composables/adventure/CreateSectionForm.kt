@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
 import com.example.active_portfolio_mobile.data.remote.dto.SectionType
+import com.example.active_portfolio_mobile.navigation.LocalAuthViewModel
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.utilities.rememberMutableStateListOf
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionCreationVM
@@ -42,6 +43,7 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
     val portfolios = rememberMutableStateListOf<String>()
     val navController: NavController = LocalNavController.current
     val parentPortfolios = sectionVM.portfolios
+    val authViewModel = LocalAuthViewModel.current
 
     Column {
         // Create the Section's label.
@@ -119,12 +121,16 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
             // Save the section according to its type.
             when (type) {
                 SectionType.IMAGE -> sectionVM.saveNewImageSection(
-                    sectionToSave, 
-                    imageContent
+                    token = authViewModel.tokenManager.getToken(),
+                    sectionToSave = sectionToSave,
+                    images = imageContent
                 ){
                     success = it
                 }
-                else -> sectionVM.saveNewSection(sectionToSave) {
+                else -> sectionVM.saveNewSection(
+                    token = authViewModel.tokenManager.getToken(),
+                    sectionToSave = sectionToSave
+                ) {
                     success = it
                 }
             }

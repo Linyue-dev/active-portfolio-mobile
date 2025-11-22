@@ -42,7 +42,7 @@ data class AuthUiState(
  */
 
 class AuthViewModel(
-    private val tokenManager: TokenManager
+    val tokenManager: TokenManager
 ) : ViewModel() {
 
     // Retrofit API service for backend communication
