@@ -13,7 +13,8 @@ private val json = Json {
     coerceInputValues = true
 }
 
-private const val BASE_URL = "https://activeportfolio.onrender.com/"
+//private const val BASE_URL = "https://activeportfolio.onrender.com/"
+private const val BASE_URL = "http://10.0.2.2:3000/"
 
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
