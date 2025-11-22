@@ -50,7 +50,7 @@ class AdventureSectionCreationVM : ViewModel() {
      * The function for saving an adventure section to the database which has a content type which
      * takes a simple string.
      */
-    fun saveNewSection(sectionToSave: AdventureSection, setSuccess: (Boolean) -> Unit) {
+    fun saveNewSection(sectionToSave: AdventureSection, token: String?, setSuccess: (Boolean) -> Unit) {
         viewModelScope.launch{
             try {
                 val request = AdventureSectionCreationRequest(
@@ -62,6 +62,7 @@ class AdventureSectionCreationVM : ViewModel() {
                     type = sectionToSave.type
                 )
                 val response = ActivePortfolioApi.adventureSection.createSection(
+                    "Bearer $token",
                     request
                 )
                 if (response.isSuccessful) {
@@ -84,6 +85,7 @@ class AdventureSectionCreationVM : ViewModel() {
     fun saveNewImageSection(
         sectionToSave: AdventureSection,
         images: List<Bitmap>,
+        token: String?,
         setSuccess: (Boolean) -> Unit
     ) {
         viewModelScope.launch{
@@ -94,6 +96,7 @@ class AdventureSectionCreationVM : ViewModel() {
                     images = images
                 )
                 val response = ActivePortfolioApi.adventureSection.createImageSection(
+                    token = "Bearer $token",
                     label = sectionToSave.label.toRequestBody("text/plain".toMediaType()),
                     description = sectionToSave.label.toRequestBody("text/plain".toMediaType()),
                     type = sectionToSave.type.toRequestBody("text/plain".toMediaType()),

@@ -75,8 +75,9 @@ class AdventureSectionUpdateVM : ViewModel() {
     /**
      * Saves updates to an existing section in the database via the ActivePortfolio API.
      * @param section the updated Adventure Section to be saved.
+     * @param token the authentication token of the signed-in user.
      */
-    fun updateSection(section: AdventureSection, setMessage: (String) -> Unit) {
+    fun updateSection(section: AdventureSection, token: String?, setMessage: (String) -> Unit) {
         viewModelScope.launch {
             try {
                 val updatedSection = AdventureSectionUpdateRequest(
@@ -86,6 +87,7 @@ class AdventureSectionUpdateVM : ViewModel() {
                     newPortfolios = section.portfolios
                 )
                 val response = ActivePortfolioApi.adventureSection.updateSection(
+                    token = "Bearer $token",
                     sectionId = section.id,
                     updatedSection = updatedSection
                 )
@@ -103,11 +105,15 @@ class AdventureSectionUpdateVM : ViewModel() {
     /**
      * Deletes an adventure section through the Active Portfolio API.
      * @param section the adventure section to be deleted.
+     * @param token the authentication token of the signed-in user.
      */
-    fun deleteSection(section: AdventureSection, setMessage: (String) -> Unit) {
+    fun deleteSection(section: AdventureSection, token: String?, setMessage: (String) -> Unit) {
         viewModelScope.launch {
             try {
-                val response = ActivePortfolioApi.adventureSection.delete(section.id)
+                val response = ActivePortfolioApi.adventureSection.delete(
+                    token = "Bearer $token",
+                    section.id
+                )
                 if (response.isSuccessful) {
                    setMessage("Success")
                     sections.value = sections.value.filterNot { it.id == section.id }
@@ -220,9 +226,9 @@ class AdventureSectionImageUpdateVM : ViewModel() {
 
     /**
      * Saves updates to an existing image section in the database via the ActivePortfolio API.
-     * @param section the updated Adventure Section to be saved.
+     * @param token the authentication token of the signed-in user.
      */
-    fun updateSection(setMessage: (String) -> Unit) {
+    fun updateSection(token: String?, setMessage: (String) -> Unit) {
         viewModelScope.launch {
             try {
                 val convertedImages = convertImagesForRequest(
@@ -230,6 +236,7 @@ class AdventureSectionImageUpdateVM : ViewModel() {
                     images = _bitmapImages.value
                 )
                 val response = ActivePortfolioApi.adventureSection.updateImageSection(
+                    token = "Bearer $token",
                     id = _section.value.id,
                     label = _section.value.label.toRequestBody("text/plain".toMediaType()),
                     description = (_section.value.description ?: "").toRequestBody("text/plain".toMediaType()),
