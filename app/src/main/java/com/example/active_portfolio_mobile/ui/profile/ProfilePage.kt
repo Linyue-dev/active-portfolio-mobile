@@ -22,10 +22,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.active_portfolio_mobile.composables.adventure.AdventureNavigationList
 import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.viewModels.UserPortfolio
@@ -269,13 +270,12 @@ fun ProfilePage(
                     Spacer(Modifier.width(4.dp))
                     Text("Edit")
                 }
-
                 OutlinedButton(
                     onClick = {
                     },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Icon(Icons.Default.Work, null, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.Dashboard , null, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(4.dp))
                     Text("Portfolio", maxLines = 1)
                 }
@@ -356,6 +356,7 @@ fun ProfilePage(
                     Text("Get Portfolio static!!")
                 }
             }
+            AdventureNavigationList(user.id )
         }
     }
 }
