@@ -64,3 +64,9 @@ data class ChangePasswordRequest(
 data class ChangePasswordResponse(
     val message: String
 )
+
+@Serializable
+data class CheckUsernameResponse(
+    val available: Boolean,
+    val message: String
+)

@@ -37,6 +37,8 @@ import com.example.active_portfolio_mobile.ui.profile.ChangePasswordPage
 import com.example.active_portfolio_mobile.ui.profile.EditFieldPage
 import com.example.active_portfolio_mobile.ui.profile.EditProfilePage
 import com.example.active_portfolio_mobile.ui.profile.ProfileViewModel
+import com.example.active_portfolio_mobile.ui.search.SearchResultPage
+import com.example.active_portfolio_mobile.ui.search.SearchViewModel
 
 //Sets up the app navigation using NavHost with three routes: LandingPage,
 // CommentPage and AboutUsPage.
@@ -47,10 +49,12 @@ fun Router(modifier: Modifier) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val tokenManager =  remember { TokenManager(context) }
+    val searchViewModel: SearchViewModel = viewModel()
 
     val authViewModel: AuthViewModel = viewModel(
         factory = ViewModelFactory(tokenManager)
     )
+
     CompositionLocalProvider(LocalAuthViewModel provides authViewModel) {
         CompositionLocalProvider(
             LocalNavController provides navController
@@ -187,6 +191,7 @@ fun Router(modifier: Modifier) {
                             factory = ViewModelFactory(tokenManager)
                         )
                         ProfilePage(
+                            username = null,
                             authViewModel,
                             profileViewModel,
                             onEditProfile = {
@@ -202,7 +207,7 @@ fun Router(modifier: Modifier) {
                     EditProfilePage(
                         viewModel = profileViewModel,
                         onEdit = { field ->
-                            navController.navigate(Routes.EditField.routeWithField(field))
+                            navController.navigate(Routes.EditField.go(field))
                         }
                     )
                 }
@@ -233,6 +238,42 @@ fun Router(modifier: Modifier) {
                     )
                     ChangePasswordPage(
                         viewModel = profileViewModel
+                    )
+                }
+
+                /**
+                 * Search user
+                 */
+                composable(
+                    route = Routes.SearchUser.route,
+                    arguments = listOf(
+                        navArgument("query"){
+                            type = NavType.StringType
+                            defaultValue = ""
+                        }
+                    )
+                ) { backStackEntry  ->
+                    val query = backStackEntry.arguments?.getString("query") ?: ""
+                    SearchResultPage(query = query, viewModel = searchViewModel)
+
+                }
+                composable(
+                    route = Routes.OtherUserProfile.route,
+                    arguments = listOf(
+                        navArgument("username"){
+                            type= NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val profileViewModel: ProfileViewModel = viewModel(
+                        factory = ViewModelFactory(tokenManager)
+                    )
+                    val username = backStackEntry.arguments?.getString("username") ?: ""
+                    ProfilePage(
+                        username = username,
+                        authViewModel = authViewModel,
+                        profileViewModel = profileViewModel,
+                        onEditProfile = {}
                     )
                 }
             }
