@@ -1,7 +1,6 @@
 package com.example.active_portfolio_mobile.data.remote.network
 
-import com.example.active_portfolio_mobile.data.remote.network.AdventureSectionService
-import com.example.active_portfolio_mobile.data.remote.network.AdventureService
+import com.example.active_portfolio_mobile.data.remote.api.UserPublicApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -14,7 +13,8 @@ private val json = Json {
     coerceInputValues = true
 }
 
-private const val BASE_URL = "https://activeportfolio.onrender.com/"
+//private const val BASE_URL = "https://activeportfolio.onrender.com/"
+private const val BASE_URL = "http://10.0.2.2:3000/"
 
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
@@ -33,5 +33,8 @@ object ActivePortfolioApi {
     }
     val portfolio: PortfolioService by lazy{
         retrofit.create(PortfolioService::class.java)
+    }
+    val userPublic: UserPublicApiService by lazy{
+        retrofit.create(UserPublicApiService::class.java)
     }
 }

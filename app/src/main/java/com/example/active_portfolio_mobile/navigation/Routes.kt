@@ -29,9 +29,7 @@ sealed class Routes(val route: String){
     object Login : Routes("login")
     object SignUp : Routes("signup")
 
-    // User
-    object Profile : Routes("ProfilePageRoute")
-
+    
     //Portfolio
     object CreateUpdatePortfolio : Routes(
         "PortfolioCreateUpdateRoute?isEditing={isEditing}&portfolioId={portfolioId}"
@@ -39,14 +37,24 @@ sealed class Routes(val route: String){
         fun goCreate() =
             "PortfolioCreateUpdateRoute?isEditing=false&portfolioId="
 
-        fun goEdit(portfolioId: String) =
-            "PortfolioCreateUpdateRoute?isEditing=true&portfolioId=$portfolioId"
+        fun goEdit(portfolioId: String) = "ProfileCreateUpdateRoute?isEditing=true?portfolioId=$portfolioId"
     }
 
-
+    // User Profile
+    object Profile : Routes("ProfilePageRoute")
     object EditProfile : Routes("edit_profile")
     object EditField : Routes("edit_field/{field}") {
-        fun routeWithField(field: String) = "edit_field/$field"
+        fun go(field: String) = "edit_field/$field"
     }
     object ChangePassword : Routes("change_password")
+
+    // Search
+    object SearchUser : Routes("search?q={query}"){
+        fun go(query: String) = "search?q=$query"
+    }
+
+    // Check other user profile
+    object OtherUserProfile : Routes("user/{username}"){
+        fun go(username: String) = "user/$username"
+    }
 }

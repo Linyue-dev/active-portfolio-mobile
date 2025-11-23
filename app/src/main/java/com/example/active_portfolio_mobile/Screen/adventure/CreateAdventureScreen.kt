@@ -104,7 +104,7 @@ fun CreateAdventureScreen(
             // Create Adventure or save changes to existing one.
             item {
                 Button(onClick = {
-                    adventureVM.saveAdventure()
+                    adventureVM.saveAdventure(authViewModel.tokenManager.getToken())
                 }) {
                     Text("Save")
                 }
@@ -116,7 +116,7 @@ fun CreateAdventureScreen(
             item {
                 if (adventure.id != "") {
                     DeleteButtonWithConfirm {
-                        adventureVM.deleteAdventure()
+                        adventureVM.deleteAdventure(authViewModel.tokenManager.getToken())
                     }
                 }
             }

@@ -109,13 +109,18 @@ class AdventureCreationUpdateVM : ViewModel() {
      * Creates an Adventure or updates an existing one depending on whether the view model's
      * adventure has a set id. Sets the adventure id once a new Adventure is created so it can
      * proceed to be updated when this function is called again.
+     * @param token the token for authorizing the user creating the adventure. If the token
+     * is null or invalid, there will be an error.
      */
-    fun saveAdventure() {
+    fun saveAdventure(token: String?) {
         viewModelScope.launch {
             try {
                 var response: Response<Adventure>
                 if (adventure.value.id == "") {
-                    response = ActivePortfolioApi.adventure.create(adventure.value)
+                    response = ActivePortfolioApi.adventure.create(
+                        "Bearer $token",
+                        adventure.value
+                    )
                 } else {
                     val updatedAdventure = AdventureUpdateRequest(
                         newTitle = adventure.value.title,
@@ -124,6 +129,7 @@ class AdventureCreationUpdateVM : ViewModel() {
                     )
                     response = ActivePortfolioApi.adventure.update(
                         id = adventure.value.id,
+                        token = "Bearer $token",
                         updatedAdventure = updatedAdventure
                     )
                 }
@@ -145,11 +151,16 @@ class AdventureCreationUpdateVM : ViewModel() {
      * Deletes an adventure through the Active Portfolio API using the current id value of view model's
      * adventure. The values for the view model's held adventure are then reset (except for userId),
      * allowing a new adventure to be defined and created.
+     * @param token the token for authorizing the user deleting the adventure. If the token
+     * is null or invalid, there will be an error.
      */
-    fun deleteAdventure() {
+    fun deleteAdventure(token: String?) {
         viewModelScope.launch {
             try {
-                val response = ActivePortfolioApi.adventure.delete(adventure.value.id)
+                val response = ActivePortfolioApi.adventure.delete(
+                    "Bearer $token",
+                    adventure.value.id
+                )
                 if (response.isSuccessful) {
                     _adventure.update { it.copy(id = "", title = "", visibility = "", portfolios = emptyList()) }
                     _message.value = "Success"

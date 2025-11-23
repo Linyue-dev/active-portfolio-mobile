@@ -1,6 +1,7 @@
 package com.example.active_portfolio_mobile.ui.profile
 
 import android.app.Activity
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -80,6 +81,7 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun ProfilePage(
+    username: String? = null,
     authViewModel: AuthViewModel,
     profileViewModel: ProfileViewModel,
     onEditProfile: () -> Unit
@@ -88,17 +90,22 @@ fun ProfilePage(
     val activity = localContext as ComponentActivity
     val uiState by profileViewModel.uiState.collectAsState()
     val authState by authViewModel.uiState.collectAsState()
-    val user = uiState.user
     val userPortfolio : UserPortfolio = viewModel()
+    val isOwnProfile = username == null || username == authState.user?.username
+
 
     // Listen for changes in the logged-in user's email and reload the profile
-    LaunchedEffect(authState.user?.email) {
-        if (authState.user != null){
-            profileViewModel.getMyProfile()
-        }
+    LaunchedEffect(username,authState.user?.email) {
+        if (username == null ){
+            if (authState.user != null){
+                profileViewModel.getMyProfile()
+            }
+        } else {
+            profileViewModel.loadOtherUserProfile(username)
+       }
     }
 
-    if(user == null){
+    if(uiState.user == null){
         Box(
             Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -107,6 +114,7 @@ fun ProfilePage(
         }
         return
     }
+    val user = uiState.user!!
 
     MainLayout {
         Column(
@@ -128,8 +136,8 @@ fun ProfilePage(
                             )
                         )
                     )
-            ){
-                if (user.banner.isNullOrEmpty()){
+            ) {
+                if (user.banner.isNullOrEmpty()) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -171,9 +179,9 @@ fun ProfilePage(
             Spacer(modifier = Modifier.height(70.dp))
 
             // ===== Name + Username + Role =====
-            Column (
+            Column(
                 modifier = Modifier.padding(20.dp)
-            ){
+            ) {
                 // name
                 Text(
                     text = "${user.firstName} ${user.lastName}",
@@ -187,7 +195,7 @@ fun ProfilePage(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ){
+                ) {
                     user.username?.takeIf { it.isNotBlank() }?.let {
                         Text(
                             text = "@$it",
@@ -196,9 +204,9 @@ fun ProfilePage(
                         )
                     }
 
-                    Surface (
+                    Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = when (user.role){
+                        color = when (user.role) {
                             "teacher" -> MaterialTheme.colorScheme.primaryContainer
                             "student" -> MaterialTheme.colorScheme.secondaryContainer
                             "public" -> MaterialTheme.colorScheme.secondaryContainer
@@ -256,107 +264,120 @@ fun ProfilePage(
             }
 
             // ===== Button =====
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ){
-                OutlinedButton(
-                    onClick = onEditProfile,
-                    modifier = Modifier.weight(1f)
-                ){
-                    Icon(Icons.Default.Edit, null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text("Edit")
-                }
-                OutlinedButton(
-                    onClick = {
-                    },
-                    modifier = Modifier.weight(1f)
+            if (isOwnProfile) {
+                Log.d("ProfilePage", "Showing buttons (isOwnProfile = true)")
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(Icons.Default.Dashboard , null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text("Portfolio", maxLines = 1)
-                }
-                OutlinedButton(
-                    onClick = {
-                        authViewModel.logout()
-                    },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
-                    )
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.Logout, null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text("Logout")
-                }
-            }
-
-            // Button to return the user's name and email to the log-in launcher app.
-            // Only appears if the app is launched from the right launcher.
-            if (activity.intent.getBooleanExtra("from_login_launcher", false)) {
-                Spacer(modifier = Modifier.height(15.dp))
-                Button(onClick = {
-                    val resultIntent = activity.intent
-                    resultIntent.putExtra("name", user.firstName)
-                    resultIntent.putExtra("email", user.email)
-                    localContext.setResult(Activity.RESULT_OK, resultIntent)
-                    localContext.finish()
-                    authViewModel.logout()
-                }) {
-                    Text("Save this User to the Launcher")
-                }
-            }
-
-            //Check if it was opened by Labiba launcher app.
-            if(activity.intent.getBooleanExtra("from_portfolio_launcher", false)){
-
-                //Mutable states to hold portfolio statistic,\
-                var totalCount by remember { mutableStateOf<Int?>(null) }
-                var countPrivate by remember { mutableStateOf<Int?>(null) }
-                var countPublic by remember { mutableStateOf<Int?>(null) }
-                var countLink by remember { mutableStateOf<Int?>(null) }
-
-                val scope = rememberCoroutineScope()
-                /**
-                 * Launched effect runs once when the user.id changes.
-                 * It loads all portfolio statistics.
-                 */
-                LaunchedEffect(user.id){
-                    scope.launch {
-                        totalCount = userPortfolio.getPortfolioCount(user.id)
-                        countPrivate = userPortfolio.getPortfolioCountByVisibility(user.id, "private")
-                        countPublic = userPortfolio.getPortfolioCountByVisibility(user.id, "public")
-                        countLink = userPortfolio.getPortfolioCountByVisibility(user.id, "link-only")
+                    OutlinedButton(
+                        onClick = onEditProfile,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.Edit, null, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("Edit")
+                    }
+                    OutlinedButton(
+                        onClick = {
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.Dashboard, null, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("Portfolio", maxLines = 1)
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            authViewModel.logout()
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.Logout,
+                            null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text("Logout")
                     }
                 }
 
-                Spacer(modifier = Modifier.height(15.dp))
-                //All data must be fully loaded before enabling the button
-                val allLoaded = totalCount != null && countPrivate != null && countPublic != null && countLink != null
+                // Button to return the user's name and email to the log-in launcher app.
+                // Only appears if the app is launched from the right launcher.
+                if (activity.intent.getBooleanExtra("from_login_launcher", false)) {
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Button(onClick = {
+                        val resultIntent = activity.intent
+                        resultIntent.putExtra("name", user.firstName)
+                        resultIntent.putExtra("email", user.email)
+                        localContext.setResult(Activity.RESULT_OK, resultIntent)
+                        localContext.finish()
+                        authViewModel.logout()
+                    }) {
+                        Text("Save this User to the Launcher")
+                    }
+                }
 
-                /**
-                 * Button sends the result back to the launcher app.
-                 * Enabled only after every things has loaded.
-                 */
-                Button(onClick = {
-                    val resultIntent = activity.intent
-                    resultIntent.putExtra("result", "Success")
-                    resultIntent.putExtra("total", totalCount)
-                    resultIntent.putExtra("public", countPublic)
-                    resultIntent.putExtra("private", countPrivate)
-                    resultIntent.putExtra("link", countLink)
-                    localContext.setResult(Activity.RESULT_OK, resultIntent)
-                    authViewModel.logout()
-                    localContext.finish()
-                }, enabled = allLoaded
-                ){
-                    Text("Get Portfolio static!!")
+                //Check if it was opened by Labiba launcher app.
+                if (activity.intent.getBooleanExtra("from_portfolio_launcher", false)) {
+
+                    //Mutable states to hold portfolio statistic,\
+                    var totalCount by remember { mutableStateOf<Int?>(null) }
+                    var countPrivate by remember { mutableStateOf<Int?>(null) }
+                    var countPublic by remember { mutableStateOf<Int?>(null) }
+                    var countLink by remember { mutableStateOf<Int?>(null) }
+
+                    val scope = rememberCoroutineScope()
+                    /**
+                     * Launched effect runs once when the user.id changes.
+                     * It loads all portfolio statistics.
+                     */
+                    LaunchedEffect(user.id) {
+                        scope.launch {
+                            totalCount = userPortfolio.getPortfolioCount(user.id)
+                            countPrivate =
+                                userPortfolio.getPortfolioCountByVisibility(user.id, "private")
+                            countPublic =
+                                userPortfolio.getPortfolioCountByVisibility(user.id, "public")
+                            countLink =
+                                userPortfolio.getPortfolioCountByVisibility(user.id, "link-only")
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(15.dp))
+                    //All data must be fully loaded before enabling the button
+                    val allLoaded =
+                        totalCount != null && countPrivate != null && countPublic != null && countLink != null
+
+                    /**
+                     * Button sends the result back to the launcher app.
+                     * Enabled only after every things has loaded.
+                     */
+                    Button(
+                        onClick = {
+                            val resultIntent = activity.intent
+                            resultIntent.putExtra("result", "Success")
+                            resultIntent.putExtra("total", totalCount)
+                            resultIntent.putExtra("public", countPublic)
+                            resultIntent.putExtra("private", countPrivate)
+                            resultIntent.putExtra("link", countLink)
+                            localContext.setResult(Activity.RESULT_OK, resultIntent)
+                            authViewModel.logout()
+                            localContext.finish()
+                        }, enabled = allLoaded
+                    ) {
+                        Text("Get Portfolio static!!")
+                    }
                 }
             }
-            AdventureNavigationList(user.id )
+            // ===== Adventure List =====
+            AdventureNavigationList(user.id)
         }
     }
 }
