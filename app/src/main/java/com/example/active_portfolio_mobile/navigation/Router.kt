@@ -22,6 +22,7 @@ import com.example.active_portfolio_mobile.Screen.CommentPage
 import com.example.active_portfolio_mobile.Screen.AboutUsPage
 import com.example.active_portfolio_mobile.Screen.CreateOrEditPortfolioScreen
 import com.example.active_portfolio_mobile.Screen.CreateScreen
+import com.example.active_portfolio_mobile.Screen.InformationPage
 import com.example.active_portfolio_mobile.Screen.LandingPage
 import com.example.active_portfolio_mobile.Screen.adventure.AdventureViewScreen
 import com.example.active_portfolio_mobile.Screen.adventure.CreateAdventureScreen
@@ -70,6 +71,7 @@ fun Router(modifier: Modifier) {
                 composable(Routes.Main.route) { LandingPage(modifier) }
                 composable(Routes.Comment.route) { CommentPage(modifier) }
                 composable(Routes.About.route) { AboutUsPage(modifier) }
+                composable(Routes.Info.route) { InformationPage(modifier) }
                 composable(Routes.Create.route) { CreateScreen() }
                 // Adventure routes
                 composable(Routes.AdventureCreate.route) { CreateAdventureScreen(modifier) }
