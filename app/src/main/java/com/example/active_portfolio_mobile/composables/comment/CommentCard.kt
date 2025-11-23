@@ -14,8 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.active_portfolio_mobile.ui.theme.DarkPurple
-
 
 /**
  * A composable function that display a single comment in a card format.
@@ -38,7 +36,7 @@ fun CommentCard(comment: Comment, currentTime: Long){
     ){
         //Column to stack text elements veritcally
         Column(modifier = Modifier.padding(8.dp)){
-            Text(comment.author, style = MaterialTheme.typography.labelLarge, color = DarkPurple)
+            Text(comment.author, style = MaterialTheme.typography.labelLarge)
             Text(comment.message, style = MaterialTheme.typography.bodyLarge)
             
             Row( 
