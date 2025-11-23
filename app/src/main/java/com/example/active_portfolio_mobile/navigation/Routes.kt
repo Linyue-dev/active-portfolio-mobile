@@ -33,11 +33,17 @@ sealed class Routes(val route: String){
     object Profile : Routes("ProfilePageRoute")
 
     //Portfolio
-    object CreateUpdatePortfolio: Routes("PortfolioCreateUpdateRoute"){
-        fun goCreate() = "ProfileCreateUpdateRoute?isEditing=false?portfolioID="
+    object CreateUpdatePortfolio : Routes(
+        "PortfolioCreateUpdateRoute?isEditing={isEditing}&portfolioId={portfolioId}"
+    ) {
+        fun goCreate() =
+            "PortfolioCreateUpdateRoute?isEditing=false&portfolioId="
 
-        fun goEdit(portfolioId: String) = "ProfileCreateUpdateRoute?isEditing=true?portfolioId=$portfolioId"
+        fun goEdit(portfolioId: String) =
+            "PortfolioCreateUpdateRoute?isEditing=true&portfolioId=$portfolioId"
     }
+
+
     object EditProfile : Routes("edit_profile")
     object EditField : Routes("edit_field/{field}") {
         fun routeWithField(field: String) = "edit_field/$field"
