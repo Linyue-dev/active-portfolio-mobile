@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.active_portfolio_mobile.composables.portfolio.PopUpMessage
 import com.example.active_portfolio_mobile.composables.portfolio.PortfolioActionButtons
@@ -27,8 +29,10 @@ import com.example.active_portfolio_mobile.data.remote.dto.CreatePortfolioReques
 import com.example.active_portfolio_mobile.data.remote.dto.Portfolio
 import com.example.active_portfolio_mobile.data.remote.dto.UpdatePortfolioRequest
 import com.example.active_portfolio_mobile.layouts.MainLayout
+import com.example.active_portfolio_mobile.navigation.LocalAuthViewModel
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.navigation.Routes
+import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.viewModels.SinglePortfolioMV
 
 
@@ -51,19 +55,31 @@ fun CreateOrEditPortfolioScreen(
     existingPortfolio: Portfolio? = null,
     singlePortfolioMV: SinglePortfolioMV = viewModel()
 ){
+    //User info
+    val authViewModel: AuthViewModel = LocalAuthViewModel.current
+    val user = authViewModel.uiState.collectAsStateWithLifecycle().value.user
+
     //Local state for form fields.
-    var title by remember { mutableStateOf(existingPortfolio?.title ?: "") }
-    var description by remember { mutableStateOf(existingPortfolio?.description ?: "") }
-    var visibility by remember { mutableStateOf(existingPortfolio?.visibility ?: "private") }
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var visibility by remember { mutableStateOf("private") }
 
-
+    LaunchedEffect(existingPortfolio){
+        if(isEditing && existingPortfolio!=null ){
+            title = existingPortfolio.title
+            description = (existingPortfolio.description).toString()
+            visibility = existingPortfolio.visibility
+        }
+    }
+    
     //Observing error and connection messages for the viewModel
     val errorMessage by singlePortfolioMV.errorMessage.collectAsState()
     val connectionStatus by singlePortfolioMV.connectionStatus.collectAsState()
     val popupMessage by singlePortfolioMV.popUpMessage.collectAsState()
 
     val navController = LocalNavController.current
-    MainLayout {  
+
+    MainLayout {
         //The surface for the fields, visibility and action button.
         Surface(modifier = Modifier.padding(16.dp)) {
             Column(
@@ -79,12 +95,12 @@ fun CreateOrEditPortfolioScreen(
                     onDescriptionChange = { description = it }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-    
+
                 //Visibility selection dropdown
                 VisibilitySelector(
                     visibility,
                     onVisibilityChange = { visibility = it })
-    
+
                 //Display error message if present
                 errorMessage?.let {
                         msg ->
@@ -95,7 +111,7 @@ fun CreateOrEditPortfolioScreen(
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                 }
-    
+
                 Spacer(modifier = Modifier.padding(10.dp))
                 //Action buttons for Save/Create and Delete
                 PortfolioActionButtons(
@@ -113,7 +129,7 @@ fun CreateOrEditPortfolioScreen(
                             /* Handle the creation part*/
                             val portfolio = CreatePortfolioRequest(
                                 title = title,
-                                userId = "690e3b61905d564736adf04f",
+                                userId = user?.id ?: "",
                                 description = description,
                                 visibility = visibility.lowercase()
                             )
@@ -129,7 +145,7 @@ fun CreateOrEditPortfolioScreen(
                         }
                     } else null
                 )
-    
+
 //                //Test fetch composable (for debugging) !!!
 //                GetAllPortfolio()
 //                //Display connection status if present
@@ -153,7 +169,7 @@ fun CreateOrEditPortfolioScreen(
                 PopUpMessage(popupMessage) {
                     val isSuccess = popupMessage?.startsWith("SUCCESS:") == true
                     singlePortfolioMV.ClearPopUpMessage()
-        
+
                     if(isSuccess){
                         //Navigate back
                         navController.navigate(Routes.Main.route){

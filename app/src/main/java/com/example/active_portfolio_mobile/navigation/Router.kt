@@ -9,6 +9,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -28,7 +29,6 @@ import com.example.active_portfolio_mobile.Screen.adventure.CreateSectionScreen
 import com.example.active_portfolio_mobile.Screen.adventure.UpdateSectionsScreen
 import com.example.active_portfolio_mobile.ui.profile.ProfilePage
 import com.example.active_portfolio_mobile.data.local.TokenManager
-import com.example.active_portfolio_mobile.data.remote.dto.Portfolio
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.ui.common.ViewModelFactory
 import com.example.active_portfolio_mobile.ui.auth.LoginPage
@@ -39,6 +39,7 @@ import com.example.active_portfolio_mobile.ui.profile.EditProfilePage
 import com.example.active_portfolio_mobile.ui.profile.ProfileViewModel
 import com.example.active_portfolio_mobile.ui.search.SearchResultPage
 import com.example.active_portfolio_mobile.ui.search.SearchViewModel
+import com.example.active_portfolio_mobile.viewModels.PortfoliosVM
 
 //Sets up the app navigation using NavHost with three routes: LandingPage,
 // CommentPage and AboutUsPage.
@@ -49,6 +50,7 @@ fun Router(modifier: Modifier) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val tokenManager =  remember { TokenManager(context) }
+    val getPortfolio: PortfoliosVM = viewModel()
     val searchViewModel: SearchViewModel = viewModel()
 
     val authViewModel: AuthViewModel = viewModel(
@@ -157,15 +159,12 @@ fun Router(modifier: Modifier) {
 
                     val existingPortfolio =
                         if (isEditing) {
-                            //REPLACE BY GET SINGLE PORTFOLIO
-                            Portfolio(
-                                id = "690e53e88f09dccf0d758ede",
-                                title = "EH",
-                                createdBy = "690e3b61905d564736adf04f",
-                                shareToken = "55f068be88c7322f1aef3628a0049390",
-                                description = null,
-                                visibility = "link-only"
-                            )
+                            LaunchedEffect(Unit) {
+                                getPortfolio.loadOnePortfolio(portfolioId)
+                            }
+                            val portfolioState = getPortfolio.portfolio.collectAsStateWithLifecycle()
+
+                            portfolioState.value
                         } else null
                     CreateOrEditPortfolioScreen(
                         isEditing = isEditing,
