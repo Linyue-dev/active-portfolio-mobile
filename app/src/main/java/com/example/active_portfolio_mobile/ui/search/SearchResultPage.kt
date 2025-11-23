@@ -1,7 +1,5 @@
 package com.example.active_portfolio_mobile.ui.search
 
-import android.util.Log
-import android.widget.Space
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,12 +21,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.unit.dp
 import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.navigation.Routes
 
+/**
+ * Displays the search result page for user lookup.
+ *
+ * This screen:
+ * - Initializes the search query from navigation arguments.
+ * - Executes a user search when the query changes or when triggered by the search bar.
+ * - Observes [SearchViewModel.uiState] to display loading, error, empty state, or results.
+ * - Navigates to another user's profile when a user card is selected.
+ *
+ * @param query The initial search text passed from the previous screen.
+ * @param viewModel The [SearchViewModel] responsible for handling search logic and exposing UI state.
+ */
 @Composable
 fun SearchResultPage(
     query: String,
@@ -39,7 +48,6 @@ fun SearchResultPage(
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(query) {
-        Log.d("SearchResultsPage", "Query received: $query")
         if(query.isNotEmpty()){
             viewModel.searchUsers(query)
         }

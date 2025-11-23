@@ -1,10 +1,10 @@
 package com.example.active_portfolio_mobile.ui.search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.active_portfolio_mobile.data.remote.RetrofitClient
+import com.example.active_portfolio_mobile.data.remote.api.UserPublicApiService
 import com.example.active_portfolio_mobile.data.remote.dto.User
-import com.example.active_portfolio_mobile.data.remote.network.ActivePortfolioApi
 import com.example.active_portfolio_mobile.ui.common.ErrorParser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,14 +20,13 @@ data class SearchUiState(
 )
 class SearchViewModel(
 ): ViewModel(){
-    private val apiService = ActivePortfolioApi.userPublic
+    private val apiService = RetrofitClient.createPublicService(UserPublicApiService::class.java)
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     fun searchUsers(query: String){
-        Log.d("SearchResultsPage", "Query received: $query")
+
         if(query.isBlank()){
-            Log.d("SearchViewModel", "Query is blank, clearing")
             _uiState.value = SearchUiState(
                 results = emptyList(),
                 isLoading = false,
@@ -37,7 +36,6 @@ class SearchViewModel(
         }
 
         if(query.length <2 ){
-            Log.d("SearchViewModel", "Query too short: ${query.length}")
             _uiState.value = SearchUiState(
                 results = emptyList(),
                 isLoading = false,
@@ -45,7 +43,6 @@ class SearchViewModel(
             )
             return
         }
-        Log.d("SearchViewModel", "Starting search for: '$query'")
         _uiState.value = _uiState.value.copy(
             isLoading = true,
             error = null
@@ -62,9 +59,6 @@ class SearchViewModel(
                 )
 
             } catch (ex: HttpException){
-                Log.e("SearchViewModel", "EXCEPTION in searchUsers", ex)  // ← 加这个
-                Log.e("SearchViewModel", "Exception type: ${ex.javaClass.name}")
-                Log.e("SearchViewModel", "Exception message: ${ex.message}")
                 _uiState.update {
                     it.copy(
                         isLoading = false,
