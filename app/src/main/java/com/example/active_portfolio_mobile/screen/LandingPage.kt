@@ -76,6 +76,19 @@ fun LandingPage(modifier : Modifier){
                     }
                 )
 
+                Spacer(Modifier.padding(top = 20.dp))
+                Button(
+                    onClick = { navController.navigate(Routes.Info.route) },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface)
+                ) {
+                    Text(
+                        text = "How To Use This App",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 16.sp
+                    )
+                }
+
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -104,21 +117,19 @@ fun LandingPage(modifier : Modifier){
                             fontSize = 16.sp
                         )
                     }
-
-                    TestAdventuresFetch()
                 }
 
                 // ============== Demo buttons ==============
-                Button(onClick = {
-                    navController.navigate(Routes.AdventureUpdate.go("6915f42db4bdb25ac6a42fae"))
-                }) {
-                    Text("Demo Adventure Update")
-                }
-                Button(onClick = {
-                    navController.navigate(Routes.AdventureView.go("6915f42db4bdb25ac6a42fae"))
-                }) {
-                    Text("Demo Adventure View")
-                }
+//                Button(onClick = {
+//                    navController.navigate(Routes.AdventureUpdate.go("6915f42db4bdb25ac6a42fae"))
+//                }) {
+//                    Text("Demo Adventure Update")
+//                }
+//                Button(onClick = {
+//                    navController.navigate(Routes.AdventureView.go("6915f42db4bdb25ac6a42fae"))
+//                }) {
+//                    Text("Demo Adventure View")
+//                }
             }
         }
     }
