@@ -28,7 +28,7 @@ object RetrofitClient {
     private const val PROD_BASE_URL = "https://activeportfolio.onrender.com/"
 //    private const val DEV_BASE_URL = "http://10.0.2.2:1339/"
 
-    private const val BASE_URL = DEV_BASE_URL
+    private const val BASE_URL = PROD_BASE_URL
 
     // JSON configuration for Kotlinx Serialization
     private val json = Json {

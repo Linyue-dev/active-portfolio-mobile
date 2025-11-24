@@ -32,8 +32,8 @@ object ErrorParser{
                     "Password must be at least 6 characters"
                 fullMessage.contains("must be different",  ignoreCase = true) ->
                     "New password must be different from current password"
-                fullMessage.contains("already token",  ignoreCase = true) ->
-                    "The username is already token"
+                fullMessage.contains("already taken",  ignoreCase = true) ->
+                    "The username is already taken"
                 else ->
                     "Something went wrong. Please try again."
             }

@@ -10,13 +10,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,78 +47,81 @@ fun SearchResultPage(
     var searchQuery by rememberSaveable { mutableStateOf(query) }
     val navController = LocalNavController.current
     val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(query) {
         if(query.isNotEmpty()){
             viewModel.searchUsers(query)
         }
     }
+    // display messages via Snackbar
+    LaunchedEffect(uiState.isLoading) {
+        if (!uiState.isLoading && uiState.results.isEmpty() ) {
+            snackbarHostState.showSnackbar("No users found")
+        }
+    }
 
     MainLayout {
-        Column (
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
+        Box(
+            modifier = Modifier.fillMaxSize()
         ){
-            //============== Search Bar ==============
-            SearchBar(
-                query = searchQuery,
-                onQueryChange = {
-                    searchQuery = it
-                    if (it.length >= 2) {
-                        viewModel.searchUsers(it)
+            Column (
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ){
+                //============== Search Bar ==============
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChange = {
+                        searchQuery = it
+                        if (it.length >= 2) {
+                            viewModel.searchUsers(it)
+                        }
+                    },
+                    onSearch = {
+                        if (searchQuery.length >= 2) {
+                            viewModel.searchUsers(searchQuery)
+                        }
+                    },
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //============== Search Result ==============
+                when {
+                    uiState.isLoading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
-                },
-                onSearch = {
-                    if (searchQuery.length >= 2) {
-                        viewModel.searchUsers(searchQuery)
-                    }
-                },
-                modifier = Modifier.padding(end = 8.dp)
-            )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                    else -> {
+                        Spacer(modifier = Modifier.height(8.dp))
 
-            //============== Search Result ==============
-            when {
-                uiState.isLoading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
+                        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            items(uiState.results) { user ->
+                                UserCard(
+                                    user = user,
+                                    onClick = {
+                                        val identifier = user.username ?: user.id
+                                        navController.navigate(Routes.OtherUserProfile.go(identifier))
 
-                uiState.error != null -> {
-                    Text(
-                        text = "Error: ${uiState.error}",
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-
-                uiState.results.isEmpty() -> {
-                    Text("No users found")
-                }
-
-                else -> {
-                    Text("${uiState.results.size} users found")
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(uiState.results) { user ->
-                            UserCard(
-                                user = user,
-                                onClick = {
-                                    val identifier = user.username ?: user.id
-                                    navController.navigate(Routes.OtherUserProfile.go(identifier))
-
-                                }
-                            )
+                                    }
+                                )
+                            }
                         }
                     }
                 }
             }
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
     }
 }
