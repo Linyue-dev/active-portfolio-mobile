@@ -12,9 +12,7 @@ private val json = Json {
     isLenient = true
     coerceInputValues = true
 }
-
-//private const val BASE_URL = "https://activeportfolio.onrender.com/"
-private const val BASE_URL = "http://10.0.2.2:3000/"
+private const val BASE_URL = "https://activeportfolio.onrender.com/"
 
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
@@ -34,7 +32,7 @@ object ActivePortfolioApi {
     val portfolio: PortfolioService by lazy{
         retrofit.create(PortfolioService::class.java)
     }
-    val userPublic: UserPublicApiService by lazy{
-        retrofit.create(UserPublicApiService::class.java)
-    }
+//    val userPublic: UserPublicApiService by lazy{
+//        retrofit.create(UserPublicApiService::class.java)
+//    }
 }

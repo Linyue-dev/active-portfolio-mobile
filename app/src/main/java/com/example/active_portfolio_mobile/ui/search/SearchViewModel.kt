@@ -1,10 +1,10 @@
 package com.example.active_portfolio_mobile.ui.search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.active_portfolio_mobile.data.remote.RetrofitClient
+import com.example.active_portfolio_mobile.data.remote.api.UserPublicApiService
 import com.example.active_portfolio_mobile.data.remote.dto.User
-import com.example.active_portfolio_mobile.data.remote.network.ActivePortfolioApi
 import com.example.active_portfolio_mobile.ui.common.ErrorParser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,42 +13,70 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.IOException
 import retrofit2.HttpException
+
+/**
+ * UI state for the user search screen.
+ *
+ * @property results The list of users matching the current search query.
+ * @property isLoading Whether a search request is currently in progress.
+ * @property message An optional message for displaying feedback to the user
+ *                   (e.g., error messages or “no results” notifications).
+ */
 data class SearchUiState(
     val results: List<User> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val message: String? = null
 )
+
+/**
+ * ViewModel responsible for handling user search logic.
+ *
+ * This ViewModel:
+ * - Validates the search query before making API calls.
+ * - Sends HTTP requests to fetch matching users.
+ * - Updates [uiState] with loading, results, and message feedback.
+ * - Handles API, network, and unknown exceptions gracefully.
+ */
 class SearchViewModel(
 ): ViewModel(){
-    private val apiService = ActivePortfolioApi.userPublic
+    private val apiService = RetrofitClient.createPublicService(UserPublicApiService::class.java)
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
+
+    /**
+     * Performs a user search for the given [query].
+     *
+     * Behavior:
+     * - Blank or too-short queries immediately reset the state without searching.
+     * - Starts a loading state before performing the API request.
+     * - Updates results on success.
+     * - Sets a user-visible [message] when an error occurs.
+     *
+     * @param query The search keyword entered by the user.
+     */
     fun searchUsers(query: String){
-        Log.d("SearchResultsPage", "Query received: $query")
+
         if(query.isBlank()){
-            Log.d("SearchViewModel", "Query is blank, clearing")
             _uiState.value = SearchUiState(
                 results = emptyList(),
                 isLoading = false,
-                error = null
+                message = null
             )
             return
         }
 
         if(query.length <2 ){
-            Log.d("SearchViewModel", "Query too short: ${query.length}")
             _uiState.value = SearchUiState(
                 results = emptyList(),
                 isLoading = false,
-                error = null
+                message = null
             )
             return
         }
-        Log.d("SearchViewModel", "Starting search for: '$query'")
         _uiState.value = _uiState.value.copy(
             isLoading = true,
-            error = null
+            message = null
         )
 
         // start search
@@ -58,35 +86,34 @@ class SearchViewModel(
                 _uiState.value = SearchUiState(
                     results = results,
                     isLoading = false,
-                    error = null
+                    message = null
                 )
 
             } catch (ex: HttpException){
-                Log.e("SearchViewModel", "EXCEPTION in searchUsers", ex)  // ← 加这个
-                Log.e("SearchViewModel", "Exception type: ${ex.javaClass.name}")
-                Log.e("SearchViewModel", "Exception message: ${ex.message}")
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = ErrorParser.errorHttpError(ex)
+                        message = ErrorParser.errorHttpError(ex)
                     )
                 }
             } catch (ex: IOException){
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = "Network error. Please check your connection."
+                        message = "Network error. Please check your connection."
                     )
                 }
             }catch (ex: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Network error"
+                    message = "Network error"
                 )
             }
         }
     }
-
+    /**
+     * Resets the search state to its default values.
+     */
     fun clearSearch(){
         _uiState.update {
             SearchUiState()

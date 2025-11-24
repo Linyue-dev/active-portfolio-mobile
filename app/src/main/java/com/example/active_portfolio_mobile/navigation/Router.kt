@@ -30,7 +30,6 @@ import com.example.active_portfolio_mobile.Screen.adventure.CreateSectionScreen
 import com.example.active_portfolio_mobile.Screen.adventure.UpdateSectionsScreen
 import com.example.active_portfolio_mobile.ui.profile.ProfilePage
 import com.example.active_portfolio_mobile.data.local.TokenManager
-import com.example.active_portfolio_mobile.data.remote.dto.Portfolio
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.ui.common.ViewModelFactory
 import com.example.active_portfolio_mobile.ui.auth.LoginPage
@@ -39,9 +38,9 @@ import com.example.active_portfolio_mobile.ui.profile.ChangePasswordPage
 import com.example.active_portfolio_mobile.ui.profile.EditFieldPage
 import com.example.active_portfolio_mobile.ui.profile.EditProfilePage
 import com.example.active_portfolio_mobile.ui.profile.ProfileViewModel
-import com.example.active_portfolio_mobile.viewModels.PortfoliosVM
 import com.example.active_portfolio_mobile.ui.search.SearchResultPage
 import com.example.active_portfolio_mobile.ui.search.SearchViewModel
+import com.example.active_portfolio_mobile.viewModels.PortfoliosVM
 
 //Sets up the app navigation using NavHost with three routes: LandingPage,
 // CommentPage and AboutUsPage.
@@ -58,7 +57,7 @@ fun Router(modifier: Modifier) {
     val authViewModel: AuthViewModel = viewModel(
         factory = ViewModelFactory(tokenManager)
     )
-    
+
     CompositionLocalProvider(LocalAuthViewModel provides authViewModel) {
         CompositionLocalProvider(
             LocalNavController provides navController
@@ -160,7 +159,7 @@ fun Router(modifier: Modifier) {
                     val isEditing = backStackEntry.arguments?.getBoolean("isEditing") ?: false
                     val portfolioId = backStackEntry.arguments?.getString("portfolioId") ?: ""
 
-                    val existingPortfolio = 
+                    val existingPortfolio =
                         if (isEditing) {
                             LaunchedEffect(Unit) {
                                 getPortfolio.loadOnePortfolio(portfolioId)

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.local.TokenManager
 import com.example.active_portfolio_mobile.data.remote.RetrofitClient
 import com.example.active_portfolio_mobile.data.remote.api.UserApiService
+import com.example.active_portfolio_mobile.data.remote.api.UserPublicApiService
 import com.example.active_portfolio_mobile.data.remote.dto.ChangePasswordRequest
 import com.example.active_portfolio_mobile.data.remote.dto.UpdateUserRequest
 import com.example.active_portfolio_mobile.data.remote.dto.User
@@ -44,6 +45,8 @@ class ProfileViewModel(
 ) : ViewModel() {
     private val apiService : UserApiService =
         RetrofitClient.createService(UserApiService::class.java, tokenManager)
+    private val userPublicApi : UserPublicApiService =
+        RetrofitClient.createPublicService(UserPublicApiService::class.java)
     private val _uiState = MutableStateFlow(ProfileUiState())
 
     val uiState : StateFlow<ProfileUiState> = _uiState.asStateFlow()
@@ -203,20 +206,16 @@ class ProfileViewModel(
      * @param username The username of the user to load
      */
     fun loadOtherUserProfile(username: String){
-        Log.d("ProfileViewModel", "loadUserProfile called with: '$username'")
         viewModelScope.launch {
             _uiState.update {
                 it.copy(user = null, isLoading = true, error = null)
             }
             try{
-                Log.d("ProfileViewModel", "Calling API getUserByIdentifier('$username')")
-                val user = ActivePortfolioApi.userPublic.getUserByIdentifier(username)
+                val user = userPublicApi.getUserByIdentifier(username)
                 _uiState.update {
-                    Log.d("ProfileViewModel", "API returned user: ${user.username}")
                     it.copy( user = user, isLoading = false, error = null)
                 }
             } catch (ex: HttpException){
-                Log.e("ProfileViewModel", "Error loading user", ex)
                 _uiState.update {
                     it.copy(isLoading = false, error = ErrorParser.errorHttpError(ex))
                 }

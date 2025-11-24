@@ -30,7 +30,7 @@ sealed class Routes(val route: String){
     object Login : Routes("login")
     object SignUp : Routes("signup")
 
-    
+
     //Portfolio
     object CreateUpdatePortfolio : Routes(
         "PortfolioCreateUpdateRoute?isEditing={isEditing}&portfolioId={portfolioId}"
