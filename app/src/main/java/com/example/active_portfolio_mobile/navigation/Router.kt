@@ -24,6 +24,7 @@ import com.example.active_portfolio_mobile.Screen.CreateOrEditPortfolioScreen
 import com.example.active_portfolio_mobile.Screen.CreateScreen
 import com.example.active_portfolio_mobile.Screen.InformationPage
 import com.example.active_portfolio_mobile.Screen.LandingPage
+import com.example.active_portfolio_mobile.Screen.UserPortfolioPage
 import com.example.active_portfolio_mobile.Screen.adventure.AdventureViewScreen
 import com.example.active_portfolio_mobile.Screen.adventure.CreateAdventureScreen
 import com.example.active_portfolio_mobile.Screen.adventure.CreateSectionScreen
@@ -276,6 +277,21 @@ fun Router(modifier: Modifier) {
                         profileViewModel = profileViewModel,
                         onEditProfile = {}
                     )
+                }
+
+                /**
+                 * Search user
+                 */
+                composable(
+                    route = Routes.UserPortfolio.route,
+                    arguments = listOf(
+                        navArgument("userId"){
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val userId = backStackEntry.arguments?.getString("userId") ?: ""
+                    UserPortfolioPage(userId)
                 }
             }
         }
