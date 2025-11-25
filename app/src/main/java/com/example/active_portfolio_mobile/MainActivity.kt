@@ -8,15 +8,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.active_portfolio_mobile.navigation.Router
-import com.example.active_portfolio_mobile.ui.theme.CommentScreenTheme
-
+import com.example.active_portfolio_mobile.ui.theme.ActivePortfolioTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CommentScreenTheme {
+            ActivePortfolioTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                 ) {

@@ -42,7 +42,7 @@ data class AuthUiState(
  */
 
 class AuthViewModel(
-    private val tokenManager: TokenManager
+    val tokenManager: TokenManager
 ) : ViewModel() {
 
     // Retrofit API service for backend communication
@@ -114,12 +114,19 @@ class AuthViewModel(
     /**
      * Handle user signup with provided details
      */
-    fun signup(firstName: String,lastName: String,email: String,program: String,password: String){
+    fun signup(
+        firstName: String,
+        lastName: String,
+        email: String,
+        program: String,
+        password: String,
+        username:String
+    ){
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
             try {
-                val response = apiService.signup(SignUpRequest(firstName,lastName,email,program,password))
+                val response = apiService.signup(SignUpRequest(firstName,lastName,email,program,password, username))
                 tokenManager.saveToken(response.token)
                 tokenManager.saveUser(response.user)
 

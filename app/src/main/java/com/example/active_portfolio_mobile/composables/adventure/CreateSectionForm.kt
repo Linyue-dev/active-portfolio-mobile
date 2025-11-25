@@ -15,6 +15,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -23,9 +24,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
 import com.example.active_portfolio_mobile.data.remote.dto.SectionType
+import com.example.active_portfolio_mobile.navigation.LocalAuthViewModel
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.utilities.rememberMutableStateListOf
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionCreationVM
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlin.collections.forEach
 
 /**
@@ -34,7 +39,12 @@ import kotlin.collections.forEach
  * @param sectionVM the View Model for creating sections from the creation screen.
  */
 @Composable
-fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
+fun CreateSectionForm(
+    type: String,
+    messageFlow: MutableSharedFlow<String>,
+    sectionVM: AdventureSectionCreationVM
+) {
+    val scope = rememberCoroutineScope()
     var label by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
     var stringContent by rememberSaveable { mutableStateOf("") }
@@ -42,6 +52,7 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
     val portfolios = rememberMutableStateListOf<String>()
     val navController: NavController = LocalNavController.current
     val parentPortfolios = sectionVM.portfolios
+    val authViewModel = LocalAuthViewModel.current
 
     Column {
         // Create the Section's label.
@@ -119,20 +130,38 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
             // Save the section according to its type.
             when (type) {
                 SectionType.IMAGE -> sectionVM.saveNewImageSection(
-                    sectionToSave, 
-                    imageContent
+                    token = authViewModel.tokenManager.getToken(),
+                    sectionToSave = sectionToSave,
+                    images = imageContent
                 ){
                     success = it
+                    if (success) {
+                        scope.launch {
+                            messageFlow.emit("Success")
+                        }
+                        navController.navigateUp()
+                    } else {
+                        scope.launch {
+                            messageFlow.emit("Something went wrong: ${sectionVM.getMessage()}")
+                        }
+                    }
                 }
-                else -> sectionVM.saveNewSection(sectionToSave) {
+                else -> sectionVM.saveNewSection(
+                    token = authViewModel.tokenManager.getToken(),
+                    sectionToSave = sectionToSave
+                ) {
                     success = it
+                    if (success) {
+                        scope.launch {
+                            messageFlow.emit("Success")
+                        }
+                        navController.navigateUp()
+                    } else {
+                        scope.launch {
+                            messageFlow.emit("Something went wrong: ${sectionVM.getMessage()}")
+                        }
+                    }
                 }
-            }
-
-            if (success) {
-                navController.navigateUp() // ToDo, make sure previous screen updates w/ new content
-            } else {
-                // Todo, error popup
             }
         }) {
             Text("Save")

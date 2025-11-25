@@ -24,6 +24,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.active_portfolio_mobile.navigation.LocalAuthViewModel
 import com.example.active_portfolio_mobile.navigation.Routes
 
 /**
@@ -34,6 +36,7 @@ import com.example.active_portfolio_mobile.navigation.Routes
 @Composable
 fun MainLayout(content: @Composable () -> Unit) {
     val navController = LocalNavController.current
+    val user = LocalAuthViewModel.current.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -63,6 +66,7 @@ fun MainLayout(content: @Composable () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 actions = {
                     Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                        // Navigate home button.
                         IconButton(onClick = {
                             navController.navigate(route = Routes.Main.route)
                         }) {
@@ -71,14 +75,20 @@ fun MainLayout(content: @Composable () -> Unit) {
                                 contentDescription = "Home"
                             )
                         }
+                        // Create Adventure or Portfolio button.
                         IconButton( onClick = {
-                            navController.navigate(Routes.Create.route)
+                            if (user.value.isLoggedIn) {
+                                navController.navigate(Routes.Create.route)
+                            } else {
+                                navController.navigate(Routes.Login.route)
+                            }
                         }) {
                             Icon(
                                 imageVector = Icons.Filled.Add,
                                 contentDescription = "Create a new Adventure or Portfolio"
                             )
                         }
+                        // Navigate to profile page.
                         IconButton( onClick = {
                             navController.navigate(Routes.Profile.route)
                         }) {

@@ -12,7 +12,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
-import retrofit2.http.Path
+
 /**
  * API endpoints for user authentication and profile operations.
  */
@@ -42,15 +42,6 @@ interface UserApiService {
      */
     @GET("users/me")
     suspend fun getCurrentUser() : User
-
-    /**
-     * Fetch another user's public profile by ID.
-     *
-     * @param id The target user's ID.
-     * @return The user's profile if found.
-     */
-    @GET("users/{id}")
-    suspend fun getUserById(@Path("id") id: String) : User
 
     /**
      * Request body for updating user profile.

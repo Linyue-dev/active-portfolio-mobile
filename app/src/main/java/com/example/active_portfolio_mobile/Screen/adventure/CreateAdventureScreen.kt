@@ -1,15 +1,22 @@
 package com.example.active_portfolio_mobile.Screen.adventure
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -25,6 +32,8 @@ import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.navigation.Routes
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.viewModels.AdventureCreationUpdateVM
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 
 /**
  * The primary screen for creating, updating, and deleting an Adventure.
@@ -42,9 +51,18 @@ fun CreateAdventureScreen(
     val navController: NavController = LocalNavController.current
     val adventure by adventureVM.adventure.collectAsStateWithLifecycle()
     val portfolios = adventureVM.portfolios
+    val snackbarHostState = remember { SnackbarHostState() }
+    val messageFlow = remember { MutableSharedFlow<String>() }
+    val scope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
         if (adventureToUpdate != null) {
             adventureVM.setAdventure(adventureToUpdate)
+        }
+
+        // Collect messages emitted for the snackbar.
+        messageFlow.collect { message ->
+            snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Short)
         }
     }
     LaunchedEffect(user) {
@@ -52,74 +70,88 @@ fun CreateAdventureScreen(
     }
 
     MainLayout {
-        LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
-            // Set Title of Adventure
-            item {
-                TextField(
-                    label = { Text("Title") },
-                    value = adventure.title,
-                    onValueChange = { adventureVM.setTitle(it) },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer
-                    ), modifier = Modifier.fillMaxWidth()
-                )
-            }
-            // Navigate to Adventure Section creation/update/delete for this adventure
-            item {
-                if (adventure.id != "") {
-                    Button(onClick = {
-                        navController.navigate(Routes.SectionsUpdate.go(adventure.id))
-                    }) {
-                        Text("Build My Adventure")
-                    }
-                }
-            }
-            // Set visibility of Adventure
-            item {
-                DropDownTab(name = "Visibility: ${adventure.visibility}") {
-                    SingleSelectList(
-                        selectedItem = adventure.visibility,
-                        setSelectedItem = { adventureVM.setVisibility(it) },
-                        list = listOf("Public", "Private") // TODO switch for less hardcoded values
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+            LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
+                // Set Title of Adventure
+                item {
+                    TextField(
+                        label = { Text("Title") },
+                        value = adventure.title,
+                        onValueChange = { adventureVM.setTitle(it) },
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer
+                        ), modifier = Modifier.fillMaxWidth()
                     )
                 }
-            }
-            // Select Portfolios in which to include this Adventure.
-            item {
-                DropDownTab(name = "Portfolios") {
-                    MultiSelectList(
-                        selectedItems = portfolios.value.filter { it.id in adventure.portfolios },
-                        list = portfolios.value,
-                        displayText = { it.title },
-                        selectItem = {
-                            adventureVM.addToPortfolios(it.id)
-                        },
-                        deselectItem = {
-                            adventureVM.removeFromPortfolios(it.id)
+                // Navigate to Adventure Section creation/update/delete for this adventure
+                item {
+                    if (adventure.id != "") {
+                        Button(onClick = {
+                            navController.navigate(Routes.SectionsUpdate.go(adventure.id))
+                        }) {
+                            Text("Build My Adventure")
                         }
-                    )
+                    }
                 }
-            }
-            // Create Adventure or save changes to existing one.
-            item {
-                Button(onClick = {
-                    adventureVM.saveAdventure()
-                }) {
-                    Text("Save")
+                // Set visibility of Adventure
+                item {
+                    DropDownTab(name = "Visibility: ${adventure.visibility}") {
+                        SingleSelectList(
+                            selectedItem = adventure.visibility,
+                            setSelectedItem = { adventureVM.setVisibility(it) },
+                            list = listOf(
+                                "Public",
+                                "Private"
+                            ) // TODO switch for less hardcoded values
+                        )
+                    }
                 }
-                if (adventureVM.message.value != null) {
-                    Text("${adventureVM.message.value}")
+                // Select Portfolios in which to include this Adventure.
+                item {
+                    DropDownTab(name = "Portfolios") {
+                        MultiSelectList(
+                            selectedItems = portfolios.value.filter { it.id in adventure.portfolios },
+                            list = portfolios.value,
+                            displayText = { it.title },
+                            selectItem = {
+                                adventureVM.addToPortfolios(it.id)
+                            },
+                            deselectItem = {
+                                adventureVM.removeFromPortfolios(it.id)
+                            }
+                        )
+                    }
                 }
-            }
-            // Delete the Adventure.
-            item {
-                if (adventure.id != "") {
-                    DeleteButtonWithConfirm {
-                        adventureVM.deleteAdventure()
+                // Create Adventure or save changes to existing one.
+                item {
+                    Button(onClick = {
+                        adventureVM.saveAdventure(authViewModel.tokenManager.getToken()) {
+                            scope.launch {
+                                messageFlow.emit(it)
+                            }
+                        }
+                    }) {
+                        Text("Save")
+                    }
+                }
+                // Delete the Adventure.
+                item {
+                    if (adventure.id != "") {
+                        DeleteButtonWithConfirm {
+                            adventureVM.deleteAdventure(authViewModel.tokenManager.getToken()) {
+                                scope.launch {
+                                    messageFlow.emit(it)
+                                }
+                            }
+                        }
                     }
                 }
             }
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
     }
 }

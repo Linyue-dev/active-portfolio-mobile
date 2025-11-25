@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.local.TokenManager
 import com.example.active_portfolio_mobile.data.remote.RetrofitClient
 import com.example.active_portfolio_mobile.data.remote.api.UserApiService
+import com.example.active_portfolio_mobile.data.remote.api.UserPublicApiService
 import com.example.active_portfolio_mobile.data.remote.dto.ChangePasswordRequest
 import com.example.active_portfolio_mobile.data.remote.dto.UpdateUserRequest
 import com.example.active_portfolio_mobile.data.remote.dto.User
+import com.example.active_portfolio_mobile.data.remote.network.ActivePortfolioApi
 import com.example.active_portfolio_mobile.ui.common.ErrorParser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,6 +45,8 @@ class ProfileViewModel(
 ) : ViewModel() {
     private val apiService : UserApiService =
         RetrofitClient.createService(UserApiService::class.java, tokenManager)
+    private val userPublicApi : UserPublicApiService =
+        RetrofitClient.createPublicService(UserPublicApiService::class.java)
     private val _uiState = MutableStateFlow(ProfileUiState())
 
     val uiState : StateFlow<ProfileUiState> = _uiState.asStateFlow()
@@ -71,7 +75,7 @@ class ProfileViewModel(
     fun getMyProfile(){
         val token = tokenManager.getToken()
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            _uiState.value = _uiState.value.copy( isLoading = true, error = null)
 
             try{
                 val newUser = apiService.getCurrentUser()
@@ -182,6 +186,35 @@ class ProfileViewModel(
                 )
                 onSuccess()
 
+            } catch (ex: HttpException){
+                _uiState.update {
+                    it.copy(isLoading = false, error = ErrorParser.errorHttpError(ex))
+                }
+            } catch (ex: Exception){
+                _uiState.update {
+                    it.copy(isLoading = false, error = "An unexpected error occurred.")
+                }
+            }
+        }
+    }
+    /**
+     * Load another user's public profile by username.
+     *
+     * Fetches public profile information for the specified user from the API.
+     * Updates the UI state with the loaded user data or error message.
+     *
+     * @param username The username of the user to load
+     */
+    fun loadOtherUserProfile(username: String){
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(user = null, isLoading = true, error = null)
+            }
+            try{
+                val user = userPublicApi.getUserByIdentifier(username)
+                _uiState.update {
+                    it.copy( user = user, isLoading = false, error = null)
+                }
             } catch (ex: HttpException){
                 _uiState.update {
                     it.copy(isLoading = false, error = ErrorParser.errorHttpError(ex))
