@@ -40,7 +40,10 @@ fun AdventureView(
                     when(section.type) {
                         SectionType.TEXT -> TextSectionView(section)
                         SectionType.LINK -> LinkSectionView(section)
-                        SectionType.IMAGE -> ImageSectionView(section)
+                        SectionType.IMAGE -> ImageSectionView(
+                            section,
+                            viewModel(key = section.id)
+                        )
                     }
                 }
             }

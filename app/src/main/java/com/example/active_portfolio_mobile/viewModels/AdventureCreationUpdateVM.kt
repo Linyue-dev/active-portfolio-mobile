@@ -39,6 +39,7 @@ class AdventureCreationUpdateVM : ViewModel() {
                   _message.value = "There was an issue retrieving the adventure."
                 }
             } catch(e: Exception) {
+                _message.value = e.message ?: "An unknown error occurred while trying to get the adventure."
                 println(e)
             }
         }
@@ -56,7 +57,6 @@ class AdventureCreationUpdateVM : ViewModel() {
                 if (response.isSuccessful) {
                     portfolios.value = response.body() ?: emptyList()
                 } else {
-                    _message.value = "There was an issue retrieving the user's portfolios."
                     println(response.errorBody())
                 }
             } catch (e: Exception) {
@@ -112,7 +112,7 @@ class AdventureCreationUpdateVM : ViewModel() {
      * @param token the token for authorizing the user creating the adventure. If the token
      * is null or invalid, there will be an error.
      */
-    fun saveAdventure(token: String?) {
+    fun saveAdventure(token: String?, setMessage: (String) -> Unit) {
         viewModelScope.launch {
             try {
                 var response: Response<Adventure>
@@ -137,12 +137,13 @@ class AdventureCreationUpdateVM : ViewModel() {
                     if (adventure.value.id == "") {
                         _adventure.update { it.copy(id = response.body()!!.id) }
                     }
-                    _message.value = "Success"
+                    setMessage("Success")
                 } else {
-                    _message.value = response.message()
+                    setMessage(response.message())
                 }
             } catch(err: Exception) {
                 println("An error occurred while creating/updating the Adventure: $err")
+                setMessage("An error occurred while creating/updating the Adventure: $err")
             }
         }
     }
@@ -154,7 +155,7 @@ class AdventureCreationUpdateVM : ViewModel() {
      * @param token the token for authorizing the user deleting the adventure. If the token
      * is null or invalid, there will be an error.
      */
-    fun deleteAdventure(token: String?) {
+    fun deleteAdventure(token: String?, setMessage: (String) -> Unit) {
         viewModelScope.launch {
             try {
                 val response = ActivePortfolioApi.adventure.delete(
@@ -163,12 +164,13 @@ class AdventureCreationUpdateVM : ViewModel() {
                 )
                 if (response.isSuccessful) {
                     _adventure.update { it.copy(id = "", title = "", visibility = "", portfolios = emptyList()) }
-                    _message.value = "Success"
+                    setMessage("Success")
                 } else {
-                    _message.value = response.message()
+                    setMessage(response.message())
                 }
             } catch(err: Exception) {
                 println("An error occurred while trying to delete the Adventure: $err")
+                setMessage("An error occurred while trying to delete the Adventure: $err")
             }
         }
     }
