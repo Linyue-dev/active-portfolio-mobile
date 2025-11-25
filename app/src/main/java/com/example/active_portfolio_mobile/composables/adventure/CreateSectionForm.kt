@@ -15,6 +15,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -27,6 +28,9 @@ import com.example.active_portfolio_mobile.navigation.LocalAuthViewModel
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.utilities.rememberMutableStateListOf
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionCreationVM
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlin.collections.forEach
 
 /**
@@ -35,7 +39,12 @@ import kotlin.collections.forEach
  * @param sectionVM the View Model for creating sections from the creation screen.
  */
 @Composable
-fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
+fun CreateSectionForm(
+    type: String,
+    messageFlow: MutableSharedFlow<String>,
+    sectionVM: AdventureSectionCreationVM
+) {
+    val scope = rememberCoroutineScope()
     var label by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
     var stringContent by rememberSaveable { mutableStateOf("") }
@@ -127,9 +136,14 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
                 ){
                     success = it
                     if (success) {
+                        scope.launch {
+                            messageFlow.emit("Success")
+                        }
                         navController.navigateUp()
                     } else {
-                        // Todo, error popup
+                        scope.launch {
+                            messageFlow.emit("Something went wrong: ${sectionVM.getMessage()}")
+                        }
                     }
                 }
                 else -> sectionVM.saveNewSection(
@@ -138,9 +152,14 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
                 ) {
                     success = it
                     if (success) {
+                        scope.launch {
+                            messageFlow.emit("Success")
+                        }
                         navController.navigateUp()
                     } else {
-                        // Todo, error popup
+                        scope.launch {
+                            messageFlow.emit("Something went wrong: ${sectionVM.getMessage()}")
+                        }
                     }
                 }
             }

@@ -17,20 +17,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.active_portfolio_mobile.data.remote.dto.Adventure
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
 import com.example.active_portfolio_mobile.data.remote.dto.SectionType
-import com.example.active_portfolio_mobile.data.remote.network.ActivePortfolioApi.adventure
 import com.example.active_portfolio_mobile.navigation.LocalAuthViewModel
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionImageUpdateVM
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionUpdateVM
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 
 /**
  * A form for updating a Text or Link Adventure Section.
@@ -41,13 +40,14 @@ import com.example.active_portfolio_mobile.viewModels.AdventureSectionUpdateVM
 @Composable
 fun UpdateSectionForm(
     sectionToShow: AdventureSection,
+    messageFlow: MutableSharedFlow<String>,
     adventureSectionVM: AdventureSectionUpdateVM,
     setUpdated: () -> Unit
 ) {
     val parentPortfolios = adventureSectionVM.portfolios
     val section = remember { mutableStateOf(sectionToShow) }
-    var message by rememberSaveable { mutableStateOf("") }
     val authViewModel = LocalAuthViewModel.current
+    val scope = rememberCoroutineScope()
 
     Column {
         TextField(
@@ -103,8 +103,10 @@ fun UpdateSectionForm(
                 section.value,
                 authViewModel.tokenManager.getToken()
             ) { newMessage ->
-                message = newMessage
-                println(message)
+                scope.launch {
+                    messageFlow.emit(newMessage)
+                }
+                println(newMessage)
                 setUpdated()
             }
         }) {
@@ -116,12 +118,10 @@ fun UpdateSectionForm(
                 section.value,
                 authViewModel.tokenManager.getToken()
             ) {
-                message = it
+                scope.launch {
+                    messageFlow.emit(it)
+                }
             }
-        }
-
-        if (message != "") {
-            Text(message)
         }
     }
 }
@@ -157,6 +157,7 @@ fun UpdateStringSectionContent(contentType: String, content: String, setSectionC
 @Composable
 fun UpdateImageSectionForm(
     sectionToShow: AdventureSection,
+    messageFlow: MutableSharedFlow<String>,
     allSectionsVM: AdventureSectionUpdateVM,
     adventureSectionVM: AdventureSectionImageUpdateVM = viewModel(),
     setUpdated: () -> Unit
@@ -164,10 +165,10 @@ fun UpdateImageSectionForm(
     LaunchedEffect(Unit) {
         adventureSectionVM.setSection(sectionToShow)
     }
+    val scope = rememberCoroutineScope()
     val parentPortfolios = allSectionsVM.portfolios
     val section by adventureSectionVM.section.collectAsStateWithLifecycle()
     val bitmaps = adventureSectionVM.bitmapImages.collectAsStateWithLifecycle()
-    var message by rememberSaveable { mutableStateOf("") }
     val authViewModel = LocalAuthViewModel.current
 
     Column {
@@ -217,8 +218,10 @@ fun UpdateImageSectionForm(
             adventureSectionVM.updateSection(
                 authViewModel.tokenManager.getToken()
             ) { newMessage ->
-                message = newMessage
-                println(message)
+                scope.launch {
+                    messageFlow.emit(newMessage)
+                }
+                println(newMessage)
                 setUpdated()
             }
         }) {
@@ -230,13 +233,10 @@ fun UpdateImageSectionForm(
                 section = section,
                 token = authViewModel.tokenManager.getToken()
             ) {
-                message = it
+                scope.launch {
+                    messageFlow.emit(it)
+                }
             }
-            if (message == "Success") {  }
-        }
-
-        if (message != "") {
-            Text(message)
         }
     }
 }
