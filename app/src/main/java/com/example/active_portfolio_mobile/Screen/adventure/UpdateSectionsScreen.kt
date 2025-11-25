@@ -7,6 +7,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -32,8 +35,13 @@ fun UpdateSectionsScreen(
     adventureSectionVM: AdventureSectionUpdateVM = viewModel(),
     adventureVM: AdventureCreationUpdateVM = viewModel()
 ) {
-    LaunchedEffect(Unit) {
+    // Using a counter for updated, triggers launched effect whenever incremented.
+    var updated by rememberSaveable { mutableIntStateOf(0) }
+    LaunchedEffect(updated) {
+        // Refetches the sections when one is updated, so they are always up to date.
         adventureSectionVM.fetchSections(adventureId)
+    }
+    LaunchedEffect(Unit) {
         adventureSectionVM.fetchPortfolios(adventureId)
         adventureVM.setAdventure(adventureId)
     }
@@ -54,10 +62,14 @@ fun UpdateSectionsScreen(
                             sectionToShow = section,
                             allSectionsVM = adventureSectionVM,
                             adventureSectionVM = viewModel(key = section.id)
-                        )
+                        ) {
+                            updated++
+                        }
                     }
                     else -> DropDownTab(section.label) {
-                        UpdateSectionForm(section, adventureSectionVM)
+                        UpdateSectionForm(section, adventureSectionVM) {
+                            updated++
+                        }
                     }
                 }
             }

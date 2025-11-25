@@ -126,19 +126,23 @@ fun CreateSectionForm(type: String, sectionVM: AdventureSectionCreationVM) {
                     images = imageContent
                 ){
                     success = it
+                    if (success) {
+                        navController.navigateUp()
+                    } else {
+                        // Todo, error popup
+                    }
                 }
                 else -> sectionVM.saveNewSection(
                     token = authViewModel.tokenManager.getToken(),
                     sectionToSave = sectionToSave
                 ) {
                     success = it
+                    if (success) {
+                        navController.navigateUp()
+                    } else {
+                        // Todo, error popup
+                    }
                 }
-            }
-
-            if (success) {
-                navController.navigateUp() // ToDo, make sure previous screen updates w/ new content
-            } else {
-                // Todo, error popup
             }
         }) {
             Text("Save")

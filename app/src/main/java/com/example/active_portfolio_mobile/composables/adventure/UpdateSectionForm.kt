@@ -41,7 +41,8 @@ import com.example.active_portfolio_mobile.viewModels.AdventureSectionUpdateVM
 @Composable
 fun UpdateSectionForm(
     sectionToShow: AdventureSection,
-    adventureSectionVM: AdventureSectionUpdateVM
+    adventureSectionVM: AdventureSectionUpdateVM,
+    setUpdated: () -> Unit
 ) {
     val parentPortfolios = adventureSectionVM.portfolios
     val section = remember { mutableStateOf(sectionToShow) }
@@ -104,6 +105,7 @@ fun UpdateSectionForm(
             ) { newMessage ->
                 message = newMessage
                 println(message)
+                setUpdated()
             }
         }) {
             Text("Save")
@@ -156,7 +158,8 @@ fun UpdateStringSectionContent(contentType: String, content: String, setSectionC
 fun UpdateImageSectionForm(
     sectionToShow: AdventureSection,
     allSectionsVM: AdventureSectionUpdateVM,
-    adventureSectionVM: AdventureSectionImageUpdateVM = viewModel()
+    adventureSectionVM: AdventureSectionImageUpdateVM = viewModel(),
+    setUpdated: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         adventureSectionVM.setSection(sectionToShow)
@@ -216,6 +219,7 @@ fun UpdateImageSectionForm(
             ) { newMessage ->
                 message = newMessage
                 println(message)
+                setUpdated()
             }
         }) {
             Text("Save")
