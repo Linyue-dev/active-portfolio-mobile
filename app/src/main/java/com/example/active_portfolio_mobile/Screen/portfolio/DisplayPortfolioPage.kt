@@ -32,12 +32,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import android.content.ClipboardManager
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.BlurEffect
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.active_portfolio_mobile.composables.adventure.AdventureView
+import com.example.active_portfolio_mobile.composables.portfolio.DescriptionPanel
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.viewModels.GetPortfoliosVM
 import com.example.active_portfolio_mobile.viewModels.PortfolioMV
@@ -57,13 +64,13 @@ fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM =
     val isAdventureLoading by portfolioMV.isLoading.collectAsStateWithLifecycle()
     val adventureError by portfolioMV.errorMessage.collectAsStateWithLifecycle()
 
+
     LaunchedEffect(portfolioId) {
         getPortfolioMV.loadOnePortfolio(portfolioId)
         portfolioMV.loadAdventureFromPortfolio(portfolioId)
     }
 
     var detailsExpended by remember { mutableStateOf(false) }
-    
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -87,12 +94,6 @@ fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM =
             )
         }, bottomBar = {
             Column(horizontalAlignment = Alignment.CenterHorizontally){
-                if(detailsExpended && portfolio?.description?.isNotBlank() == true){
-                    Text(
-                        text = portfolio!!.description!!,
-                        modifier = Modifier.padding(6.dp)
-                    )
-                }
                 BottomAppBar(
                     actions = {
                         // + button
@@ -125,6 +126,13 @@ fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM =
             }
         }){
             padding  ->
+        Box(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+        ){
+            
+            //Main content
             Column(
                 modifier = Modifier
                     .padding(padding)
@@ -132,43 +140,61 @@ fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM =
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
-                //Portfolio loading/error
-                when{
-                    isPortfolioLoading -> Text("Loading portfolio....")
-                    portfolioError != null -> Text("Error: $portfolioError")
+
+                if(isPortfolioLoading || isAdventureLoading){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize() ,
+                        contentAlignment = Alignment.Center
+                    ){
+                        CircularProgressIndicator()
+                    }
+                    return@Column
                 }
-                //Adventures loading/error
-                when{
-                    isAdventureLoading -> Text("Loading adventures....")
-                    adventureError != null -> Text("Error: $adventureError")
+                if(portfolioError != null){
+                    Text("Error: $portfolioError")
+                }
+                if(adventureError != null){
+                    Text("Error: $adventureError")
                 }
                 val pagerState = rememberPagerState(pageCount = {adventures.size})
 
-                LaunchedEffect(adventures) {
-                    pagerState.scrollToPage(0)
+                LaunchedEffect(adventures.size) {
+                    if(pagerState.currentPage >= adventures.size){
+                        pagerState.scrollToPage(0)
+                    }
                 }
                 if(adventures.isNotEmpty()){
-       
-                    HorizontalPager(
-                        state = pagerState,
-                        modifier = Modifier.fillMaxSize(),
-                        key = {page -> adventures[page].id}
-                    ){
-                        page ->
-                        val adventure = adventures[page]
-                        AdventureView(
-                            adventureToView = adventure,
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .fillMaxWidth(),
-                            filterPortfolioId = portfolioId
-                        )
+
+                        HorizontalPager(
+                            state = pagerState,
+                            modifier = Modifier.fillMaxSize(),
+                            beyondViewportPageCount = 1,
+                            key = { page -> adventures[page].id },
+                        ) { page ->
+                            val adventure = adventures[page]
+
+                            AdventureView(
+                                adventureToView = adventure,
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .fillMaxWidth(),
+                                filterPortfolioId = portfolioId
+                            )
                         
                     }
                 }
-                else if(!isAdventureLoading){
+                else {
                     Text("No adventures in this portfolio yet")
                 }
             }
+            
+            
+            //Description Box
+            DescriptionPanel(
+                visible = detailsExpended,
+                description = portfolio?.description ?: ""
+            )
+        }
     }
 }

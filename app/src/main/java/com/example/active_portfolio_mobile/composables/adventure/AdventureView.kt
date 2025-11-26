@@ -24,7 +24,7 @@ fun AdventureView(
     adventureToView: Adventure,
     modifier: Modifier = Modifier,
     filterPortfolioId: String = "",
-    adventureSectionVM: AdventureSectionUpdateVM = viewModel()
+    adventureSectionVM: AdventureSectionUpdateVM = viewModel(key = adventureToView.id)
 ) {
     LaunchedEffect(adventureToView) {
         adventureSectionVM.fetchSections(adventureToView.id, filterPortfolioId)

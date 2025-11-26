@@ -101,8 +101,7 @@ fun ListUserPortfolio(userId: String, userPortfolio: UserPortfolio = viewModel()
                     Button(                            
                         modifier = Modifier.width(200.dp),
                         onClick = {
-                            //TODO Replace the navigate to the display of the portfolio
-                            //navController.navigate(Routes.CreateUpdatePortfolio.goEdit(portfolio!!.id))
+                            navController.navigate(Routes.Portfolio.go(portfolio!!.id))
                         }){
                             Text(portfolio!!.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }

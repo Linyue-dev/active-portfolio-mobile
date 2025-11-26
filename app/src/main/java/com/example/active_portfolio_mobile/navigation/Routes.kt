@@ -38,7 +38,12 @@ sealed class Routes(val route: String){
         fun goCreate() =
             "PortfolioCreateUpdateRoute?isEditing=false&portfolioId="
 
-        fun goEdit(portfolioId: String) = "ProfileCreateUpdateRoute?isEditing=true?portfolioId=$portfolioId"
+        fun goEdit(portfolioId: String) =
+            "PortfolioCreateUpdateRoute?isEditing=true&portfolioId=$portfolioId"
+
+    }
+    object Portfolio : Routes("DisplayPortfolioPage/{portfolioId}"){
+        fun go(portfolioId : String) = "DisplayPortfolioPage/$portfolioId"
     }
 
     // User Profile
