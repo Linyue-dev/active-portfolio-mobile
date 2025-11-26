@@ -144,7 +144,6 @@ class ProfileViewModel(
                     onSuccess()
                 } else{
                     val errorBody = updateResponse.errorBody()?.string() ?: ""
-//                    Log.e("ProfileViewModel", "HTTP ${updateResponse.code()}: $errorBody")
                     val errorMessage = ErrorParser.errorHttpError(errorBody)
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
@@ -152,8 +151,6 @@ class ProfileViewModel(
                     )
                 }
             } catch (ex: HttpException){
-//                val errorBody = ex.response()?.errorBody()?.string()
-//                Log.e("ProfileViewModel", "HTTP ${ex.code()}: $errorBody")
                 _uiState.update {
                     it.copy( isLoading = false, error = ErrorParser.errorHttpError(ex))
                 }
