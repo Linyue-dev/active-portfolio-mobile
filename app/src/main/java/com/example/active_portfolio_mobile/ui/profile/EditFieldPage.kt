@@ -59,10 +59,12 @@ fun EditFieldPage(
     // display error messages via Snackbar
     LaunchedEffect(uiState.error) {
         uiState.error?.let{ error ->
-            snackbarHostState.showSnackbar(
-                message = error,
-                duration = SnackbarDuration.Long
-            )
+            if (field != "firstName" && field != "lastName"){
+                snackbarHostState.showSnackbar(
+                    message = error,
+                    duration = SnackbarDuration.Long
+                )
+            }
             viewModel.cleanError()
         }
     }

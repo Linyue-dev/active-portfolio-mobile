@@ -280,7 +280,7 @@ fun Router(modifier: Modifier) {
                 }
 
                 /**
-                 * Search user
+                 * Portfolio by user
                  */
                 composable(
                     route = Routes.UserPortfolio.route,
