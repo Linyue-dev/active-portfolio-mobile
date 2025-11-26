@@ -1,24 +1,28 @@
 package com.example.active_portfolio_mobile.ui.common
 
+import android.util.Log
 import org.json.JSONObject
 import retrofit2.HttpException
 
 /**
- * Parses HTTP error responses and converts them into user-friendly error messages.
+ * Parses HTTP error responses into user-friendly messages.
  *
- * Extracts the errorMessage field from the response body and maps common error patterns
- * to localized, readable messages for display in the UI.
- *
- * @param ex The HttpException containing the error response
- * @return A user-friendly error message string
+ * Supports both HttpException and raw error body strings.
  */
 object ErrorParser{
-    fun errorHttpError(ex: HttpException) : String{
-        val errorBody = ex.response()?.errorBody()?.string()
+    /**
+     * Parses error body JSON and returns user-friendly message.
+     *
+     * @param errorBody Raw JSON error string from server.
+     * @return User-friendly error message.
+     */
+    fun parseErrorBody(errorBody: String) : String{
         return try {
-            val json = JSONObject(errorBody ?: "")
+            if(errorBody.isEmpty()){
+                return "Server error - no details available"
+            }
+            val json = JSONObject(errorBody)
             val fullMessage = json.optString("errorMessage", "Unexpected error")
-
             when {
                 fullMessage.contains("already exists", ignoreCase = true) ->
                     "This email is already registered"
@@ -34,11 +38,37 @@ object ErrorParser{
                     "New password must be different from current password"
                 fullMessage.contains("already taken",  ignoreCase = true) ->
                     "The username is already taken"
+                fullMessage.contains("Invalid username format", ignoreCase = true) ->
+                    "Invalid username format"
                 else ->
                     "Something went wrong. Please try again."
             }
         } catch (e: Exception) {
+            Log.d("ErrorParser","Parse error: ${e.message}")
             "Unexpected error"
         }
     }
+
+    /**
+     * Parses error from HttpException.
+     *
+     * @param ex HttpException from Retrofit.
+     * @return User-friendly error message.
+     */
+    fun errorHttpError(ex: HttpException): String {
+        val errorBody = ex.response()?.errorBody()?.string()
+        return parseErrorBody(errorBody ?: "")
+    }
+
+    /**
+     * Parses error from raw error body string.
+     *
+     * @param errorBody Raw error body string.
+     * @return User-friendly error message.
+     */
+    fun errorHttpError(errorBody: String): String {
+        return parseErrorBody(errorBody)
+    }
+
 }
+

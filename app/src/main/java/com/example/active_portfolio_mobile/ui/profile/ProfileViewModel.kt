@@ -130,19 +130,27 @@ class ProfileViewModel(
                     else -> throw IllegalArgumentException("Unknown field: $field")
                 }
 
-                val updateUser = apiService.updateUser(request)
-                tokenManager.saveUser(updateUser)
+                val updateResponse = apiService.updateUser(request)
 
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = null
-                )
-                // go back previous page after save successfully
-                onSuccess()
-
+                if (updateResponse.isSuccessful){
+                    val user = updateResponse.body()!!
+                    tokenManager.saveUser(user)
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        user = user,
+                        error= null
+                    )
+                    // go back previous page after save successfully
+                    onSuccess()
+                } else{
+                    val errorBody = updateResponse.errorBody()?.string() ?: ""
+                    val errorMessage = ErrorParser.errorHttpError(errorBody)
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = errorMessage
+                    )
+                }
             } catch (ex: HttpException){
-                val errorBody = ex.response()?.errorBody()?.string()
-                Log.e("ProfileViewModel", "HTTP ${ex.code()}: $errorBody")
                 _uiState.update {
                     it.copy( isLoading = false, error = ErrorParser.errorHttpError(ex))
                 }
