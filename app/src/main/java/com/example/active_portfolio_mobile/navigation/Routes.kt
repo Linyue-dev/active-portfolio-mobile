@@ -63,4 +63,9 @@ sealed class Routes(val route: String){
     object OtherUserProfile : Routes("user/{username}"){
         fun go(username: String) = "user/$username"
     }
+
+    // User Portfolio
+    object UserPortfolio : Routes("user_portfolio/{userId}"){
+        fun go(userId: String) = "user_portfolio/$userId"
+    }
 }
