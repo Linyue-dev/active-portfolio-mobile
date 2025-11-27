@@ -26,6 +26,11 @@ interface AdventureService {
         @Path("userId") userId: String
     ) : Response<List<Adventure>>
 
+    @GET("adventures/byPortfolio/{portfolioId}")
+    suspend fun getAllAdventureFromPortfolio(
+        @Path("portfolioId") portfolioId: String
+    ) : Response <List<Adventure>>
+    
     @POST("adventures")
     suspend fun create(
         @Header("Authorization") token: String,

@@ -29,6 +29,8 @@ import com.example.active_portfolio_mobile.Screen.adventure.AdventureViewScreen
 import com.example.active_portfolio_mobile.Screen.adventure.CreateAdventureScreen
 import com.example.active_portfolio_mobile.Screen.adventure.CreateSectionScreen
 import com.example.active_portfolio_mobile.Screen.adventure.UpdateSectionsScreen
+import com.example.active_portfolio_mobile.Screen.portfolio.DisplayPortfolioPage
+import com.example.active_portfolio_mobile.composables.portfolio.ListUserPortfolio
 import com.example.active_portfolio_mobile.ui.profile.ProfilePage
 import com.example.active_portfolio_mobile.data.local.TokenManager
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
@@ -41,7 +43,7 @@ import com.example.active_portfolio_mobile.ui.profile.EditProfilePage
 import com.example.active_portfolio_mobile.ui.profile.ProfileViewModel
 import com.example.active_portfolio_mobile.ui.search.SearchResultPage
 import com.example.active_portfolio_mobile.ui.search.SearchViewModel
-import com.example.active_portfolio_mobile.viewModels.PortfoliosVM
+import com.example.active_portfolio_mobile.viewModels.GetPortfoliosVM
 
 //Sets up the app navigation using NavHost with three routes: LandingPage,
 // CommentPage and AboutUsPage.
@@ -52,7 +54,7 @@ fun Router(modifier: Modifier) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val tokenManager =  remember { TokenManager(context) }
-    val getPortfolio: PortfoliosVM = viewModel()
+    val getPortfolio: GetPortfoliosVM = viewModel()
     val searchViewModel: SearchViewModel = viewModel()
 
     val authViewModel: AuthViewModel = viewModel(
@@ -173,6 +175,12 @@ fun Router(modifier: Modifier) {
                         isEditing = isEditing,
                         existingPortfolio = existingPortfolio
                     )
+                }
+                composable(Routes.Portfolio.route){
+                    val id = it.arguments?.getString("portfolioId")
+                    if (id != null) {
+                        DisplayPortfolioPage(id)
+                    }
                 }
 
                 /**

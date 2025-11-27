@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 /**
  * One VM per page so list and single for each .
  */
-class PortfoliosVM : ViewModel(){
+class GetPortfoliosVM : ViewModel(){
     private val _portfolios = MutableStateFlow<List<Portfolio>>(emptyList())
     val portfolios: StateFlow<List<Portfolio>> = _portfolios.asStateFlow()
 
