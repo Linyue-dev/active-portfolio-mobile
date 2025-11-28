@@ -98,22 +98,27 @@ fun CreateSectionForm(
             )
         }
 
-        // Set the portfolios in which to include this Section.
-        if (parentPortfolios.value.isNotEmpty()) {
-            DropDownTab(name = "Portfolios") {
-                MultiSelectList(
-                    selectedItems = parentPortfolios.value.filter{ it.id in portfolios },
-                    list = parentPortfolios.value,
-                    displayText = { it.title },
-                    selectItem = {
-                        portfolios.add(it.id)
-                    },
-                    deselectItem = {
-                        portfolios.remove(it.id)
-                    }
-                )
-            }
-        }
+        /**
+         * Upon team reflection, we determined that setting portfolios for sections was excessive
+         * and confusing. We have therefore decided to simply have all sections appear in a
+         * portfolio that includes their parent adventure.
+         */
+//        // Set the portfolios in which to include this Section.
+//        if (parentPortfolios.value.isNotEmpty()) {
+//            DropDownTab(name = "Portfolios") {
+//                MultiSelectList(
+//                    selectedItems = parentPortfolios.value.filter{ it.id in portfolios },
+//                    list = parentPortfolios.value,
+//                    displayText = { it.title },
+//                    selectItem = {
+//                        portfolios.add(it.id)
+//                    },
+//                    deselectItem = {
+//                        portfolios.remove(it.id)
+//                    }
+//                )
+//            }
+//        }
 
         // Save the created section.
         Button(onClick = {

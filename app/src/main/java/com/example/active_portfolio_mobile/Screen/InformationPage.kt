@@ -86,7 +86,7 @@ fun InformationPage(modifier: Modifier) {
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Portfolios are how you organize your adventures into meta-narratives! You can include adventures into any of your portfolios and then share that portfolio with whomever you please. That way, you can share adventures based on themes: a portfolio about your adventures in hardware versus one about your web projects, for example. The sections of adventures can also be individually placed into or removed from the specific portfolios that you've assigned to the adventure, giving you extra control of how you want to build the narrative for different viewers.",
+                            text = "Portfolios are how you organize your adventures into meta-narratives! You can include adventures into any of your portfolios and then share that portfolio with whomever you please. That way, you can share adventures based on themes: a portfolio about your adventures in hardware versus one about your web projects, for example.",
                             fontSize = 15.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                             lineHeight = 20.sp
