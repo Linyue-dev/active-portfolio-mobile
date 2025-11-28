@@ -91,7 +91,7 @@ fun CreateAdventureScreen(
                     if (adventure.id != "") {
                         Button(onClick = {
                             navController.navigate(Routes.SectionsUpdate.go(adventure.id))
-                        }) {
+                        }, modifier = Modifier.padding(top = 20.dp)) {
                             Text("Build My Adventure")
                         }
                     }
@@ -132,13 +132,16 @@ fun CreateAdventureScreen(
                 }
                 // Create Adventure or save changes to existing one.
                 item {
-                    Button(onClick = {
-                        adventureVM.saveAdventure(authViewModel.tokenManager.getToken()) {
-                            scope.launch {
-                                messageFlow.emit(it)
+                    Button(
+                        onClick = {
+                            adventureVM.saveAdventure(authViewModel.tokenManager.getToken()) {
+                                scope.launch {
+                                    messageFlow.emit(it)
+                                }
                             }
-                        }
-                    }) {
+                        },
+                        modifier = Modifier.padding(top = 30.dp)
+                    ) {
                         Text("Save")
                     }
                 }

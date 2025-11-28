@@ -27,6 +27,7 @@ fun DeleteButtonWithConfirm(deleteFunc: () -> Unit) {
         }) {
             Text("Delete")
         }
+        // ToDo change this to a popup.
         if (confirmDelete) {
             Card {
                 Text("Are you sure? Deletion is permanent")
