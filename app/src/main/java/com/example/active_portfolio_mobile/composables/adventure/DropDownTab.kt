@@ -34,16 +34,17 @@ fun DropDownTab(name: String, content: @Composable (() -> Unit)) {
         // The clickable title card. Clicking on it will open the contents.
         Card(modifier = Modifier.fillMaxWidth()
             .clickable(onClick = { isDisplayed = !isDisplayed },
-                onClickLabel = "Toggle $name contents"),
+                onClickLabel = "Toggle $name contents"
+            ),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+                containerColor = MaterialTheme.colorScheme.primary,
             )
         ) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Text(text = name, textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.padding(vertical = 10.dp),
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
                 )
             }
         }

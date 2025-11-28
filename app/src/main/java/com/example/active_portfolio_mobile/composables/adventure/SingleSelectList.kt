@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,19 +22,29 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun SingleSelectList(list: List<String>, selectedItem: String, setSelectedItem: (String) -> Unit) {
-    Column {
+    Column(modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp)) {
         list.forEach { item ->
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
-                Card(
-                    modifier = Modifier.padding(all = 5.dp),
-                    onClick = {
-                        setSelectedItem(item)
-                    }) {
-                    var fontWeight = FontWeight.Normal
-                    if (item == selectedItem) {
-                        fontWeight = FontWeight.Bold
-                    }
-                    Text(text = item, fontWeight = fontWeight)
+            Card(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = 10.dp)
+                    .padding(top = 5.dp),
+                onClick = {
+                    setSelectedItem(item)
+                },
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )) {
+                var fontWeight = FontWeight.Normal
+                if (item == selectedItem) {
+                    fontWeight = FontWeight.Bold
+                }
+
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = item,
+                        fontWeight = fontWeight,
+                        modifier = Modifier.padding(all = 5.dp)
+                    )
                 }
             }
         }
