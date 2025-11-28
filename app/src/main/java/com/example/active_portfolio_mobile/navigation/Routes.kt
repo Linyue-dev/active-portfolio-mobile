@@ -38,7 +38,12 @@ sealed class Routes(val route: String){
         fun goCreate() =
             "PortfolioCreateUpdateRoute?isEditing=false&portfolioId="
 
-        fun goEdit(portfolioId: String) = "ProfileCreateUpdateRoute?isEditing=true?portfolioId=$portfolioId"
+        fun goEdit(portfolioId: String) =
+            "PortfolioCreateUpdateRoute?isEditing=true&portfolioId=$portfolioId"
+
+    }
+    object Portfolio : Routes("DisplayPortfolioPage/{portfolioId}"){
+        fun go(portfolioId : String) = "DisplayPortfolioPage/$portfolioId"
     }
 
     // User Profile
@@ -57,5 +62,10 @@ sealed class Routes(val route: String){
     // Check other user profile
     object OtherUserProfile : Routes("user/{username}"){
         fun go(username: String) = "user/$username"
+    }
+
+    // User Portfolio
+    object UserPortfolio : Routes("user_portfolio/{userId}"){
+        fun go(userId: String) = "user_portfolio/$userId"
     }
 }

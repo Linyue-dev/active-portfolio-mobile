@@ -1,5 +1,6 @@
 package com.example.active_portfolio_mobile.ui.profile
 
+import android.R.attr.value
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,10 +59,12 @@ fun EditFieldPage(
     // display error messages via Snackbar
     LaunchedEffect(uiState.error) {
         uiState.error?.let{ error ->
-            snackbarHostState.showSnackbar(
-                message = error,
-                duration = SnackbarDuration.Long
-            )
+            if (field != "firstName" && field != "lastName"){
+                snackbarHostState.showSnackbar(
+                    message = error,
+                    duration = SnackbarDuration.Long
+                )
+            }
             viewModel.cleanError()
         }
     }
@@ -89,6 +92,8 @@ fun EditFieldPage(
 
     // add flag to make user firstname and lastname cannot be null
     val isRequired = field == "firstName" || field == "lastName"
+    val nameRegex = Regex(  """^[A-Za-zÀ-ÖØ-öø-ÿ\-'\\s]+$""")
+    val isNameValid = !isRequired || value.matches(nameRegex)
 
     MainLayout {
         Box(modifier = Modifier.fillMaxSize()){
@@ -124,7 +129,13 @@ fun EditFieldPage(
                         onValueChange = { value = it},
                         label = { Text(fieldLabel)},
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        singleLine = true,
+                        isError = !isNameValid,
+                        supportingText = {
+                            if(!isNameValid){
+                                Text("Name cannot contain number")
+                            }
+                        }
                     )
                 }
 

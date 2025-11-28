@@ -58,6 +58,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.active_portfolio_mobile.composables.adventure.AdventureNavigationList
 import com.example.active_portfolio_mobile.layouts.MainLayout
+import com.example.active_portfolio_mobile.navigation.LocalNavController
+import com.example.active_portfolio_mobile.navigation.Routes
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.viewModels.UserPortfolio
 import kotlinx.coroutines.launch
@@ -87,6 +89,7 @@ fun ProfilePage(
     onEditProfile: () -> Unit
 ){
     val localContext = LocalContext.current
+    val navController = LocalNavController.current
     val activity = localContext as ComponentActivity
     val uiState by profileViewModel.uiState.collectAsState()
     val authState by authViewModel.uiState.collectAsState()
@@ -265,7 +268,6 @@ fun ProfilePage(
 
             // ===== Button =====
             if (isOwnProfile) {
-                Log.d("ProfilePage", "Showing buttons (isOwnProfile = true)")
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -277,17 +279,18 @@ fun ProfilePage(
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(Icons.Default.Edit, null, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(4.dp))
-                        Text("Edit")
+                        Spacer(Modifier.width(2.dp))
+                        Text("Edit",fontSize = 12.sp)
                     }
                     OutlinedButton(
                         onClick = {
+                            navController.navigate(Routes.UserPortfolio.go(user.id))
                         },
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(Icons.Default.Dashboard, null, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(4.dp))
-                        Text("Portfolio", maxLines = 1)
+                        Spacer(Modifier.width(2.dp))
+                        Text("Portfolio", maxLines = 1,fontSize = 12.sp)
                     }
                     OutlinedButton(
                         onClick = {
@@ -303,8 +306,8 @@ fun ProfilePage(
                             null,
                             modifier = Modifier.size(16.dp)
                         )
-                        Spacer(Modifier.width(4.dp))
-                        Text("Logout")
+                        Spacer(Modifier.width(2.dp))
+                        Text("Logout",fontSize = 12.sp)
                     }
                 }
 
