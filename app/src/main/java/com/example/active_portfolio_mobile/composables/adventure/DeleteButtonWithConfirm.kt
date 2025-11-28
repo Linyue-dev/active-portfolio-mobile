@@ -2,9 +2,11 @@ package com.example.active_portfolio_mobile.composables.adventure
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,23 +29,26 @@ fun DeleteButtonWithConfirm(deleteFunc: () -> Unit) {
         }) {
             Text("Delete")
         }
-        // ToDo change this to a popup.
-        if (confirmDelete) {
-            Card {
-                Text("Are you sure? Deletion is permanent")
-            }
-            Row {
-                Button(onClick = {
-                    deleteFunc()
-                }) {
-                    Text("Yes, Delete")
+        if(confirmDelete) {
+            AlertDialog(
+                onDismissRequest = { confirmDelete = false },
+                title = {
+                    Text(text = "Confirm Deletion")
+                },
+                text = {
+                    Text("Are you sure? Deletion is permanent")
+                },
+                confirmButton = {
+                    TextButton(onClick = { deleteFunc() }) {
+                        Text("Yes, Delete")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { confirmDelete = false }) {
+                        Text("Cancel")
+                    }
                 }
-                Button(onClick = {
-                    confirmDelete = false
-                }) {
-                    Text("Cancel")
-                }
-            }
+            )
         }
     }
 }
