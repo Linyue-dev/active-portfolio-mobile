@@ -49,13 +49,21 @@ import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.viewModels.GetPortfoliosVM
 import com.example.active_portfolio_mobile.viewModels.PortfolioMV
 
-
+/**
+ * Displays a complete portfolio page containing
+ * the portfolio title and description. And then in the center
+ * it displays the adventures linked to that portfolio.
+ * You can copy the link of the portfolio to share it (not done yet).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM = viewModel(), portfolioMV: PortfolioMV = viewModel()){
+    
+    //Navigation and context access
     val navController = LocalNavController.current
     val context = LocalContext.current
-    
+
+    //Collect viewmodel state for both the portfolio and the adventures
     val portfolio by getPortfolioMV.portfolio.collectAsStateWithLifecycle()
     val isPortfolioLoading by getPortfolioMV.isLoading.collectAsStateWithLifecycle()
     val portfolioError by getPortfolioMV.errorMessage.collectAsStateWithLifecycle()
@@ -65,13 +73,17 @@ fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM =
     val adventureError by portfolioMV.errorMessage.collectAsStateWithLifecycle()
 
 
+    //When this composable loads or the Id changes, fetch the portfolio
+    //and its adventures.
     LaunchedEffect(portfolioId) {
         getPortfolioMV.loadOnePortfolio(portfolioId)
         portfolioMV.loadAdventureFromPortfolio(portfolioId)
     }
 
+    //Controls whether the description panel appears or no.
     var detailsExpended by remember { mutableStateOf(false) }
     Scaffold(
+        //TOP BAR: Shows the tile and back button.
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(portfolio?.title ?: "Portfolio") },
@@ -92,15 +104,17 @@ fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM =
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
-        }, bottomBar = {
+        },
+        //BOTTOM BAR: Expand the description and the share button
+        bottomBar = {
             Column(horizontalAlignment = Alignment.CenterHorizontally){
                 BottomAppBar(
                     actions = {
-                        // + button
+                        // + button : Toggle the description panel
                         IconButton(onClick = {detailsExpended = !detailsExpended}) {
                             Icon(
                                 imageVector = if(detailsExpended) Icons.Default.Remove else Icons.Default.Add,
-                                contentDescription = "Toggle Details"
+                                contentDescription = "Toggle Description"
                             )
                         }
 
@@ -109,7 +123,8 @@ fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM =
                         //Share button
                         IconButton(
                             onClick = {
-                                //CHANGE THE LINK TO BE THE PROPER LINK
+                                //Copies a portfolio link to clipboard
+                                //TODO CHANGE THE LINK TO BE THE PROPER LINK
                                 val link = "google.com"
                                 val clipboard = ContextCompat.getSystemService(context, ClipboardManager::class.java)
                                 clipboard?.setPrimaryClip(ClipData.newPlainText("Portfolio Link", link))
@@ -141,6 +156,8 @@ fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM =
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
 
+                //Loading state for portfolio and adventure list.
+                //Show a loading circle.
                 if(isPortfolioLoading || isAdventureLoading){
                     Box(
                         modifier = Modifier
@@ -151,19 +168,26 @@ fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM =
                     }
                     return@Column
                 }
+                //Display portfolio or adventures errors
+                //TODO remake it prettier
                 if(portfolioError != null){
                     Text("Error: $portfolioError")
                 }
                 if(adventureError != null){
                     Text("Error: $adventureError")
                 }
+
+                //Pager to horizontally swipe through adventures
                 val pagerState = rememberPagerState(pageCount = {adventures.size})
 
+                //Reset page if the list size shrinks
                 LaunchedEffect(adventures.size) {
                     if(pagerState.currentPage >= adventures.size){
                         pagerState.scrollToPage(0)
                     }
                 }
+
+                //Show adventures or fallback text
                 if(adventures.isNotEmpty()){
 
                         HorizontalPager(
@@ -174,6 +198,7 @@ fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM =
                         ) { page ->
                             val adventure = adventures[page]
 
+                            //Display a single adventure page
                             AdventureView(
                                 adventureToView = adventure,
                                 modifier = Modifier
@@ -190,7 +215,7 @@ fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM =
             }
             
             
-            //Description Box
+            //Description Box (slides up and down)
             DescriptionPanel(
                 visible = detailsExpended,
                 description = portfolio?.description ?: ""
