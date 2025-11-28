@@ -27,7 +27,7 @@ fun AdventureView(
     adventureSectionVM: AdventureSectionUpdateVM = viewModel(key = adventureToView.id)
 ) {
     LaunchedEffect(adventureToView) {
-        adventureSectionVM.fetchSections(adventureToView.id, filterPortfolioId)
+        adventureSectionVM.fetchSections(adventureToView.id)
     }
     val sections = adventureSectionVM.sections
 

@@ -82,21 +82,26 @@ fun UpdateSectionForm(
             )
         }
 
-        if (parentPortfolios.value.isNotEmpty()) {
-            DropDownTab(name = "Portfolios") {
-                MultiSelectList(
-                    selectedItems = parentPortfolios.value.filter { it.id in section.value.portfolios },
-                    list = parentPortfolios.value,
-                    displayText = { it.title },
-                    selectItem = {
-                        section.value = section.value.copy(portfolios = section.value.portfolios + it.id)
-                    },
-                    deselectItem = {
-                        section.value = section.value.copy(portfolios = section.value.portfolios - it.id)
-                    }
-                )
-            }
-        }
+        /**
+         * Upon team reflection, we determined that setting portfolios for sections was excessive
+         * and confusing. We have therefore decided to simply have all sections appear in a
+         * portfolio that includes their parent adventure.
+         */
+//        if (parentPortfolios.value.isNotEmpty()) {
+//            DropDownTab(name = "Portfolios") {
+//                MultiSelectList(
+//                    selectedItems = parentPortfolios.value.filter { it.id in section.value.portfolios },
+//                    list = parentPortfolios.value,
+//                    displayText = { it.title },
+//                    selectItem = {
+//                        section.value = section.value.copy(portfolios = section.value.portfolios + it.id)
+//                    },
+//                    deselectItem = {
+//                        section.value = section.value.copy(portfolios = section.value.portfolios - it.id)
+//                    }
+//                )
+//            }
+//        }
 
         Button(onClick = {
             adventureSectionVM.updateSection(
@@ -198,21 +203,26 @@ fun UpdateImageSectionForm(
             ), modifier = Modifier.fillMaxWidth()
         )
 
-        if (parentPortfolios.value.isNotEmpty()) {
-            DropDownTab(name = "Portfolios") {
-                MultiSelectList(
-                    selectedItems = parentPortfolios.value.filter { it.id in section.portfolios },
-                    list = parentPortfolios.value,
-                    displayText = { it.title },
-                    selectItem = {
-                        adventureSectionVM.addToPortfolios(it.id)
-                    },
-                    deselectItem = {
-                        adventureSectionVM.removeFromPortfolios(it.id)
-                    }
-                )
-            }
-        }
+        /**
+         * Upon team reflection, we determined that setting portfolios for sections was excessive
+         * and confusing. We have therefore decided to simply have all sections appear in a
+         * portfolio that includes their parent adventure.
+         */
+//        if (parentPortfolios.value.isNotEmpty()) {
+//            DropDownTab(name = "Portfolios") {
+//                MultiSelectList(
+//                    selectedItems = parentPortfolios.value.filter { it.id in section.portfolios },
+//                    list = parentPortfolios.value,
+//                    displayText = { it.title },
+//                    selectItem = {
+//                        adventureSectionVM.addToPortfolios(it.id)
+//                    },
+//                    deselectItem = {
+//                        adventureSectionVM.removeFromPortfolios(it.id)
+//                    }
+//                )
+//            }
+//        }
 
         Button(onClick = {
             adventureSectionVM.updateSection(
