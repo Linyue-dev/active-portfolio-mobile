@@ -1,11 +1,18 @@
 package com.example.active_portfolio_mobile.Screen.adventure
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -91,7 +98,8 @@ fun CreateAdventureScreen(
                     if (adventure.id != "") {
                         Button(onClick = {
                             navController.navigate(Routes.SectionsUpdate.go(adventure.id))
-                        }, modifier = Modifier.padding(top = 20.dp)) {
+                        }, modifier = Modifier.padding(top = 20.dp)
+                        ) {
                             Text("Build My Adventure",
                                 style = MaterialTheme.typography.titleLarge,
                                 modifier = Modifier.padding(horizontal = 15.dp)
@@ -134,28 +142,33 @@ fun CreateAdventureScreen(
                         }
                     }
                 }
-                // Create Adventure or save changes to existing one.
                 item {
-                    Button(
-                        onClick = {
-                            adventureVM.saveAdventure(authViewModel.tokenManager.getToken()) {
-                                scope.launch {
-                                    messageFlow.emit(it)
+                    Row(horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier.padding(top = 50.dp).fillMaxWidth()
+                    ) {
+                        // Create Adventure or save changes to existing one.
+                        IconButton(
+                            onClick = {
+                                adventureVM.saveAdventure(authViewModel.tokenManager.getToken()) {
+                                    scope.launch {
+                                        messageFlow.emit(it)
+                                    }
                                 }
                             }
-                        },
-                        modifier = Modifier.padding(top = 30.dp)
-                    ) {
-                        Text("Save")
-                    }
-                }
-                // Delete the Adventure.
-                item {
-                    if (adventure.id != "") {
-                        DeleteButtonWithConfirm {
-                            adventureVM.deleteAdventure(authViewModel.tokenManager.getToken()) {
-                                scope.launch {
-                                    messageFlow.emit(it)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Save,
+                                contentDescription = "Save new or updated Adventure",
+                                modifier = Modifier.size(30.dp)
+                            )
+                        }
+                        // Delete the Adventure
+                        if (adventure.id != "") {
+                            DeleteButtonWithConfirm {
+                                adventureVM.deleteAdventure(authViewModel.tokenManager.getToken()) {
+                                    scope.launch {
+                                        messageFlow.emit(it)
+                                    }
                                 }
                             }
                         }
