@@ -77,7 +77,7 @@ fun CreateAdventureScreen(
                 // Set Title of Adventure
                 item {
                     TextField(
-                        label = { Text("Title") },
+                        label = { Text("Title", style = MaterialTheme.typography.titleMedium) },
                         value = adventure.title,
                         onValueChange = { adventureVM.setTitle(it) },
                         colors = TextFieldDefaults.colors(
@@ -92,7 +92,11 @@ fun CreateAdventureScreen(
                         Button(onClick = {
                             navController.navigate(Routes.SectionsUpdate.go(adventure.id))
                         }, modifier = Modifier.padding(top = 20.dp)) {
-                            Text("Build My Adventure")
+                            Text("Build My Adventure",
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier.padding(horizontal = 15.dp)
+                                    .padding(vertical = 10.dp)
+                            )
                         }
                     }
                 }
