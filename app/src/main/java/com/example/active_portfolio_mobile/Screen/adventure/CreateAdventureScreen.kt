@@ -1,10 +1,18 @@
 package com.example.active_portfolio_mobile.Screen.adventure
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -19,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -75,7 +84,7 @@ fun CreateAdventureScreen(
                 // Set Title of Adventure
                 item {
                     TextField(
-                        label = { Text("Title") },
+                        label = { Text("Title", style = MaterialTheme.typography.titleMedium) },
                         value = adventure.title,
                         onValueChange = { adventureVM.setTitle(it) },
                         colors = TextFieldDefaults.colors(
@@ -89,8 +98,13 @@ fun CreateAdventureScreen(
                     if (adventure.id != "") {
                         Button(onClick = {
                             navController.navigate(Routes.SectionsUpdate.go(adventure.id))
-                        }) {
-                            Text("Build My Adventure")
+                        }, modifier = Modifier.padding(top = 20.dp)
+                        ) {
+                            Text("Build My Adventure",
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier.padding(horizontal = 15.dp)
+                                    .padding(vertical = 10.dp)
+                            )
                         }
                     }
                 }
@@ -103,45 +117,58 @@ fun CreateAdventureScreen(
                             list = listOf(
                                 "Public",
                                 "Private"
-                            ) // TODO switch for less hardcoded values
+                            )
                         )
                     }
                 }
                 // Select Portfolios in which to include this Adventure.
                 item {
                     DropDownTab(name = "Portfolios") {
-                        MultiSelectList(
-                            selectedItems = portfolios.value.filter { it.id in adventure.portfolios },
-                            list = portfolios.value,
-                            displayText = { it.title },
-                            selectItem = {
-                                adventureVM.addToPortfolios(it.id)
-                            },
-                            deselectItem = {
-                                adventureVM.removeFromPortfolios(it.id)
-                            }
-                        )
-                    }
-                }
-                // Create Adventure or save changes to existing one.
-                item {
-                    Button(onClick = {
-                        adventureVM.saveAdventure(authViewModel.tokenManager.getToken()) {
-                            scope.launch {
-                                messageFlow.emit(it)
-                            }
+                        if (portfolios.value.isNotEmpty()) {
+                            MultiSelectList(
+                                selectedItems = portfolios.value.filter { it.id in adventure.portfolios },
+                                list = portfolios.value,
+                                displayText = { it.title },
+                                selectItem = {
+                                    adventureVM.addToPortfolios(it.id)
+                                },
+                                deselectItem = {
+                                    adventureVM.removeFromPortfolios(it.id)
+                                }
+                            )
+                        } else {
+                            Text("You do not currently have any portfolios",
+                                modifier = Modifier.padding(20.dp))
                         }
-                    }) {
-                        Text("Save")
                     }
                 }
-                // Delete the Adventure.
                 item {
-                    if (adventure.id != "") {
-                        DeleteButtonWithConfirm {
-                            adventureVM.deleteAdventure(authViewModel.tokenManager.getToken()) {
-                                scope.launch {
-                                    messageFlow.emit(it)
+                    Row(horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier.padding(top = 50.dp).fillMaxWidth()
+                    ) {
+                        // Create Adventure or save changes to existing one.
+                        IconButton(
+                            onClick = {
+                                adventureVM.saveAdventure(authViewModel.tokenManager.getToken()) {
+                                    scope.launch {
+                                        messageFlow.emit(it)
+                                    }
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Save,
+                                contentDescription = "Save new or updated Adventure",
+                                modifier = Modifier.size(30.dp)
+                            )
+                        }
+                        // Delete the Adventure
+                        if (adventure.id != "") {
+                            DeleteButtonWithConfirm {
+                                adventureVM.deleteAdventure(authViewModel.tokenManager.getToken()) {
+                                    scope.launch {
+                                        messageFlow.emit(it)
+                                    }
                                 }
                             }
                         }

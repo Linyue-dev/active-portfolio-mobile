@@ -5,10 +5,16 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 
 /**
  * An image picker which allows an image to be uploaded from the device's storage.
@@ -30,8 +36,13 @@ fun ImagePicker(onImageSelected: (Bitmap) -> Unit) {
         }
     }
 
-    Button(onClick = { launcher.launch("image/*") }) {
-        Text("Pick Image from Gallery")
+    Button(onClick = { launcher.launch("image/*") },
+        modifier = Modifier.padding(vertical = 20.dp)
+        ) {
+        Icon(imageVector = Icons.Filled.AddPhotoAlternate,
+            contentDescription = "Add an image from the device's gallery",
+            modifier = Modifier.size(30.dp)
+        )
     }
 }
 
