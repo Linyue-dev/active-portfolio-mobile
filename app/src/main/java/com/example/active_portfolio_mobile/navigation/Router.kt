@@ -106,7 +106,7 @@ fun Router(modifier: Modifier) {
                         viewModel = authViewModel,
                         onNavigateToSignUp = { navController.navigate(Routes.SignUp.route) },
                         onLoginSuccess = {
-                            navController.navigate(Routes.Profile.route) {
+                            navController.navigate(Routes.Main.route) {
                                 popUpTo(Routes.Login.route) { inclusive = true }
                                 launchSingleTop = true
                             }
@@ -137,7 +137,7 @@ fun Router(modifier: Modifier) {
                         viewModel = authViewModel,
                         onNavigateToSignUp = { navController.navigate(Routes.SignUp.route) },
                         onLoginSuccess = {
-                            navController.navigate(Routes.Profile.route) {
+                            navController.navigate(Routes.Main.route) {
                                 popUpTo(Routes.Login.route) { inclusive = true }
                                 launchSingleTop = true
                             }
