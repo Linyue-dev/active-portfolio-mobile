@@ -30,7 +30,6 @@ import com.example.active_portfolio_mobile.Screen.adventure.CreateAdventureScree
 import com.example.active_portfolio_mobile.Screen.adventure.CreateSectionScreen
 import com.example.active_portfolio_mobile.Screen.adventure.UpdateSectionsScreen
 import com.example.active_portfolio_mobile.Screen.portfolio.DisplayPortfolioPage
-import com.example.active_portfolio_mobile.composables.portfolio.ListUserPortfolio
 import com.example.active_portfolio_mobile.ui.profile.ProfilePage
 import com.example.active_portfolio_mobile.data.local.TokenManager
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
@@ -264,8 +263,7 @@ fun Router(modifier: Modifier) {
                     )
                 ) { backStackEntry  ->
                     val query = backStackEntry.arguments?.getString("query") ?: ""
-                    SearchResultPage(query = query, viewModel = searchViewModel)
-
+                    SearchResultPage(initialQuery = query, viewModel = searchViewModel)
                 }
                 composable(
                     route = Routes.OtherUserProfile.route,

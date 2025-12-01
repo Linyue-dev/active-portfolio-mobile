@@ -1,5 +1,6 @@
 package com.example.active_portfolio_mobile.ui.search
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,27 +37,30 @@ import com.example.active_portfolio_mobile.navigation.Routes
  * - Observes [SearchViewModel.uiState] to display loading, error, empty state, or results.
  * - Navigates to another user's profile when a user card is selected.
  *
- * @param query The initial search text passed from the previous screen.
+ * @param initialQuery The initial search text passed from the previous screen.
  * @param viewModel The [SearchViewModel] responsible for handling search logic and exposing UI state.
  */
 @Composable
 fun SearchResultPage(
-    query: String,
+    initialQuery: String,
     viewModel: SearchViewModel
 ){
-    var searchQuery by rememberSaveable { mutableStateOf(query) }
+    var searchQuery by rememberSaveable { mutableStateOf(initialQuery) }
     val navController = LocalNavController.current
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val hasInitialized = rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(query) {
-        if(query.isNotEmpty()){
-            viewModel.searchUsers(query)
+    LaunchedEffect(Unit) {
+        if(!hasInitialized.value && initialQuery.isNotEmpty()){
+            searchQuery = initialQuery
+            viewModel.searchUsers(initialQuery)
+            hasInitialized.value = true
         }
     }
     // display messages via Snackbar
-    LaunchedEffect(uiState.isLoading) {
-        if (!uiState.isLoading && uiState.results.isEmpty() ) {
+    LaunchedEffect(uiState.isLoading, uiState.results.size) {
+        if (!uiState.isLoading && uiState.results.isEmpty() && searchQuery.length >= 2) {
             snackbarHostState.showSnackbar("No users found")
         }
     }
@@ -77,6 +81,8 @@ fun SearchResultPage(
                         searchQuery = it
                         if (it.length >= 2) {
                             viewModel.searchUsers(it)
+                        } else{
+                            viewModel.clearSearch()
                         }
                     },
                     onSearch = {
@@ -101,8 +107,6 @@ fun SearchResultPage(
                     }
 
                     else -> {
-                        Spacer(modifier = Modifier.height(8.dp))
-
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             items(uiState.results) { user ->
                                 UserCard(
