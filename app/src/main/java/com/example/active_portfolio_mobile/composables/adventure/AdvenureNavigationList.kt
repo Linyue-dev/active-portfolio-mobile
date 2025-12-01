@@ -126,7 +126,8 @@ fun AdventureNavigationList(
                         if (userAuthState.user?.id == userId || userAuthState.user?.role == "admin") {
                             Button(onClick = {
                                 navController.navigate(Routes.AdventureUpdate.go(adventure.id))
-                            }) {
+                            }, modifier = Modifier.padding(start = 40.dp)
+                            ) {
                                 Text("Update")
                             }
                         }

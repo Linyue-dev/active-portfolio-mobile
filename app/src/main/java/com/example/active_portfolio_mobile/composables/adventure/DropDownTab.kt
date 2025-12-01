@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 fun DropDownTab(name: String, content: @Composable (() -> Unit)) {
     var isDisplayed by rememberSaveable { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxWidth(0.75f).padding(top = 25.dp),
+    Column(modifier = Modifier.fillMaxWidth(0.90f).padding(top = 25.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
 
         // The clickable title card. Clicking on it will open the contents.

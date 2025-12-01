@@ -117,7 +117,7 @@ fun CreateAdventureScreen(
                             list = listOf(
                                 "Public",
                                 "Private"
-                            ) // TODO switch for less hardcoded values
+                            )
                         )
                     }
                 }
