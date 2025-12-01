@@ -11,14 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,7 +47,6 @@ fun SearchResultPage(
     var searchQuery by rememberSaveable { mutableStateOf(initialQuery) }
     val navController = LocalNavController.current
     val uiState by viewModel.uiState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
     val hasInitialized = rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -56,12 +54,6 @@ fun SearchResultPage(
             searchQuery = initialQuery
             viewModel.searchUsers(initialQuery)
             hasInitialized.value = true
-        }
-    }
-    // display messages via Snackbar
-    LaunchedEffect(uiState.isLoading, uiState.results.size) {
-        if (!uiState.isLoading && uiState.results.isEmpty() && searchQuery.length >= 2) {
-            snackbarHostState.showSnackbar("No users found")
         }
     }
 
@@ -105,6 +97,18 @@ fun SearchResultPage(
                             CircularProgressIndicator()
                         }
                     }
+                    uiState.results.isEmpty() && searchQuery.length >= 2 -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ){
+                            Text(
+                                text = "Not username found",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
 
                     else -> {
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -122,10 +126,6 @@ fun SearchResultPage(
                     }
                 }
             }
-            SnackbarHost(
-                hostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
         }
     }
 }
