@@ -1,5 +1,6 @@
 package com.example.active_portfolio_mobile.ui.search
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,14 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,28 +36,24 @@ import com.example.active_portfolio_mobile.navigation.Routes
  * - Observes [SearchViewModel.uiState] to display loading, error, empty state, or results.
  * - Navigates to another user's profile when a user card is selected.
  *
- * @param query The initial search text passed from the previous screen.
+ * @param initialQuery The initial search text passed from the previous screen.
  * @param viewModel The [SearchViewModel] responsible for handling search logic and exposing UI state.
  */
 @Composable
 fun SearchResultPage(
-    query: String,
+    initialQuery: String,
     viewModel: SearchViewModel
 ){
-    var searchQuery by rememberSaveable { mutableStateOf(query) }
+    var searchQuery by rememberSaveable { mutableStateOf(initialQuery) }
     val navController = LocalNavController.current
     val uiState by viewModel.uiState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val hasInitialized = rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(query) {
-        if(query.isNotEmpty()){
-            viewModel.searchUsers(query)
-        }
-    }
-    // display messages via Snackbar
-    LaunchedEffect(uiState.isLoading) {
-        if (!uiState.isLoading && uiState.results.isEmpty() ) {
-            snackbarHostState.showSnackbar("No users found")
+    LaunchedEffect(Unit) {
+        if(!hasInitialized.value && initialQuery.isNotEmpty()){
+            searchQuery = initialQuery
+            viewModel.searchUsers(initialQuery)
+            hasInitialized.value = true
         }
     }
 
@@ -77,6 +73,8 @@ fun SearchResultPage(
                         searchQuery = it
                         if (it.length >= 2) {
                             viewModel.searchUsers(it)
+                        } else{
+                            viewModel.clearSearch()
                         }
                     },
                     onSearch = {
@@ -99,10 +97,20 @@ fun SearchResultPage(
                             CircularProgressIndicator()
                         }
                     }
+                    uiState.results.isEmpty() && searchQuery.length >= 2 -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ){
+                            Text(
+                                text = "Not username found",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
 
                     else -> {
-                        Spacer(modifier = Modifier.height(8.dp))
-
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             items(uiState.results) { user ->
                                 UserCard(
@@ -118,10 +126,6 @@ fun SearchResultPage(
                     }
                 }
             }
-            SnackbarHost(
-                hostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
         }
     }
 }
