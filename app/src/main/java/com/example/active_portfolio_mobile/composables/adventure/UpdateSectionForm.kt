@@ -2,12 +2,19 @@ package com.example.active_portfolio_mobile.composables.adventure
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -18,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
@@ -103,28 +111,37 @@ fun UpdateSectionForm(
 //            }
 //        }
 
-        Button(onClick = {
-            adventureSectionVM.updateSection(
-                section.value,
-                authViewModel.tokenManager.getToken()
-            ) { newMessage ->
-                scope.launch {
-                    messageFlow.emit(newMessage)
+        Row(horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 15.dp).padding(top = 15.dp).padding(bottom = 5.dp)
+        ) {
+            IconButton(onClick = {
+                adventureSectionVM.updateSection(
+                    section.value,
+                    authViewModel.tokenManager.getToken()
+                ) { newMessage ->
+                    scope.launch {
+                        messageFlow.emit(newMessage)
+                    }
+                    println(newMessage)
+                    setUpdated()
                 }
-                println(newMessage)
-                setUpdated()
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Save,
+                    contentDescription = "Save updated Section",
+                    modifier = Modifier.size(30.dp)
+                )
             }
-        }) {
-            Text("Save")
-        }
 
-        DeleteButtonWithConfirm {
-            adventureSectionVM.deleteSection(
-                section.value,
-                authViewModel.tokenManager.getToken()
-            ) {
-                scope.launch {
-                    messageFlow.emit(it)
+            DeleteButtonWithConfirm {
+                adventureSectionVM.deleteSection(
+                    section.value,
+                    authViewModel.tokenManager.getToken()
+                ) {
+                    scope.launch {
+                        messageFlow.emit(it)
+                    }
                 }
             }
         }
@@ -224,27 +241,36 @@ fun UpdateImageSectionForm(
 //            }
 //        }
 
-        Button(onClick = {
-            adventureSectionVM.updateSection(
-                authViewModel.tokenManager.getToken()
-            ) { newMessage ->
-                scope.launch {
-                    messageFlow.emit(newMessage)
+        Row(horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 15.dp).padding(top = 15.dp).padding(bottom = 5.dp)
+        ) {
+            IconButton(onClick = {
+                adventureSectionVM.updateSection(
+                    authViewModel.tokenManager.getToken()
+                ) { newMessage ->
+                    scope.launch {
+                        messageFlow.emit(newMessage)
+                    }
+                    println(newMessage)
+                    setUpdated()
                 }
-                println(newMessage)
-                setUpdated()
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Save,
+                    contentDescription = "Save updated Section",
+                    modifier = Modifier.size(30.dp)
+                )
             }
-        }) {
-            Text("Save")
-        }
 
-        DeleteButtonWithConfirm {
-            allSectionsVM.deleteSection(
-                section = section,
-                token = authViewModel.tokenManager.getToken()
-            ) {
-                scope.launch {
-                    messageFlow.emit(it)
+            DeleteButtonWithConfirm {
+                allSectionsVM.deleteSection(
+                    section = section,
+                    token = authViewModel.tokenManager.getToken()
+                ) {
+                    scope.launch {
+                        messageFlow.emit(it)
+                    }
                 }
             }
         }
@@ -266,25 +292,31 @@ fun UpdateImageSectionContent(
     addImage: (Bitmap) -> Unit,
     removeImage: (Bitmap) -> Unit
 ) {
-    Card {
-        Column {
-            bitmaps.forEach { bitmap ->
-                Card {
-                    Row {
-                        Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = null,
-                            modifier = Modifier.width(200.dp)
-                        )
-                        DeleteButtonWithConfirm {
-                            removeImage(bitmap)
-                        }
+    Column(modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        bitmaps.forEach { bitmap ->
+            Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp).padding(top = 10.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            ) {
+                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = null,
+                        modifier = Modifier.width(200.dp)
+                    )
+                    DeleteButtonWithConfirm {
+                        removeImage(bitmap)
                     }
                 }
             }
-            ImagePicker {
-                addImage(it)
-            }
+        }
+        ImagePicker {
+            addImage(it)
         }
     }
 }

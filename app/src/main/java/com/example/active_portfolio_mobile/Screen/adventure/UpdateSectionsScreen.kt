@@ -1,10 +1,15 @@
 package com.example.active_portfolio_mobile.Screen.adventure
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -19,6 +24,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -32,7 +39,6 @@ import com.example.active_portfolio_mobile.navigation.Routes
 import com.example.active_portfolio_mobile.viewModels.AdventureCreationUpdateVM
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionUpdateVM
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.launch
 
 /**
  * The screen for updating and deleting the existing sections of a specific adventure.
@@ -48,7 +54,6 @@ fun UpdateSectionsScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val messageFlow = remember { MutableSharedFlow<String>() }
-    val scope = rememberCoroutineScope()
 
     // Using a counter for updated, triggers launched effect whenever incremented.
     var updated by rememberSaveable { mutableIntStateOf(0) }
@@ -71,36 +76,49 @@ fun UpdateSectionsScreen(
 
     MainLayout {
         Box( modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-            LazyColumn {
+            LazyColumn(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                contentPadding = PaddingValues(5.dp),
+            ) {
                 item {
-                    Text(adventure.title)
+                    Text(adventure.title,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 20.dp)
+                    )
                 }
                 // List all the sections in the adventure.
                 items(sections.value, key = { it.id }) { section ->
-                    when (section.type) {
-                        SectionType.IMAGE -> DropDownTab(section.label) {
-                            UpdateImageSectionForm(
-                                sectionToShow = section,
-                                allSectionsVM = adventureSectionVM,
-                                messageFlow = messageFlow,
-                                adventureSectionVM = viewModel(key = section.id)
-                            ) {
-                                updated++
+                        when (section.type) {
+                            SectionType.IMAGE -> DropDownTab(section.label) {
+                                UpdateImageSectionForm(
+                                    sectionToShow = section,
+                                    allSectionsVM = adventureSectionVM,
+                                    messageFlow = messageFlow,
+                                    adventureSectionVM = viewModel(key = section.id)
+                                ) {
+                                    updated++
+                                }
                             }
-                        }
 
-                        else -> DropDownTab(section.label) {
-                            UpdateSectionForm(section, messageFlow, adventureSectionVM) {
-                                updated++
+                            else -> DropDownTab(section.label) {
+                                UpdateSectionForm(section, messageFlow, adventureSectionVM) {
+                                    updated++
+                                }
                             }
                         }
-                    }
                 }
                 item {
                     Button(onClick = {
                         navController.navigate(Routes.SectionsCreate.go(adventureId))
-                    }) {
-                        Text("Add New Section")
+                    }, colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    ), border = BorderStroke(width = 2.dp,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    ), modifier = Modifier.padding(top = 15.dp)
+                    ) {
+                        Text("+ New Section")
                     }
                 }
             }

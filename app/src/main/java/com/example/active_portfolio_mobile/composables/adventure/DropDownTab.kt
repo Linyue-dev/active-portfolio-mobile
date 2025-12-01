@@ -28,22 +28,23 @@ import androidx.compose.ui.unit.dp
 fun DropDownTab(name: String, content: @Composable (() -> Unit)) {
     var isDisplayed by rememberSaveable { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxWidth(0.75f).padding(top = 25.dp),
+    Column(modifier = Modifier.fillMaxWidth(0.90f).padding(top = 25.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
 
         // The clickable title card. Clicking on it will open the contents.
         Card(modifier = Modifier.fillMaxWidth()
             .clickable(onClick = { isDisplayed = !isDisplayed },
-                onClickLabel = "Toggle $name contents"),
+                onClickLabel = "Toggle $name contents"
+            ),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+                containerColor = MaterialTheme.colorScheme.primary,
             )
         ) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Text(text = name, textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.padding(vertical = 10.dp),
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
                 )
             }
         }
