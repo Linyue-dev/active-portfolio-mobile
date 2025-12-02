@@ -50,6 +50,7 @@ fun SearchResultPage(
 
     LaunchedEffect(Unit) {
         if(!hasInitialized.value && initialQuery.isNotEmpty()){
+            viewModel.clearSearch()
             searchQuery = initialQuery
             viewModel.searchUsers(initialQuery)
             hasInitialized.value = true
@@ -78,8 +79,7 @@ fun SearchResultPage(
                     },
                     onSearch = {
                         if (searchQuery.length >= 2) {
-                            viewModel.searchUsers(searchQuery)
-                        }
+                            viewModel.searchUsers(searchQuery)                        }
                     },
                     modifier = Modifier.padding(end = 8.dp)
                 )
@@ -102,7 +102,7 @@ fun SearchResultPage(
                             contentAlignment = Alignment.Center
                         ){
                             Text(
-                                text = "No username found",  // ← 也改成 "No"
+                                text = "No username found",
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

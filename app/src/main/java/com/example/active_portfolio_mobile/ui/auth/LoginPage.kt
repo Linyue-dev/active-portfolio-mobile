@@ -35,15 +35,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.active_portfolio_mobile.layouts.MainLayout
-import com.example.active_portfolio_mobile.navigation.LocalNavController
-import com.example.active_portfolio_mobile.navigation.Routes
+
 /**
  * Login page for existing user authentication.
  *
