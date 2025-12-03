@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.active_portfolio_mobile.navigation.LocalAuthViewModel
 import com.example.active_portfolio_mobile.navigation.Routes

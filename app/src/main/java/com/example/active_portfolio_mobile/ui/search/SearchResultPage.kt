@@ -1,6 +1,5 @@
 package com.example.active_portfolio_mobile.ui.search
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,6 +50,7 @@ fun SearchResultPage(
 
     LaunchedEffect(Unit) {
         if(!hasInitialized.value && initialQuery.isNotEmpty()){
+            viewModel.clearSearch()
             searchQuery = initialQuery
             viewModel.searchUsers(initialQuery)
             hasInitialized.value = true
@@ -79,8 +79,7 @@ fun SearchResultPage(
                     },
                     onSearch = {
                         if (searchQuery.length >= 2) {
-                            viewModel.searchUsers(searchQuery)
-                        }
+                            viewModel.searchUsers(searchQuery)                        }
                     },
                     modifier = Modifier.padding(end = 8.dp)
                 )
@@ -97,13 +96,13 @@ fun SearchResultPage(
                             CircularProgressIndicator()
                         }
                     }
-                    uiState.results.isEmpty() && searchQuery.length >= 2 -> {
+                    !uiState.isLoading && uiState.results.isEmpty() && searchQuery.length >= 2 -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ){
                             Text(
-                                text = "Not username found",
+                                text = "No username found",
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

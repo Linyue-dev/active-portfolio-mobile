@@ -1,7 +1,6 @@
 package com.example.active_portfolio_mobile.ui.profile
 
 import android.app.Activity
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
