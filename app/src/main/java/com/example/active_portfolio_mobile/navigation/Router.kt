@@ -42,6 +42,7 @@ import com.example.active_portfolio_mobile.ui.profile.EditProfilePage
 import com.example.active_portfolio_mobile.ui.profile.ProfileViewModel
 import com.example.active_portfolio_mobile.ui.search.SearchResultPage
 import com.example.active_portfolio_mobile.ui.search.SearchViewModel
+import com.example.active_portfolio_mobile.viewModels.AdventureVM
 import com.example.active_portfolio_mobile.viewModels.GetPortfoliosVM
 
 //Sets up the app navigation using NavHost with three routes: LandingPage,
@@ -199,10 +200,12 @@ fun Router(modifier: Modifier) {
                         val profileViewModel: ProfileViewModel = viewModel(
                             factory = ViewModelFactory(tokenManager)
                         )
+                        val adventureVM: AdventureVM = viewModel()
                         ProfilePage(
                             username = null,
                             authViewModel,
                             profileViewModel,
+                            adventureVM = adventureVM,
                             onEditProfile = {
                                 navController.navigate(Routes.EditProfile.route)
                             }
@@ -265,6 +268,9 @@ fun Router(modifier: Modifier) {
                     val query = backStackEntry.arguments?.getString("query") ?: ""
                     SearchResultPage(initialQuery = query, viewModel = searchViewModel)
                 }
+                /**
+                 * OtherUserProfile
+                 */
                 composable(
                     route = Routes.OtherUserProfile.route,
                     arguments = listOf(
@@ -276,11 +282,13 @@ fun Router(modifier: Modifier) {
                     val profileViewModel: ProfileViewModel = viewModel(
                         factory = ViewModelFactory(tokenManager)
                     )
+                    val adventureVM: AdventureVM = viewModel()
                     val username = backStackEntry.arguments?.getString("username") ?: ""
                     ProfilePage(
                         username = username,
                         authViewModel = authViewModel,
                         profileViewModel = profileViewModel,
+                        adventureVM = adventureVM,
                         onEditProfile = {}
                     )
                 }
