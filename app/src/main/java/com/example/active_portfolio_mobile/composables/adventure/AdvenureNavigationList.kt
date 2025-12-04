@@ -44,7 +44,7 @@ fun AdventureNavigationList(
     userId: String,
     adventureVM: AdventureVM = viewModel()
 ) {
-    LaunchedEffect(Unit) {
+    LaunchedEffect(userId) {
         adventureVM.fetchAdventuresByUser(userId)
     }
     val adventures = adventureVM.adventures.collectAsStateWithLifecycle()

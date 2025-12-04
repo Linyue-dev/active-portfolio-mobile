@@ -60,6 +60,7 @@ import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.navigation.Routes
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
+import com.example.active_portfolio_mobile.viewModels.AdventureVM
 import com.example.active_portfolio_mobile.viewModels.UserPortfolio
 import kotlinx.coroutines.launch
 
@@ -85,6 +86,7 @@ fun ProfilePage(
     username: String? = null,
     authViewModel: AuthViewModel,
     profileViewModel: ProfileViewModel,
+    adventureVM: AdventureVM,
     onEditProfile: () -> Unit
 ){
     val localContext = LocalContext.current
@@ -379,7 +381,7 @@ fun ProfilePage(
                 }
             }
             // ===== Adventure List =====
-            AdventureNavigationList(user.id)
+            AdventureNavigationList(user.id,adventureVM)
         }
     }
 }
