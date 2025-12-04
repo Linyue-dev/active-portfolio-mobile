@@ -4,16 +4,9 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,7 +22,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.navigation.Routes
-import com.example.active_portfolio_mobile.composables.adventure.TestAdventuresFetch
 import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.ui.search.SearchBar
 

@@ -57,8 +57,14 @@ How to install and launch your application.
 **Profile Edit page:**
  - ![The profile edit page, updating a text section](./readme_images/profile_edit.png)
 
-**Profile Edit Field page:**
- - ![The profile edit field page, updating a text section](./readme_images/profile_update_field.png)
+**Other User Profile page:**
+ - ![The other user profile page, updating a text section](./readme_images/other_user_profile.png)
+
+**Search Result page:**
+- ![The search result page, updating a text section](./readme_images/search_result.png)
+
+**User Portfolio page:**
+- ![The user portfolio page, updating a text section](./readme_images/user_portfolio.png)
 
 **Portfolio Creation page:**
  - ![The portfolio creation field page](./readme_images/portfoio_creation.png)
