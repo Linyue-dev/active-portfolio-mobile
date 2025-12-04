@@ -16,32 +16,48 @@ import kotlinx.coroutines.withContext
 
 
 /**
- * One VM per page so list and single for each .
+ * Viewmodel responsible for retrieving portfolios from the backend.
+ * It responsible to load all portfolio, load one portfolio using portfolioID
+ * Provide Ui with loading status, error messages, and portfolio list and selected portfolio.
  */
-class PortfoliosVM : ViewModel(){
+class GetPortfoliosVM : ViewModel(){
+    //Holds list of all portfolios loaded from the backend
     private val _portfolios = MutableStateFlow<List<Portfolio>>(emptyList())
     val portfolios: StateFlow<List<Portfolio>> = _portfolios.asStateFlow()
 
+    //Hold the currently selected /loaded portfolio
     private val _portfolio = MutableStateFlow<Portfolio?>(null)
     val portfolio: StateFlow<Portfolio?> = _portfolio.asStateFlow()
 
     var portfolioState by mutableStateOf<Portfolio?>(null)
         private set
+
+    //Loading indication for the backend request
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    //Holds error message for the UI
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
+    /**
+     * Load all portfolios from the backend
+     * Trigger loading state, handles response,
+     * updates portfolio list or error messages.
+     */
     fun loadAllPortfolio() {
         viewModelScope.launch {
+            
+            //Start loading and reset previous error
             _isLoading.value = true
             _errorMessage.value = null
             try {
+                //Perform network call on IO dispatcher
                 val response = withContext(Dispatchers.IO) {
                     ActivePortfolioApi.portfolio.getAll()
                 }
 
+                //Check the response of the call
                 if (response.isSuccessful) {
                     _portfolios.value = response.body() ?: emptyList()
                     
@@ -49,21 +65,31 @@ class PortfoliosVM : ViewModel(){
                     _errorMessage.value = "Error ${response.code()}"
                 }
             } catch (e: Exception) {
+                //Catch unexpected failure
                 _errorMessage.value = e.message
             } finally {
+                //Stop loading indicator regardless of result
                 _isLoading.value = false
             }
         }
     }
+
+    /**
+     * Loads a single portfolio by its ID.
+     */
     fun loadOnePortfolio(portfolioId : String){
         viewModelScope.launch { 
+            
+            //Begin loading state
             _isLoading.value = true
             _errorMessage.value = null
             try{
+                //Request
                 val response = withContext(Dispatchers.IO){
                     ActivePortfolioApi.portfolio.getPortfolio(portfolioId)
                 }
 
+                //Handle successful response
                 if(response.isSuccessful){
                     _portfolio.value = response.body()
                     portfolioState = response.body() 
@@ -71,8 +97,10 @@ class PortfoliosVM : ViewModel(){
                     _errorMessage.value = "Error ${response.code()}"
                 } 
             }catch(e: Exception){
+                //Process error
                 _errorMessage.value = e.message
             } finally {
+                //End loading.
                 _isLoading.value = false
             }
         }

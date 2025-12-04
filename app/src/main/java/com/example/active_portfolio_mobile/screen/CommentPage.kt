@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.example.active_portfolio_mobile.composables.comment.Comment
 import com.example.active_portfolio_mobile.composables.comment.CommentInput
 import com.example.active_portfolio_mobile.composables.comment.CommentList
-import com.example.active_portfolio_mobile.ui.theme.CommentScreenTheme
+import com.example.active_portfolio_mobile.ui.theme.ActivePortfolioTheme
 import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
 import kotlin.collections.plus
@@ -43,7 +43,7 @@ val initialComments = listOf(
  */
 @Composable
 fun CommentPage(modifier : Modifier = Modifier){
-    CommentScreenTheme {
+    ActivePortfolioTheme {
 
         //Holds the current text input for a new comment
         var commentText by rememberSaveable { mutableStateOf("") }
@@ -63,7 +63,7 @@ fun CommentPage(modifier : Modifier = Modifier){
         }
 
         //Veritcal layout for input and list
-        CommentScreenTheme {
+        ActivePortfolioTheme {
             Column(
                 modifier = Modifier
                     .fillMaxSize()

@@ -1,8 +1,12 @@
 package com.example.active_portfolio_mobile.Screen.adventure
 
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.active_portfolio_mobile.composables.adventure.AdventureView
@@ -24,6 +28,9 @@ fun AdventureViewScreen(adventureId: String, adventureVM: AdventureCreationUpdat
         LazyColumn {
             item {
                 AdventureView(adventure.value)
+            }
+            item {
+                Spacer(modifier = Modifier.padding(top = 15.dp))
             }
         }
     }

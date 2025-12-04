@@ -2,12 +2,19 @@ package com.example.active_portfolio_mobile.composables.adventure
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -17,34 +24,38 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.active_portfolio_mobile.data.remote.dto.Adventure
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
 import com.example.active_portfolio_mobile.data.remote.dto.SectionType
+import com.example.active_portfolio_mobile.navigation.LocalAuthViewModel
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionImageUpdateVM
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionUpdateVM
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 
 /**
  * A form for updating a Text or Link Adventure Section.
  * @param sectionToShow the section to update with the form.
- * @param parentAdventure the adventure to which the section belongs.
  * @param adventureSectionVM the View Model which contains the list of sections, used for accessing
  * the ActivePortfolio API functions and removing deleted sections from the section list.
  */
 @Composable
 fun UpdateSectionForm(
     sectionToShow: AdventureSection,
-    parentAdventure: Adventure,
-    adventureSectionVM: AdventureSectionUpdateVM
+    messageFlow: MutableSharedFlow<String>,
+    adventureSectionVM: AdventureSectionUpdateVM,
+    setUpdated: () -> Unit
 ) {
+    val parentPortfolios = adventureSectionVM.portfolios
     val section = remember { mutableStateOf(sectionToShow) }
-    var message by rememberSaveable { mutableStateOf("") }
+    val authViewModel = LocalAuthViewModel.current
+    val scope = rememberCoroutineScope()
 
     Column {
         TextField(
@@ -79,39 +90,60 @@ fun UpdateSectionForm(
             )
         }
 
-        // if (parentAdventure.portfolios.isNotEmpty()) {
-        // TODO Get the adventure's portfolios and set them here dynamically, using their names
-        DropDownTab(name = "Portfolios") {
-            MultiSelectList(
-                selectedItems = section.value.portfolios,
-                list = listOf("Portfolio 1", "Portfolio 2", "Portfolio 3"),
-                selectItem = {
-                    section.value = section.value.copy(portfolios = section.value.portfolios + it)
-                },
-                deselectItem = {
-                    section.value = section.value.copy(portfolios = section.value.portfolios - it)
+        /**
+         * Upon team reflection, we determined that setting portfolios for sections was excessive
+         * and confusing. We have therefore decided to simply have all sections appear in a
+         * portfolio that includes their parent adventure.
+         */
+//        if (parentPortfolios.value.isNotEmpty()) {
+//            DropDownTab(name = "Portfolios") {
+//                MultiSelectList(
+//                    selectedItems = parentPortfolios.value.filter { it.id in section.value.portfolios },
+//                    list = parentPortfolios.value,
+//                    displayText = { it.title },
+//                    selectItem = {
+//                        section.value = section.value.copy(portfolios = section.value.portfolios + it.id)
+//                    },
+//                    deselectItem = {
+//                        section.value = section.value.copy(portfolios = section.value.portfolios - it.id)
+//                    }
+//                )
+//            }
+//        }
+
+        Row(horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 15.dp).padding(top = 15.dp).padding(bottom = 5.dp)
+        ) {
+            IconButton(onClick = {
+                adventureSectionVM.updateSection(
+                    section.value,
+                    authViewModel.tokenManager.getToken()
+                ) { newMessage ->
+                    scope.launch {
+                        messageFlow.emit(newMessage)
+                    }
+                    println(newMessage)
+                    setUpdated()
                 }
-            )
-        }
-        // }
-
-        Button(onClick = {
-            adventureSectionVM.updateSection(section.value) { newMessage ->
-                message = newMessage
-                println(message)
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Save,
+                    contentDescription = "Save updated Section",
+                    modifier = Modifier.size(30.dp)
+                )
             }
-        }) {
-            Text("Save")
-        }
 
-        DeleteButtonWithConfirm {
-            adventureSectionVM.deleteSection(section.value) {
-                message = it
+            DeleteButtonWithConfirm {
+                adventureSectionVM.deleteSection(
+                    section.value,
+                    authViewModel.tokenManager.getToken()
+                ) {
+                    scope.launch {
+                        messageFlow.emit(it)
+                    }
+                }
             }
-        }
-
-        if (message != "") {
-            Text(message)
         }
     }
 }
@@ -139,7 +171,6 @@ fun UpdateStringSectionContent(contentType: String, content: String, setSectionC
 /**
  * A form for updating an Image Adventure Section.
  * @param sectionToShow the section to update with the form.
- * @param parentAdventure the adventure to which the section belongs.
  * @param allSectionsVM the View Model which contains the list of sections, used for accessing
  * certain ActivePortfolio API functions and removing deleted sections from the section list.
  * @param adventureSectionVM the View Model for updating an image type Adventure Section. Creates
@@ -148,17 +179,19 @@ fun UpdateStringSectionContent(contentType: String, content: String, setSectionC
 @Composable
 fun UpdateImageSectionForm(
     sectionToShow: AdventureSection,
-    parentAdventure: Adventure,
+    messageFlow: MutableSharedFlow<String>,
     allSectionsVM: AdventureSectionUpdateVM,
-    adventureSectionVM: AdventureSectionImageUpdateVM = viewModel()
+    adventureSectionVM: AdventureSectionImageUpdateVM = viewModel(),
+    setUpdated: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         adventureSectionVM.setSection(sectionToShow)
     }
-
+    val scope = rememberCoroutineScope()
+    val parentPortfolios = allSectionsVM.portfolios
     val section by adventureSectionVM.section.collectAsStateWithLifecycle()
     val bitmaps = adventureSectionVM.bitmapImages.collectAsStateWithLifecycle()
-    var message by rememberSaveable { mutableStateOf("") }
+    val authViewModel = LocalAuthViewModel.current
 
     Column {
         TextField(
@@ -187,40 +220,59 @@ fun UpdateImageSectionForm(
             ), modifier = Modifier.fillMaxWidth()
         )
 
-        // if (parentAdventure.portfolios.isNotEmpty()) {
-        // TODO Get the adventure's portfolios and set them here dynamically, using their names
-        DropDownTab(name = "Portfolios") {
-            MultiSelectList(
-                selectedItems = section.portfolios,
-                list = listOf("Portfolio 1", "Portfolio 2", "Portfolio 3"),
-                selectItem = {
-                    adventureSectionVM.addToPortfolios(it)
-                },
-                deselectItem = {
-                    adventureSectionVM.removeFromPortfolios(it)
+        /**
+         * Upon team reflection, we determined that setting portfolios for sections was excessive
+         * and confusing. We have therefore decided to simply have all sections appear in a
+         * portfolio that includes their parent adventure.
+         */
+//        if (parentPortfolios.value.isNotEmpty()) {
+//            DropDownTab(name = "Portfolios") {
+//                MultiSelectList(
+//                    selectedItems = parentPortfolios.value.filter { it.id in section.portfolios },
+//                    list = parentPortfolios.value,
+//                    displayText = { it.title },
+//                    selectItem = {
+//                        adventureSectionVM.addToPortfolios(it.id)
+//                    },
+//                    deselectItem = {
+//                        adventureSectionVM.removeFromPortfolios(it.id)
+//                    }
+//                )
+//            }
+//        }
+
+        Row(horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 15.dp).padding(top = 15.dp).padding(bottom = 5.dp)
+        ) {
+            IconButton(onClick = {
+                adventureSectionVM.updateSection(
+                    authViewModel.tokenManager.getToken()
+                ) { newMessage ->
+                    scope.launch {
+                        messageFlow.emit(newMessage)
+                    }
+                    println(newMessage)
+                    setUpdated()
                 }
-            )
-        }
-        // }
-
-        Button(onClick = {
-            adventureSectionVM.updateSection { newMessage ->
-                message = newMessage
-                println(message)
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Save,
+                    contentDescription = "Save updated Section",
+                    modifier = Modifier.size(30.dp)
+                )
             }
-        }) {
-            Text("Save")
-        }
 
-        DeleteButtonWithConfirm {
-            allSectionsVM.deleteSection(section) {
-                message = it
+            DeleteButtonWithConfirm {
+                allSectionsVM.deleteSection(
+                    section = section,
+                    token = authViewModel.tokenManager.getToken()
+                ) {
+                    scope.launch {
+                        messageFlow.emit(it)
+                    }
+                }
             }
-            if (message == "Success") {  }
-        }
-
-        if (message != "") {
-            Text(message)
         }
     }
 }
@@ -240,25 +292,31 @@ fun UpdateImageSectionContent(
     addImage: (Bitmap) -> Unit,
     removeImage: (Bitmap) -> Unit
 ) {
-    Card {
-        Column {
-            bitmaps.forEach { bitmap ->
-                Card {
-                    Row {
-                        Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = null,
-                            modifier = Modifier.width(200.dp)
-                        )
-                        DeleteButtonWithConfirm {
-                            removeImage(bitmap)
-                        }
+    Column(modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        bitmaps.forEach { bitmap ->
+            Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp).padding(top = 10.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            ) {
+                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = null,
+                        modifier = Modifier.width(200.dp)
+                    )
+                    DeleteButtonWithConfirm {
+                        removeImage(bitmap)
                     }
                 }
             }
-            ImagePicker {
-                addImage(it)
-            }
+        }
+        ImagePicker {
+            addImage(it)
         }
     }
 }

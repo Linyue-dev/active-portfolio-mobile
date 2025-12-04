@@ -1,4 +1,4 @@
-package com.example.active_portfolio_mobile.layouts
+package com.example.active_portfolio_mobile.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,12 +19,9 @@ import androidx.compose.ui.Modifier
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.active_portfolio_mobile.navigation.LocalAuthViewModel
 import com.example.active_portfolio_mobile.navigation.Routes
 
 /**
@@ -33,14 +30,13 @@ import com.example.active_portfolio_mobile.navigation.Routes
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainLayout(content: @Composable () -> Unit) {
+fun PortfolioLayout(portfolioTitle: String, content: @Composable () -> Unit) {
     val navController = LocalNavController.current
-    val user = LocalAuthViewModel.current.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("JAC Active Portfolio") },
+                title = { Text(portfolioTitle) },
                 navigationIcon = {
                     IconButton(onClick = {
                         navController.navigateUp()
@@ -64,8 +60,7 @@ fun MainLayout(content: @Composable () -> Unit) {
             BottomAppBar(
                 modifier = Modifier.fillMaxWidth(),
                 actions = {
-                    Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                        // Navigate home button.
+                    Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         IconButton(onClick = {
                             navController.navigate(route = Routes.Main.route)
                         }) {
@@ -74,20 +69,6 @@ fun MainLayout(content: @Composable () -> Unit) {
                                 contentDescription = "Home"
                             )
                         }
-                        // Create Adventure or Portfolio button.
-                        IconButton( onClick = {
-                            if (user.value.isLoggedIn) {
-                                navController.navigate(Routes.Create.route)
-                            } else {
-                                navController.navigate(Routes.Login.route)
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.Add,
-                                contentDescription = "Create a new Adventure or Portfolio"
-                            )
-                        }
-                        // Navigate to profile page.
                         IconButton( onClick = {
                             navController.navigate(Routes.Profile.route)
                         }) {

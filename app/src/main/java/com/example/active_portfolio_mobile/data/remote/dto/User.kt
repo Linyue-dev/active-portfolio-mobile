@@ -36,6 +36,7 @@ data class SignUpRequest(
     val email: String,
     val program: String?,
     val password: String,
+    val username: String
 )
 
 @Serializable
@@ -51,4 +52,21 @@ data class UpdateUserRequest(
     val username: String? = null,
     val bio: String? = null,
     val program: String? = null,
+)
+
+@Serializable
+data class ChangePasswordRequest(
+    val oldPassword: String,
+    val newPassword: String
+)
+
+@Serializable
+data class ChangePasswordResponse(
+    val message: String
+)
+
+@Serializable
+data class CheckUsernameResponse(
+    val available: Boolean,
+    val message: String
 )

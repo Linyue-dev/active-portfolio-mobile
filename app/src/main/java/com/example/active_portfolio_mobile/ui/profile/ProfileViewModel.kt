@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.local.TokenManager
 import com.example.active_portfolio_mobile.data.remote.RetrofitClient
 import com.example.active_portfolio_mobile.data.remote.api.UserApiService
+import com.example.active_portfolio_mobile.data.remote.api.UserPublicApiService
+import com.example.active_portfolio_mobile.data.remote.dto.ChangePasswordRequest
 import com.example.active_portfolio_mobile.data.remote.dto.UpdateUserRequest
 import com.example.active_portfolio_mobile.data.remote.dto.User
 import com.example.active_portfolio_mobile.ui.common.ErrorParser
@@ -16,11 +18,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * UI state for profile-related screens.
+ * UI state for all profile-related screens.
  *
- * @property isLoading Indicates whether a profile request is in progress.
- * @property user      The current user profile, or null while loading.
- * @property error     Error message for profile operations, null when no error.
+ * @property isLoading  Whether a profile-related request is currently in progress.
+ * @property user       The authenticated user's profile, or `null` before fetched.
+ * @property error      Error message produced by profile operations, or `null` when there is no error.
  */
 data class ProfileUiState(
     val isLoading: Boolean = false,
@@ -28,29 +30,26 @@ data class ProfileUiState(
     val error: String? = null
 )
 /**
- * ViewModel responsible for loading and updating user profile data.
+ * ViewModel responsible for retrieving and updating user profile information.
  *
- * Responsibilities:
- * - Keep cached user data in TokenManager synchronized with latest backend state
- * - Update individual profile fields (first name, last name, username, bio, etc.)
- * - Expose reactive UI state via StateFlow
+ * Lifecycle:
+ * - On init, loads cached user from [TokenManager] (if exists)
+ * - Immediately fetches the latest user profile from the backend to ensure freshness
  *
- * Functions:
- * - getMyProfile(): Fetch the latest profile from the backend and update local cache
- * - updateField(): Update a single profile field on the server and refresh local state
+ * @param tokenManager Handles secure storage of tokens and cached user data
  */
 class ProfileViewModel(
     private val tokenManager: TokenManager
 ) : ViewModel() {
     private val apiService : UserApiService =
         RetrofitClient.createService(UserApiService::class.java, tokenManager)
+    private val userPublicApi : UserPublicApiService =
+        RetrofitClient.createPublicService(UserPublicApiService::class.java)
     private val _uiState = MutableStateFlow(ProfileUiState())
 
     val uiState : StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
-
-        // load cached user from token
         val cached = tokenManager.getUser()
         if (cached != null){
             _uiState.value = _uiState.value.copy(user = cached)
@@ -60,13 +59,21 @@ class ProfileViewModel(
     }
 
     /**
-     * Load the authenticated user's profile from backend.
-     * Also updates local cached user in TokenManager.
+     * Retrieves the authenticated user's latest profile from the backend.
+     *
+     * Behavior:
+     * - Shows loading indicator in UI
+     * - Updates the local cached user stored in [TokenManager]
+     * - Updates UI state with fresh user data
+     * - Emits human-readable error messages on failure
+     *
+     * Error Handling:
+     * - [HttpException] → parsed into meaningful messages using [ErrorParser]
      */
     fun getMyProfile(){
         val token = tokenManager.getToken()
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            _uiState.value = _uiState.value.copy( isLoading = true, error = null)
 
             try{
                 val newUser = apiService.getCurrentUser()
@@ -93,11 +100,15 @@ class ProfileViewModel(
     }
 
     /**
-     * Update a single user profile field.
+     * Updates a single field of the user's profile.
      *
-     * @param field Field name to update.
-     * @param value New field value.
-     * @param onSuccess Callback invoked after successful update.
+     * @param field The profile field name to update (e.g., `"firstName"`, `"username"`, `"bio"`, `"program"`).
+     * @param value The new string value for this field. Value is trimmed before sending.
+     * @param onSuccess Callback invoked when the update finishes successfully.
+     *
+     * Error Handling:
+     * - Backend errors → converted with [ErrorParser.errorHttpError]
+     * - Network errors → “Network error”
      */
     fun updateField(
         field : String,
@@ -109,23 +120,34 @@ class ProfileViewModel(
 
             try {
                 val request = when (field){
-                    "firstName" -> UpdateUserRequest(firstName = value)
-                    "lastName" -> UpdateUserRequest(lastName = value)
-                    "username" -> UpdateUserRequest(username = value)
-                    "bio" -> UpdateUserRequest(bio = value)
-                    else -> throw IllegalArgumentException("Unknown field")
+                    "firstName" -> UpdateUserRequest(firstName = value.trim())
+                    "lastName" -> UpdateUserRequest(lastName = value.trim())
+                    "username" -> UpdateUserRequest(username = value.trim())
+                    "program" -> UpdateUserRequest(program = value.trim())
+                    "bio" -> UpdateUserRequest(bio = value.trim())
+                    else -> throw IllegalArgumentException("Unknown field: $field")
                 }
 
-                val updateUser = apiService.updateUser(request)
-                tokenManager.saveUser(updateUser)
+                val updateResponse = apiService.updateUser(request)
 
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = null
-                )
-                // go back previous page after save successfully
-                onSuccess()
-
+                if (updateResponse.isSuccessful){
+                    val user = updateResponse.body()!!
+                    tokenManager.saveUser(user)
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        user = user,
+                        error= null
+                    )
+                    // go back previous page after save successfully
+                    onSuccess()
+                } else{
+                    val errorBody = updateResponse.errorBody()?.string() ?: ""
+                    val errorMessage = ErrorParser.errorHttpError(errorBody)
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = errorMessage
+                    )
+                }
             } catch (ex: HttpException){
                 _uiState.update {
                     it.copy( isLoading = false, error = ErrorParser.errorHttpError(ex))
@@ -136,5 +158,85 @@ class ProfileViewModel(
                 }
             }
         }
+    }
+
+    /**
+     * Changes the authenticated user's password.
+     *
+     * @param oldPassword The user's current password (required for verification).
+     * @param newPassword The new password to set. Must meet backend validation rules.
+     * @param onSuccess   Callback invoked when the password is successfully changed.
+     *
+     * Error Handling:
+     * - [HttpException] → parsed to user-friendly message
+     * - Unexpected errors → generic error message
+     */
+    fun changePassword(
+        oldPassword: String,
+        newPassword: String,
+        onSuccess: () -> Unit
+    ){
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+
+            try{
+                val request = ChangePasswordRequest(
+                    oldPassword = oldPassword.trim(),
+                    newPassword = newPassword.trim()
+                )
+                apiService.changePassword(request)
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = null
+                )
+                onSuccess()
+
+            } catch (ex: HttpException){
+                _uiState.update {
+                    it.copy(isLoading = false, error = ErrorParser.errorHttpError(ex))
+                }
+            } catch (ex: Exception){
+                _uiState.update {
+                    it.copy(isLoading = false, error = "An unexpected error occurred.")
+                }
+            }
+        }
+    }
+    /**
+     * Load another user's public profile by username.
+     *
+     * Fetches public profile information for the specified user from the API.
+     * Updates the UI state with the loaded user data or error message.
+     *
+     * @param username The username of the user to load
+     */
+    fun loadOtherUserProfile(username: String){
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(user = null, isLoading = true, error = null)
+            }
+            try{
+                val user = userPublicApi.getUserByIdentifier(username)
+                _uiState.update {
+                    it.copy( user = user, isLoading = false, error = null)
+                }
+            } catch (ex: HttpException){
+                _uiState.update {
+                    it.copy(isLoading = false, error = ErrorParser.errorHttpError(ex))
+                }
+            } catch (ex: Exception){
+                _uiState.update {
+                    it.copy(isLoading = false, error = "An unexpected error occurred.")
+                }
+            }
+        }
+    }
+    /**
+     * Clears the current error message from the UI state.
+     * Used after displaying the error in a Snackbar or dialog.
+     */
+    fun cleanError(){
+        _uiState.value = _uiState.value.copy(error = null)
     }
 }
