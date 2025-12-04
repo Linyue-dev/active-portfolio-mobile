@@ -1,6 +1,7 @@
 package com.example.active_portfolio_mobile.ui.profile
 
 import android.app.Activity
+import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -386,6 +387,27 @@ fun ProfilePage(
                         }, enabled = allLoaded
                     ) {
                         Text("Get Portfolio static!!")
+                    }
+                }
+
+
+                // ===== Check if it was opened by Linyue's launcher app
+                if (activity.intent.getBooleanExtra("from_linyue_launcher", false)) {
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Button(onClick = {
+                        val resultIntent = Intent()
+                        resultIntent.putExtra("name", user.firstName + " " + user.lastName)
+                        resultIntent.putExtra("email", user.email)
+                        resultIntent.putExtra("username", user.username ?: "")
+                        resultIntent.putExtra("role", user.role)
+                        resultIntent.putExtra("program", user.program ?: "")
+                        resultIntent.putExtra("bio", user.bio ?: "")
+                        activity.setResult(Activity.RESULT_OK, resultIntent)
+
+                        authViewModel.logout()
+                        activity.finish()
+                    }) {
+                        Text("Return to Linyue's Launcher")
                     }
                 }
             }

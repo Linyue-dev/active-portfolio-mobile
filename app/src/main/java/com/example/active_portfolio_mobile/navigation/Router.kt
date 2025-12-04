@@ -1,5 +1,6 @@
 package com.example.active_portfolio_mobile.navigation
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -103,7 +104,12 @@ fun Router(modifier: Modifier) {
                 }
                 // Auth
                 composable(Routes.Login.route) {
+                    val context  = LocalContext.current
+                    val activity = context as? ComponentActivity
+                    val prefilledEmail = activity?.intent?.getStringExtra("prefilled_email") ?: ""
+
                     LoginPage(
+                        startingEmail = prefilledEmail,
                         viewModel = authViewModel,
                         onNavigateToSignUp = { navController.navigate(Routes.SignUp.route) },
                         onLoginSuccess = {
