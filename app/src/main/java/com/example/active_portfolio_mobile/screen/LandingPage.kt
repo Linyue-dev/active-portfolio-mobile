@@ -35,7 +35,7 @@ import com.example.active_portfolio_mobile.viewModels.AdventureVM
 //Display the landing page of the app with the tile and navigation button.
 //Users can navigate to the comments page or the About us page from here.
 @Composable
-fun LandingPage(modifier : Modifier, adventureVM: AdventureVM = viewModel()){
+fun LandingPage(modifier : Modifier, adventureVM: AdventureVM = viewModel(key = "landing")){
     val navController: NavController = LocalNavController.current
     var searchQuery by rememberSaveable { mutableStateOf("") }
 
