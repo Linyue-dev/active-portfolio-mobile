@@ -1,6 +1,5 @@
 package com.example.active_portfolio_mobile.viewModels
 
-import android.R.attr.type
 import android.graphics.Bitmap
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
