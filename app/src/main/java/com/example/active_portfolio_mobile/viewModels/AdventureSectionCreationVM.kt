@@ -107,7 +107,7 @@ class AdventureSectionCreationVM : ViewModel() {
                 val response = ActivePortfolioApi.adventureSection.createImageSection(
                     token = "Bearer $token",
                     label = sectionToSave.label.toRequestBody("text/plain".toMediaType()),
-                    description = sectionToSave.label.toRequestBody("text/plain".toMediaType()),
+                    description = (sectionToSave.description ?: "").toRequestBody("text/plain".toMediaType()),
                     type = sectionToSave.type.toRequestBody("text/plain".toMediaType()),
                     adventureId = section.value.adventureId.toRequestBody("text/plain".toMediaType()),
                     contentFiles = convertedImages

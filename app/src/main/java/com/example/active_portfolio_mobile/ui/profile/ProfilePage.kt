@@ -389,28 +389,28 @@ fun ProfilePage(
                         Text("Get Portfolio static!!")
                     }
                 }
-            }
 
-            // ===== Check if it was opened by Linyue's launcher app
-            if (activity.intent.getBooleanExtra("from_linyue_launcher", false)) {
-                Spacer(modifier = Modifier.height(15.dp))
-                Button(onClick = {
-                    val resultIntent = Intent()
-                    resultIntent.putExtra("name", user.firstName + " " + user.lastName)
-                    resultIntent.putExtra("email", user.email)
-                    resultIntent.putExtra("username", user.username ?: "")
-                    resultIntent.putExtra("role", user.role)
-                    resultIntent.putExtra("program", user.program ?: "")
-                    resultIntent.putExtra("bio", user.bio ?: "")
-                    activity.setResult(Activity.RESULT_OK, resultIntent)
 
-                    authViewModel.logout()
-                    activity.finish()
-                }) {
-                    Text("Return to Linyue's Launcher")
+                // ===== Check if it was opened by Linyue's launcher app
+                if (activity.intent.getBooleanExtra("from_linyue_launcher", false)) {
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Button(onClick = {
+                        val resultIntent = Intent()
+                        resultIntent.putExtra("name", user.firstName + " " + user.lastName)
+                        resultIntent.putExtra("email", user.email)
+                        resultIntent.putExtra("username", user.username ?: "")
+                        resultIntent.putExtra("role", user.role)
+                        resultIntent.putExtra("program", user.program ?: "")
+                        resultIntent.putExtra("bio", user.bio ?: "")
+                        activity.setResult(Activity.RESULT_OK, resultIntent)
+
+                        authViewModel.logout()
+                        activity.finish()
+                    }) {
+                        Text("Return to Linyue's Launcher")
+                    }
                 }
             }
-
             // ===== Adventure List =====
             AdventureNavigationList(user.id,adventureVM)
         }
