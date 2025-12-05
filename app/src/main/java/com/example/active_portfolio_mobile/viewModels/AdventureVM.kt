@@ -40,4 +40,19 @@ class AdventureVM : ViewModel() {
             }
         }
     }
+
+    fun fetchRecentPublicAdventures(quantity: Number) {
+        viewModelScope.launch {
+            try {
+                val response = ActivePortfolioApi.adventure.getRecentPublicAdventures("$quantity")
+                if (response.isSuccessful) {
+                    _adventures.value = response.body() ?: emptyList()
+                } else {
+                    println(response.errorBody().toString())
+                }
+            } catch(err: Exception) {
+                println("An error occurred when fetching recent public Adventures: $err")
+            }
+        }
+    }
 }
