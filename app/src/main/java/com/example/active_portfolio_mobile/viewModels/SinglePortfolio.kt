@@ -1,5 +1,6 @@
 package com.example.active_portfolio_mobile.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.remote.dto.CreatePortfolioRequest
@@ -12,9 +13,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.net.HttpURLConnection
-import java.net.URL
+import org.json.JSONObject
 
+/**
+ * View model responsible for managing a single portfolio and all
+ * create/update/delete operations related to it.
+ * This viewmodel is designed for screens that create or modify a single portfolio
+ * at a time.
+ */
 class SinglePortfolioMV : ViewModel() {
 
     // Holds the newly created portfolio
@@ -28,6 +34,11 @@ class SinglePortfolioMV : ViewModel() {
     // Error messages
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    //Error code returned
+    private val _errorCode = MutableStateFlow<Int?>(null)
+    val errorCode: StateFlow<Int?> = _errorCode.asStateFlow()
+
     //Pop up message
     private val _popUpMessage = MutableStateFlow<String?>(null)
     val popUpMessage : StateFlow<String?>  = _popUpMessage.asStateFlow()
@@ -37,20 +48,34 @@ class SinglePortfolioMV : ViewModel() {
     /**
      * Creates a new portfolio by calling the backend.
      */
-    fun createPortfolio(portfolio: CreatePortfolioRequest) {
+    fun createPortfolio(token : String?, portfolio: CreatePortfolioRequest) {
         viewModelScope.launch {
             runSafeOperation {
+                
+                //Get the response from the action
                 val response = withContext(Dispatchers.IO) {
-                    ActivePortfolioApi.portfolio.createPortfolio(portfolio)
+                    ActivePortfolioApi.portfolio.createPortfolio("Bearer $token",portfolio)
                 }
 
                 if (response.isSuccessful) {
                     _portfolio.value = response.body()
                     _popUpMessage.value = "SUCCESS: Portfolio created successfully!"
                 } else {
-                    _errorMessage.value = "Error ${response.code()}: ${response.message()}"
-                    _popUpMessage.value = "Failed to create portfolio. ${response.message()} " +
-                            "Please try again! "
+                    val serverMessage = response.errorBody()?.string()?.let{
+                        body->
+                        try{
+                            //Get the specific error message the back end send.
+                            JSONObject(body).optString("errorMessage", "")
+                        }
+                        catch(e: Exception){
+                            ""
+                        }
+                    }
+                    _errorMessage.value = serverMessage?.ifBlank {
+                        "Error ${response.code()}: ${response.message()}"
+                    }
+                    _errorCode.value = response.code()
+                    _popUpMessage.value = "Failed to create portfolio."
                 }
             }
         }
@@ -59,18 +84,32 @@ class SinglePortfolioMV : ViewModel() {
     /**
      * Update an existing portfolio by ID.
      */
-    fun updatePortfolio(portfolioId: String, updated: UpdatePortfolioRequest){
+    fun updatePortfolio(token: String?, portfolioId: String, updated: UpdatePortfolioRequest){
         viewModelScope.launch {
             runSafeOperation {
                 val response = withContext(Dispatchers.IO) {
-                    ActivePortfolioApi.portfolio.updatePortfolio(portfolioId, updated)
+                    ActivePortfolioApi.portfolio.updatePortfolio("Bearer $token",portfolioId, updated)
                 }
+                Log.d("UPDATE_RESPONSE", "Code = ${response.code()} Body = ${response.errorBody()?.string()}")
 
                 if (response.isSuccessful) {
                     _portfolio.value = response.body()
                     _popUpMessage.value = "SUCCESS: Portfolio updated successfully!"
                 } else {
-                    _errorMessage.value = "Error ${response.code()}: ${response.message()}"
+                    val serverMessage = response.errorBody()?.string()?.let{
+                            body->
+                        try{
+                            //Get the specific error message the back end send.
+                            JSONObject(body).optString("errorMessage", "")
+                        }
+                        catch(e: Exception){
+                            ""
+                        }
+                    }
+                    _errorCode.value = response.code()
+                    _errorMessage.value = serverMessage?.ifBlank {
+                        "Error ${response.code()}: ${response.message()}"
+                    }
                     _popUpMessage.value = "Failed to update portfolio."
                 }
             }
@@ -80,39 +119,47 @@ class SinglePortfolioMV : ViewModel() {
     /**
      * Deletes a portfolio by ID
      */
-    fun deletePortfolio(portfolioId: String){
+    fun deletePortfolio(token: String?, portfolioId: String){
         viewModelScope.launch{
             runSafeOperation {
                 val response = withContext(Dispatchers.IO) {
-                    ActivePortfolioApi.portfolio.deletePortfolio(portfolioId)
+                    ActivePortfolioApi.portfolio.deletePortfolio("Bearer $token",portfolioId)
                 }
 
                 if (response.isSuccessful && response.body()?.success == true) {
                     _portfolio.value = null
                     _popUpMessage.value = "SUCCESS: Portfolio deleted successfully."
                 } else {
-                    _errorMessage.value = "Error ${response.code()}: ${response.message()}"
+                    val serverMessage = response.errorBody()?.string()?.let{
+                            body->
+                        try{
+                            //Get the specific error message the back end send.
+                            JSONObject(body).optString("errorMessage", "")
+                        }
+                        catch(e: Exception){
+                            ""
+                        }
+                    }
+                    _errorCode.value = response.code()
+                    _errorMessage.value = serverMessage?.ifBlank {
+                        "Error ${response.code()}: ${response.message()}"
+                    }
                     _popUpMessage.value = "Failed to delete portfolio."
                 }
             }
         }
     }
 
-    //Helper to reset 
-    fun resetState() {
-        _portfolio.value = null
-        _errorMessage.value = null
-        _isLoading.value = false
-    }
-
     //Helper to reset message after showing
     fun ClearPopUpMessage(){
         _popUpMessage.value = null
     }
-    
+
+    //Helper function - Clean the state and then try the operation
     private suspend fun runSafeOperation(block: suspend() -> Unit){
         _isLoading.value = true
         _errorMessage.value = null
+        _errorCode.value = null
 
         try{
             block()
@@ -120,29 +167,6 @@ class SinglePortfolioMV : ViewModel() {
             _errorMessage.value = e.message
         } finally{
             _isLoading.value = false
-        }
-    }
-
-    fun testBackendConnection() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val url = URL("https://activeportfolio.onrender.com/portfolio/allPortfolio")
-                val conn = url.openConnection() as HttpURLConnection
-                conn.connect()
-                val code = conn.responseCode
-
-                withContext(Dispatchers.Main) {
-                    _connectionStatus.value = if (code == 200) {
-                        "✅ Connected successfully! (HTTP $code)"
-                    } else {
-                        "⚠️ Server responded with HTTP $code"
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    _connectionStatus.value = "❌ Connection failed: ${e.message}"
-                }
-            }
         }
     }
 

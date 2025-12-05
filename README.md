@@ -67,14 +67,15 @@ How to install and launch your application.
 - ![The user portfolio page, updating a text section](./readme_images/user_portfolio.png)
 
 **Portfolio Creation page:**
- - ![The portfolio creation field page](./readme_images/portfoio_creation.png)
-
-**Portfolio Creation page with visibility:**
+ - ![The portfolio creation field page](./readme_images/portfolio_creation.png)
  - ![The portfolio creation page with the visibility choice down](./readme_images/portfolio_creation_visibility.png)
 
 **Portfolio Update page:**
- - ![The portfolio update page with delete button](./readme_images/profile_update_field.png)
+ - ![The portfolio update page with delete button](./readme_images/portfolio_edit.png)
 
+**Portfolio Display page:**
+- ![The portfolio display page](./readme_images/portfolio_display.png)
+- ![The portfolio display page with the description](./readme_images/portfolio_display_with_description.png)
 
 [//]: # ()
 [//]: # (  - ![img_2.png]&#40;img_2.png&#41;)
