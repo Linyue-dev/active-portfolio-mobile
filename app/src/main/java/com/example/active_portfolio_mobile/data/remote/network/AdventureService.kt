@@ -30,6 +30,11 @@ interface AdventureService {
     suspend fun getAllAdventureFromPortfolio(
         @Path("portfolioId") portfolioId: String
     ) : Response <List<Adventure>>
+
+    @GET("adventures/mostRecent/public/{quantity}")
+    suspend fun getRecentPublicAdventures(
+        @Path("quantity") quantity: String
+    ) : Response <List<Adventure>>
     
     @POST("adventures")
     suspend fun create(

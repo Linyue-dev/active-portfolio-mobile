@@ -1,7 +1,7 @@
 package com.example.active_portfolio_mobile.ui.profile
 
 import android.app.Activity
-import android.util.Log
+import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -61,6 +61,7 @@ import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.navigation.Routes
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
+import com.example.active_portfolio_mobile.viewModels.AdventureVM
 import com.example.active_portfolio_mobile.viewModels.UserPortfolio
 import kotlinx.coroutines.launch
 
@@ -86,6 +87,7 @@ fun ProfilePage(
     username: String? = null,
     authViewModel: AuthViewModel,
     profileViewModel: ProfileViewModel,
+    adventureVM: AdventureVM,
     onEditProfile: () -> Unit
 ){
     val localContext = LocalContext.current
@@ -202,25 +204,26 @@ fun ProfilePage(
                     user.username?.takeIf { it.isNotBlank() }?.let {
                         Text(
                             text = "@$it",
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
                     Surface(
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(50),
                         color = when (user.role) {
-                            "teacher" -> MaterialTheme.colorScheme.primaryContainer
-                            "student" -> MaterialTheme.colorScheme.secondaryContainer
-                            "public" -> MaterialTheme.colorScheme.secondaryContainer
-                            else -> MaterialTheme.colorScheme.tertiaryContainer
+                            "teacher" -> MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f)
+                            "student" -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.35f)
+                            "cs_community" -> MaterialTheme.colorScheme.primaryContainer
+                            "public" -> MaterialTheme.colorScheme.surfaceVariant
+                            else -> MaterialTheme.colorScheme.surfaceVariant
                         }
                     ) {
                         Text(
                             text = user.role,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -266,7 +269,22 @@ fun ProfilePage(
                 }
             }
 
-            // ===== Button =====
+            // ===== Portfolio Button (Public)=====
+            OutlinedButton(
+                onClick = {
+                    navController.navigate(Routes.UserPortfolio.go(user.id))
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Icon(Icons.Default.Dashboard, null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Portfolio", maxLines = 1)
+            }
+
+            // =====  Edit + Logout Button (only Login user can see)=====
             if (isOwnProfile) {
                 Row(
                     modifier = Modifier
@@ -276,27 +294,20 @@ fun ProfilePage(
                 ) {
                     OutlinedButton(
                         onClick = onEditProfile,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
-                        Icon(Icons.Default.Edit, null, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(2.dp))
-                        Text("Edit",fontSize = 12.sp)
+                        Icon(Icons.Default.Edit, null, modifier = Modifier.size(20.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text("Edit")
                     }
-                    OutlinedButton(
-                        onClick = {
-                            navController.navigate(Routes.UserPortfolio.go(user.id))
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Icon(Icons.Default.Dashboard, null, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(2.dp))
-                        Text("Portfolio", maxLines = 1,fontSize = 12.sp)
-                    }
+
                     OutlinedButton(
                         onClick = {
                             authViewModel.logout()
                         },
                         modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             contentColor = MaterialTheme.colorScheme.error
                         )
@@ -304,10 +315,10 @@ fun ProfilePage(
                         Icon(
                             Icons.AutoMirrored.Filled.Logout,
                             null,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(20.dp)
                         )
-                        Spacer(Modifier.width(2.dp))
-                        Text("Logout",fontSize = 12.sp)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Logout")
                     }
                 }
 
@@ -378,9 +389,30 @@ fun ProfilePage(
                         Text("Get Portfolio static!!")
                     }
                 }
+
+
+                // ===== Check if it was opened by Linyue's launcher app
+                if (activity.intent.getBooleanExtra("from_linyue_launcher", false)) {
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Button(onClick = {
+                        val resultIntent = Intent()
+                        resultIntent.putExtra("name", user.firstName + " " + user.lastName)
+                        resultIntent.putExtra("email", user.email)
+                        resultIntent.putExtra("username", user.username ?: "")
+                        resultIntent.putExtra("role", user.role)
+                        resultIntent.putExtra("program", user.program ?: "")
+                        resultIntent.putExtra("bio", user.bio ?: "")
+                        activity.setResult(Activity.RESULT_OK, resultIntent)
+
+                        authViewModel.logout()
+                        activity.finish()
+                    }) {
+                        Text("Return to Linyue's Launcher")
+                    }
+                }
             }
             // ===== Adventure List =====
-            AdventureNavigationList(user.id)
+            AdventureNavigationList(user.id,adventureVM)
         }
     }
 }
@@ -405,13 +437,13 @@ private fun ProfilePicture(
         Box(
             modifier = modifier
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary),
+                .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = firstName.firstOrNull()?.uppercase() ?: "?",
-                style = MaterialTheme.typography.displayLarge,
-                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
             )
         }

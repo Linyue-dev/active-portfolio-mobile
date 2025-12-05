@@ -1,5 +1,6 @@
 package com.example.active_portfolio_mobile.navigation
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -42,6 +43,7 @@ import com.example.active_portfolio_mobile.ui.profile.EditProfilePage
 import com.example.active_portfolio_mobile.ui.profile.ProfileViewModel
 import com.example.active_portfolio_mobile.ui.search.SearchResultPage
 import com.example.active_portfolio_mobile.ui.search.SearchViewModel
+import com.example.active_portfolio_mobile.viewModels.AdventureVM
 import com.example.active_portfolio_mobile.viewModels.GetPortfoliosVM
 
 //Sets up the app navigation using NavHost with three routes: LandingPage,
@@ -102,7 +104,12 @@ fun Router(modifier: Modifier) {
                 }
                 // Auth
                 composable(Routes.Login.route) {
+                    val context  = LocalContext.current
+                    val activity = context as? ComponentActivity
+                    val prefilledEmail = activity?.intent?.getStringExtra("prefilled_email") ?: ""
+
                     LoginPage(
+                        startingEmail = prefilledEmail,
                         viewModel = authViewModel,
                         onNavigateToSignUp = { navController.navigate(Routes.SignUp.route) },
                         onLoginSuccess = {
@@ -199,10 +206,12 @@ fun Router(modifier: Modifier) {
                         val profileViewModel: ProfileViewModel = viewModel(
                             factory = ViewModelFactory(tokenManager)
                         )
+                        val adventureVM: AdventureVM = viewModel()
                         ProfilePage(
                             username = null,
                             authViewModel,
                             profileViewModel,
+                            adventureVM = adventureVM,
                             onEditProfile = {
                                 navController.navigate(Routes.EditProfile.route)
                             }
@@ -265,6 +274,9 @@ fun Router(modifier: Modifier) {
                     val query = backStackEntry.arguments?.getString("query") ?: ""
                     SearchResultPage(initialQuery = query, viewModel = searchViewModel)
                 }
+                /**
+                 * OtherUserProfile
+                 */
                 composable(
                     route = Routes.OtherUserProfile.route,
                     arguments = listOf(
@@ -276,11 +288,13 @@ fun Router(modifier: Modifier) {
                     val profileViewModel: ProfileViewModel = viewModel(
                         factory = ViewModelFactory(tokenManager)
                     )
+                    val adventureVM: AdventureVM = viewModel()
                     val username = backStackEntry.arguments?.getString("username") ?: ""
                     ProfilePage(
                         username = username,
                         authViewModel = authViewModel,
                         profileViewModel = profileViewModel,
+                        adventureVM = adventureVM,
                         onEditProfile = {}
                     )
                 }

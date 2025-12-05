@@ -56,25 +56,13 @@ class SearchViewModel(
      * @param query The search keyword entered by the user.
      */
     fun searchUsers(query: String){
-
-        if(query.isBlank()){
-            _uiState.value = SearchUiState(
-                results = emptyList(),
-                isLoading = false,
-                message = null
-            )
+        if(query.isBlank() || query.length < 2 ){
+            clearSearch()
             return
         }
 
-        if(query.length <2 ){
-            _uiState.value = SearchUiState(
-                results = emptyList(),
-                isLoading = false,
-                message = null
-            )
-            return
-        }
-        _uiState.value = _uiState.value.copy(
+        _uiState.value = SearchUiState(
+            results = emptyList(),
             isLoading = true,
             message = null
         )
@@ -92,6 +80,7 @@ class SearchViewModel(
             } catch (ex: HttpException){
                 _uiState.update {
                     it.copy(
+                        results = emptyList(),
                         isLoading = false,
                         message = ErrorParser.errorHttpError(ex)
                     )
@@ -99,12 +88,14 @@ class SearchViewModel(
             } catch (ex: IOException){
                 _uiState.update {
                     it.copy(
+                        results = emptyList(),
                         isLoading = false,
                         message = "Network error. Please check your connection."
                     )
                 }
             }catch (ex: Exception) {
                 _uiState.value = _uiState.value.copy(
+                    results = emptyList(),
                     isLoading = false,
                     message = "Network error"
                 )
