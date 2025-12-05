@@ -9,6 +9,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -38,13 +39,20 @@ interface PortfolioService {
 
     //POST - CREATE
     @POST("portfolio")
-    suspend fun createPortfolio(@Body portfolio: CreatePortfolioRequest) : Response<Portfolio>
+    suspend fun createPortfolio(        
+        @Header("Authorization") token: String,
+        @Body portfolio: CreatePortfolioRequest) : Response<Portfolio>
 
     //PUT - UPDATE
     @PUT("portfolio/{portfolioId}")
-    suspend fun updatePortfolio(@Path("portfolioId") portfolioId: String, @Body portfolio: UpdatePortfolioRequest): Response<Portfolio>
+    suspend fun updatePortfolio(
+        @Header("Authorization") token: String,
+        @Path("portfolioId") portfolioId: String,
+        @Body portfolio: UpdatePortfolioRequest): Response<Portfolio>
 
     //DELETE - DELETE
     @DELETE("portfolio/{portfolioId}")
-    suspend fun deletePortfolio(@Path("portfolioId") portfolioId: String) : Response<DeleteResponse>
+    suspend fun deletePortfolio(
+        @Header("Authorization") token: String,
+        @Path("portfolioId") portfolioId: String) : Response<DeleteResponse>
 }

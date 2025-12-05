@@ -12,11 +12,13 @@ import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -72,6 +74,7 @@ fun ListUserPortfolio(userId: String, userPortfolio: UserPortfolio = viewModel()
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
+            //Display specific message if its the user page or no,
             if(userId == user?.id){
                 Text(
                     text = "My Portfolio: ${portfolios.value.size}"
@@ -99,7 +102,7 @@ fun ListUserPortfolio(userId: String, userPortfolio: UserPortfolio = viewModel()
                 ) {
                     //Button click to open the portfolio
                     Button(                            
-                        modifier = Modifier.width(200.dp),
+                        modifier = Modifier.width(200.dp).weight(1f),
                         onClick = {
                             navController.navigate(Routes.Portfolio.go(portfolio!!.id))
                         }){
@@ -112,7 +115,7 @@ fun ListUserPortfolio(userId: String, userPortfolio: UserPortfolio = viewModel()
                                 navController.navigate(Routes.CreateUpdatePortfolio.goEdit(portfolio!!.id))
                             }
                         ){
-                            Icon(imageVector = Icons.Filled.ChangeCircle, contentDescription = "Update Portfolio" )
+                            Icon(imageVector = Icons.Filled.ChangeCircle, contentDescription = "Update Portfolio", tint = MaterialTheme.colorScheme.primary)
                         }
                     }
                 }

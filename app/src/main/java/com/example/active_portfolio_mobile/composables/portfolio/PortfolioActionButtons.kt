@@ -1,5 +1,6 @@
 package com.example.active_portfolio_mobile.composables.portfolio
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -8,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.active_portfolio_mobile.composables.adventure.DeleteButtonWithConfirm
 
 /**
  * A composable that display action buttons for creating, saving or deleting
@@ -27,11 +29,14 @@ fun PortfolioActionButtons(
     onSaveClick: () -> Unit,
     onDeleteClick: (() -> Unit) ? =  null,
 ) {
-
+ Row(
+     modifier = Modifier
+         .fillMaxWidth()
+ ){
     //Save and Create button.
     Button(
         onClick = onSaveClick,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.weight(1f)
     ){
         Text( if (isEditing) "Save" else "Create")
     }
@@ -39,10 +44,7 @@ fun PortfolioActionButtons(
     //Delete button: if the portfolio doesn't already exist the button will not appear.
     if(isEditing && onDeleteClick != null){
         Spacer(modifier = Modifier.height(12.dp))
-        Button(onClick = onDeleteClick,
-            modifier = Modifier.fillMaxWidth()
-        ){
-            Text("Delete")
-        }
-    }
+        DeleteButtonWithConfirm(onDeleteClick)
+    } 
+ }
 }

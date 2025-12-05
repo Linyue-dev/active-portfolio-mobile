@@ -54,6 +54,9 @@ import com.example.active_portfolio_mobile.viewModels.PortfolioMV
  * the portfolio title and description. And then in the center
  * it displays the adventures linked to that portfolio.
  * You can copy the link of the portfolio to share it (not done yet).
+ * @param portfolioId The ID of the portfolio we want to display, must be a non null string.
+ * @param getPortfolioMV ViewModel to load a single portflio for display.
+ * @param portfolioMV ViewModel to load the adventures.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -121,21 +124,21 @@ fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM =
                         Spacer(Modifier.weight(1f))
 
                         //Share button
-                        IconButton(
-                            onClick = {
-                                //Copies a portfolio link to clipboard
-                                //TODO CHANGE THE LINK TO BE THE PROPER LINK
-                                val link = "google.com"
-                                val clipboard = ContextCompat.getSystemService(context, ClipboardManager::class.java)
-                                clipboard?.setPrimaryClip(ClipData.newPlainText("Portfolio Link", link))
-                                Toast.makeText(context, "Link copied!", Toast.LENGTH_SHORT).show()
-                            }
-                        ){
-                            Icon(
-                                imageVector = Icons.Default.Share,
-                                contentDescription = "Share"
-                            )
-                        }
+//                        IconButton(
+//                            onClick = {
+//                                //Copies a portfolio link to clipboard
+//                                //TODO CHANGE THE LINK TO BE THE PROPER LINK
+//                                val link = "google.com"
+//                                val clipboard = ContextCompat.getSystemService(context, ClipboardManager::class.java)
+//                                clipboard?.setPrimaryClip(ClipData.newPlainText("Portfolio Link", link))
+//                                Toast.makeText(context, "Link copied!", Toast.LENGTH_SHORT).show()
+//                            }
+//                        ){
+//                            Icon(
+//                                imageVector = Icons.Default.Share,
+//                                contentDescription = "Share"
+//                            )
+//                        }
                     }
                 )
             }

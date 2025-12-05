@@ -74,9 +74,9 @@ fun CreateOrEditPortfolioScreen(
     
     //Observing error and connection messages for the viewModel
     val errorMessage by singlePortfolioMV.errorMessage.collectAsState()
-    val connectionStatus by singlePortfolioMV.connectionStatus.collectAsState()
     val popupMessage by singlePortfolioMV.popUpMessage.collectAsState()
-
+    val errorCode by singlePortfolioMV.errorCode.collectAsState()
+    
     val navController = LocalNavController.current
 
     MainLayout {
@@ -87,12 +87,16 @@ fun CreateOrEditPortfolioScreen(
                     .fillMaxWidth()
                     .padding(4.dp)
             ) {
+                val titleError =
+                    if (errorCode == 400) errorMessage else null
+
                 //Portfolio title and description input fields
                 PortfolioFormFields(
                     title = title,
                     onTitleChange = { title = it },
                     description = description,
-                    onDescriptionChange = { description = it }
+                    onDescriptionChange = { description = it },
+                    titleError = titleError
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -101,17 +105,19 @@ fun CreateOrEditPortfolioScreen(
                     visibility,
                     onVisibilityChange = { visibility = it })
 
-                //Display error message if present
-                errorMessage?.let {
-                        msg ->
-                    Text(
-                        text = msg,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
+                //Display error message if code isn't 400
+                if(errorCode!= 400){
+                    errorMessage?.let {
+                            msg ->
+                        Text(
+                            text = msg,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
                 }
-
+                
                 Spacer(modifier = Modifier.padding(10.dp))
                 //Action buttons for Save/Create and Delete
                 PortfolioActionButtons(
@@ -124,7 +130,7 @@ fun CreateOrEditPortfolioScreen(
                                 newDescription = description,
                                 newVisibility = visibility.lowercase()
                             )
-                            singlePortfolioMV.updatePortfolio(existingPortfolio.id, portfolio)
+                            singlePortfolioMV.updatePortfolio(authViewModel.tokenManager.getToken(), existingPortfolio.id, portfolio)
                         } else {
                             /* Handle the creation part*/
                             val portfolio = CreatePortfolioRequest(
@@ -133,36 +139,20 @@ fun CreateOrEditPortfolioScreen(
                                 description = description,
                                 visibility = visibility.lowercase()
                             )
-                            singlePortfolioMV.createPortfolio(portfolio)
+                            singlePortfolioMV.createPortfolio(authViewModel.tokenManager.getToken(), portfolio)
                         }
                     },
                     /* Handle the delete part*/
                     onDeleteClick = if (isEditing) {
                         {
                             existingPortfolio?.let {
-                                singlePortfolioMV.deletePortfolio(it.id)
+                                singlePortfolioMV.deletePortfolio(authViewModel.tokenManager.getToken(), it.id)
                             }
                         }
                     } else null
                 )
 
-//                //Test fetch composable (for debugging) !!!
-//                GetAllPortfolio()
-//                //Display connection status if present
-//                connectionStatus?.let { status ->
-//                    Text(
-//                        text = status,
-//                        color = if (status.startsWith("✅")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-//                        style = MaterialTheme.typography.bodyMedium,
-//                        modifier = Modifier.padding(vertical = 8.dp)
-//                    )
-//                }
-//    
-//                // Button to test the backend connection manually
-//                Button(onClick = { singlePortfolioMV.testBackendConnection() }) {
-//                    Text("Test Backend Connection")
-//                }
-//            }
+
                 //The pop up message that appears when the user clicks
                 //on the action button. If the message is successful
                 //return the user to the landing page.
