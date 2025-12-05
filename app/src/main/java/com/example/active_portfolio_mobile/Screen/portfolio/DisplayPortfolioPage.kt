@@ -34,9 +34,16 @@ import androidx.compose.ui.Modifier
 import android.content.ClipboardManager
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.BlurEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -45,7 +52,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.active_portfolio_mobile.composables.adventure.AdventureView
 import com.example.active_portfolio_mobile.composables.portfolio.DescriptionPanel
+import com.example.active_portfolio_mobile.navigation.LocalAuthViewModel
 import com.example.active_portfolio_mobile.navigation.LocalNavController
+import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.viewModels.GetPortfoliosVM
 import com.example.active_portfolio_mobile.viewModels.PortfolioMV
 
@@ -55,7 +64,7 @@ import com.example.active_portfolio_mobile.viewModels.PortfolioMV
  * it displays the adventures linked to that portfolio.
  * You can copy the link of the portfolio to share it (not done yet).
  * @param portfolioId The ID of the portfolio we want to display, must be a non null string.
- * @param getPortfolioMV ViewModel to load a single portflio for display.
+ * @param getPortfolioMV ViewModel to load a single portfolio for display.
  * @param portfolioMV ViewModel to load the adventures.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +73,10 @@ fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM =
     
     //Navigation and context access
     val navController = LocalNavController.current
-    val context = LocalContext.current
+    
+    //Current authenticated user
+    val authViewModel: AuthViewModel = LocalAuthViewModel.current
+    val user = authViewModel.uiState.collectAsStateWithLifecycle().value.user
 
     //Collect viewmodel state for both the portfolio and the adventures
     val portfolio by getPortfolioMV.portfolio.collectAsStateWithLifecycle()
@@ -212,8 +224,41 @@ fun DisplayPortfolioPage(portfolioId : String, getPortfolioMV: GetPortfoliosVM =
                         
                     }
                 }
-                else {
-                    Text("No adventures in this portfolio yet")
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(4.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Empty",
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "No adventure found",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            if(portfolio?.createdBy == user?.id){
+                                Text(
+                                    text = "Once you create one, it will appear here.",
+                                    color = Color.Gray
+                                )
+                            }
+                        }
+                    }
                 }
             }
             
