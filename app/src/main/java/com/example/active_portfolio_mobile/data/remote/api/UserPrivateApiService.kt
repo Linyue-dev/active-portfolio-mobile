@@ -21,15 +21,6 @@ import retrofit2.Response
  */
 interface UserPrivateApiService {
     /**
-     * Authenticate a user with email and password.
-     *
-     * @param request Login credentials.
-     * @return Contains JWT token and user profile data.
-     */
-    @POST("users/login")
-    suspend fun login(@Body request: LogInRequest) : LogInResponse
-
-    /**
      * Register a new user account.
      *
      * @param request User registration details.
@@ -37,16 +28,6 @@ interface UserPrivateApiService {
      */
     @POST("users")
     suspend fun signup(@Body request: SignUpRequest) : SignUpResponse
-
-    /**
-     * Fetch the authenticated user's profile.
-     *
-     * Requires authentication. Returns complete user information.
-     *
-     * @return User profile data.
-     */
-    @GET("users/me")
-    suspend fun getCurrentUser() : User
 
     /**
      * Updates the authenticated user's profile.
@@ -66,6 +47,6 @@ interface UserPrivateApiService {
      * @param request Contains oldPassword and newPassword.
      * @return ChangePasswordResponse confirming the change.
      */
-    @PATCH("/users/change-password")
+    @PATCH("users/change-password")
     suspend fun changePassword(@Body request: ChangePasswordRequest) : ChangePasswordResponse
 }
