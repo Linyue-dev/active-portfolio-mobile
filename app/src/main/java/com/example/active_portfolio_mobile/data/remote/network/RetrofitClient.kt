@@ -1,4 +1,4 @@
-package com.example.active_portfolio_mobile.data.remote
+package com.example.active_portfolio_mobile.data.remote.network
 
 
 import com.example.active_portfolio_mobile.data.local.TokenManager

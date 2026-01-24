@@ -3,7 +3,7 @@ package com.example.active_portfolio_mobile.ui.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.local.TokenManager
-import com.example.active_portfolio_mobile.data.remote.RetrofitClient
+import com.example.active_portfolio_mobile.data.remote.network.RetrofitClient
 import com.example.active_portfolio_mobile.data.remote.api.UserApiService
 import com.example.active_portfolio_mobile.data.remote.api.UserPublicApiService
 import com.example.active_portfolio_mobile.data.remote.dto.ChangePasswordRequest

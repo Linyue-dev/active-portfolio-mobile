@@ -1,4 +1,4 @@
-package com.example.active_portfolio_mobile.data.remote.network
+package com.example.active_portfolio_mobile.data.remote.api
 
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSectionCreationRequest

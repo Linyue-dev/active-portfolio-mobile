@@ -11,7 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
 import com.example.active_portfolio_mobile.data.remote.dto.AdventureSectionUpdateRequest
 import com.example.active_portfolio_mobile.data.remote.dto.Portfolio
-import com.example.active_portfolio_mobile.data.remote.network.ActivePortfolioApi
+import com.example.active_portfolio_mobile.data.remote.api.ActivePortfolioApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
