@@ -7,7 +7,9 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
- * API endpoints for search user operations.
+ * User Public API Service
+ * All endpoints are publicly accessible without authentication.
+ * Used for user search, profile viewing, and username availability checks.
  */
 interface UserPublicApiService {
     /**

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.local.TokenManager
 import com.example.active_portfolio_mobile.data.remote.network.RetrofitClient
-import com.example.active_portfolio_mobile.data.remote.api.UserApiService
+import com.example.active_portfolio_mobile.data.remote.api.UserPrivateApiService
 import com.example.active_portfolio_mobile.data.remote.dto.LogInRequest
 import com.example.active_portfolio_mobile.data.remote.dto.SignUpRequest
 import com.example.active_portfolio_mobile.data.remote.dto.User
@@ -46,8 +46,8 @@ class AuthViewModel(
 ) : ViewModel() {
 
     // Retrofit API service for backend communication
-    private val apiService : UserApiService =
-        RetrofitClient.createService(UserApiService::class.java, tokenManager)
+    private val apiService : UserPrivateApiService =
+        RetrofitClient.createService(UserPrivateApiService::class.java, tokenManager)
     private val _uiState = MutableStateFlow(
         //It will check whether there is already a Token in the TokenManager.
         AuthUiState(isLoggedIn = tokenManager.isLoggedIn())

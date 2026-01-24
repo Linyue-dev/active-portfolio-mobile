@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.local.TokenManager
 import com.example.active_portfolio_mobile.data.remote.network.RetrofitClient
-import com.example.active_portfolio_mobile.data.remote.api.UserApiService
+import com.example.active_portfolio_mobile.data.remote.api.UserPrivateApiService
 import com.example.active_portfolio_mobile.data.remote.api.UserPublicApiService
 import com.example.active_portfolio_mobile.data.remote.dto.ChangePasswordRequest
 import com.example.active_portfolio_mobile.data.remote.dto.UpdateUserRequest
@@ -41,8 +41,8 @@ data class ProfileUiState(
 class ProfileViewModel(
     private val tokenManager: TokenManager
 ) : ViewModel() {
-    private val apiService : UserApiService =
-        RetrofitClient.createService(UserApiService::class.java, tokenManager)
+    private val apiService : UserPrivateApiService =
+        RetrofitClient.createService(UserPrivateApiService::class.java, tokenManager)
     private val userPublicApi : UserPublicApiService =
         RetrofitClient.createPublicService(UserPublicApiService::class.java)
     private val _uiState = MutableStateFlow(ProfileUiState())

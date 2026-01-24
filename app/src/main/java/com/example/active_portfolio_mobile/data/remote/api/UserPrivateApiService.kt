@@ -15,9 +15,11 @@ import retrofit2.http.POST
 import retrofit2.Response
 
 /**
- * API endpoints for user authentication and profile operations.
+ * User Account Management API Service (Private)
+ * All endpoints require authentication.
+ * Handles user profile updates, password changes, and account management.
  */
-interface UserApiService {
+interface UserPrivateApiService {
     /**
      * Authenticate a user with email and password.
      *
