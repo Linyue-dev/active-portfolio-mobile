@@ -3,6 +3,7 @@ package com.example.active_portfolio_mobile.ui.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.local.TokenManager
+import com.example.active_portfolio_mobile.data.remote.api.AuthApiService
 import com.example.active_portfolio_mobile.data.remote.network.RetrofitClient
 import com.example.active_portfolio_mobile.data.remote.api.UserPrivateApiService
 import com.example.active_portfolio_mobile.data.remote.api.UserPublicApiService
@@ -41,10 +42,15 @@ data class ProfileUiState(
 class ProfileViewModel(
     private val tokenManager: TokenManager
 ) : ViewModel() {
-    private val apiService : UserPrivateApiService =
-        RetrofitClient.createService(UserPrivateApiService::class.java, tokenManager)
-    private val userPublicApi : UserPublicApiService =
-        RetrofitClient.createPublicService(UserPublicApiService::class.java)
+
+    // get current user by authApi
+    private val authApi: AuthApiService = RetrofitClient.authApi
+
+    // update current user by userPrivateApi
+    private val userPrivateApi : UserPrivateApiService = RetrofitClient.userPrivateApi
+    // check other user by userPublicApi
+    private val userPublicApi : UserPublicApiService =  RetrofitClient.userPublicApi
+
     private val _uiState = MutableStateFlow(ProfileUiState())
 
     val uiState : StateFlow<ProfileUiState> = _uiState.asStateFlow()
@@ -76,7 +82,7 @@ class ProfileViewModel(
             _uiState.value = _uiState.value.copy( isLoading = true, error = null)
 
             try{
-                val newUser = apiService.getCurrentUser()
+                val newUser = authApi.getCurrentUser()
 
                 // save to local storage
                 tokenManager.saveUser(newUser)
@@ -128,7 +134,7 @@ class ProfileViewModel(
                     else -> throw IllegalArgumentException("Unknown field: $field")
                 }
 
-                val updateResponse = apiService.updateUser(request)
+                val updateResponse = userPrivateApi.updateUser(request)
 
                 if (updateResponse.isSuccessful){
                     val user = updateResponse.body()!!
@@ -184,7 +190,7 @@ class ProfileViewModel(
                     oldPassword = oldPassword.trim(),
                     newPassword = newPassword.trim()
                 )
-                apiService.changePassword(request)
+                userPrivateApi.changePassword(request)
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,

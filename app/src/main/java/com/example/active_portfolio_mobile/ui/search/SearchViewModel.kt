@@ -39,7 +39,7 @@ data class SearchUiState(
  */
 class SearchViewModel(
 ): ViewModel(){
-    private val apiService = RetrofitClient.createPublicService(UserPublicApiService::class.java)
+    private val userPublicApi = RetrofitClient.userPublicApi
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
@@ -70,7 +70,7 @@ class SearchViewModel(
         // start search
         viewModelScope.launch {
             try{
-                val results = apiService.searchUsers(query)
+                val results = userPublicApi.searchUsers(query)
                 _uiState.value = SearchUiState(
                     results = results,
                     isLoading = false,
