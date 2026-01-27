@@ -6,9 +6,9 @@ import com.example.active_portfolio_mobile.data.local.TokenManager
 import com.example.active_portfolio_mobile.data.remote.api.AuthApiService
 import com.example.active_portfolio_mobile.data.remote.network.RetrofitClient
 import com.example.active_portfolio_mobile.data.remote.api.UserPrivateApiService
-import com.example.active_portfolio_mobile.data.remote.dto.LogInRequest
-import com.example.active_portfolio_mobile.data.remote.dto.SignUpRequest
-import com.example.active_portfolio_mobile.data.remote.dto.User
+import com.example.active_portfolio_mobile.data.remote.dto.auth.LoginRequest
+import com.example.active_portfolio_mobile.data.remote.dto.user.SignUpRequest
+import com.example.active_portfolio_mobile.data.remote.dto.user.User
 import com.example.active_portfolio_mobile.ui.common.ErrorParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -88,7 +88,7 @@ class AuthViewModel(
 
             try {
                 // Changed: Use authApi instead of userPrivateApi
-                val response = authApi.login(LogInRequest(email, password))
+                val response = authApi.login(LoginRequest(email, password))
 
                 tokenManager.saveToken(response.token)
                 tokenManager.saveUser(response.user)

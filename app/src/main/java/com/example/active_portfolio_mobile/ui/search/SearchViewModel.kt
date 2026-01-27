@@ -3,8 +3,7 @@ package com.example.active_portfolio_mobile.ui.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.remote.network.RetrofitClient
-import com.example.active_portfolio_mobile.data.remote.api.UserPublicApiService
-import com.example.active_portfolio_mobile.data.remote.dto.User
+import com.example.active_portfolio_mobile.data.remote.dto.user.User
 import com.example.active_portfolio_mobile.ui.common.ErrorParser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

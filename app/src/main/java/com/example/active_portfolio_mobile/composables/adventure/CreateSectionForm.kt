@@ -30,8 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
-import com.example.active_portfolio_mobile.data.remote.dto.SectionType
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.AdventureSection
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.SectionType
 import com.example.active_portfolio_mobile.navigation.LocalAuthViewModel
 import com.example.active_portfolio_mobile.navigation.LocalNavController
 import com.example.active_portfolio_mobile.utilities.rememberMutableStateListOf

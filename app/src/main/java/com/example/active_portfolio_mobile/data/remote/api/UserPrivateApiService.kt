@@ -1,15 +1,12 @@
 package com.example.active_portfolio_mobile.data.remote.api
 
-import com.example.active_portfolio_mobile.data.remote.dto.ChangePasswordRequest
-import com.example.active_portfolio_mobile.data.remote.dto.ChangePasswordResponse
-import com.example.active_portfolio_mobile.data.remote.dto.LogInRequest
-import com.example.active_portfolio_mobile.data.remote.dto.LogInResponse
-import com.example.active_portfolio_mobile.data.remote.dto.SignUpRequest
-import com.example.active_portfolio_mobile.data.remote.dto.SignUpResponse
-import com.example.active_portfolio_mobile.data.remote.dto.UpdateUserRequest
-import com.example.active_portfolio_mobile.data.remote.dto.User
+import com.example.active_portfolio_mobile.data.remote.dto.user.ChangePasswordRequest
+import com.example.active_portfolio_mobile.data.remote.dto.user.ChangePasswordResponse
+import com.example.active_portfolio_mobile.data.remote.dto.user.SignUpRequest
+import com.example.active_portfolio_mobile.data.remote.dto.user.SignUpResponse
+import com.example.active_portfolio_mobile.data.remote.dto.user.UpdateUserRequest
+import com.example.active_portfolio_mobile.data.remote.dto.user.User
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.Response

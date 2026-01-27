@@ -17,8 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.active_portfolio_mobile.data.remote.dto.Adventure
-import com.example.active_portfolio_mobile.data.remote.dto.SectionType
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.Adventure
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.SectionType
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionUpdateVM
 
 /**

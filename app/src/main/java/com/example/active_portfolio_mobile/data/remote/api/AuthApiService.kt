@@ -1,8 +1,7 @@
 package com.example.active_portfolio_mobile.data.remote.api
 
-import com.example.active_portfolio_mobile.data.remote.dto.LogInRequest
-import com.example.active_portfolio_mobile.data.remote.dto.LogInResponse
-import com.example.active_portfolio_mobile.data.remote.dto.User
+import com.example.active_portfolio_mobile.data.remote.dto.auth.LoginRequest
+import com.example.active_portfolio_mobile.data.remote.dto.auth.LoginResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -20,7 +19,7 @@ interface AuthApiService {
      * @return Contains JWT token and user profile data.
      */
     @POST("auth/login")
-    suspend fun login(@Body request: LogInRequest): LogInResponse
+    suspend fun login(@Body request: LoginRequest): LoginResponse
 
     /**
      * Fetch the currently authenticated user's profile.
@@ -31,7 +30,7 @@ interface AuthApiService {
      * @return User profile data with token.
      */
     @GET("auth/me")
-    suspend fun getCurrentUser(): User
+    suspend fun getCurrentUser(): LoginResponse
 
     /**
      * Refresh the authentication token to extend the session.
@@ -41,7 +40,7 @@ interface AuthApiService {
      * @return New JWT token and updated user data.
      */
     @POST("auth/refresh")
-    suspend fun refreshToken(): LogInResponse
+    suspend fun refreshToken(): LoginResponse
 
     /**
      * Log out the current user.

@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.AdventureSection
 import com.example.active_portfolio_mobile.viewModels.AdventureSectionImageUpdateVM
 
 /**

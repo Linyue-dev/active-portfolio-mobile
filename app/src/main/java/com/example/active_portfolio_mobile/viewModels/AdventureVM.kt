@@ -2,7 +2,7 @@ package com.example.active_portfolio_mobile.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.active_portfolio_mobile.data.remote.dto.Adventure
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.Adventure
 import com.example.active_portfolio_mobile.data.remote.api.ActivePortfolioApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

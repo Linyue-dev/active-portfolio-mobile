@@ -25,9 +25,9 @@ import com.example.active_portfolio_mobile.composables.portfolio.PopUpMessage
 import com.example.active_portfolio_mobile.composables.portfolio.PortfolioActionButtons
 import com.example.active_portfolio_mobile.composables.portfolio.PortfolioFormFields
 import com.example.active_portfolio_mobile.composables.portfolio.VisibilitySelector
-import com.example.active_portfolio_mobile.data.remote.dto.CreatePortfolioRequest
-import com.example.active_portfolio_mobile.data.remote.dto.Portfolio
-import com.example.active_portfolio_mobile.data.remote.dto.UpdatePortfolioRequest
+import com.example.active_portfolio_mobile.data.remote.dto.portfolio.CreatePortfolioRequest
+import com.example.active_portfolio_mobile.data.remote.dto.portfolio.Portfolio
+import com.example.active_portfolio_mobile.data.remote.dto.portfolio.UpdatePortfolioRequest
 import com.example.active_portfolio_mobile.layouts.MainLayout
 import com.example.active_portfolio_mobile.navigation.LocalAuthViewModel
 import com.example.active_portfolio_mobile.navigation.LocalNavController

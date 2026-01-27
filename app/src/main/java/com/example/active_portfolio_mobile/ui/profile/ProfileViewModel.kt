@@ -7,9 +7,9 @@ import com.example.active_portfolio_mobile.data.remote.api.AuthApiService
 import com.example.active_portfolio_mobile.data.remote.network.RetrofitClient
 import com.example.active_portfolio_mobile.data.remote.api.UserPrivateApiService
 import com.example.active_portfolio_mobile.data.remote.api.UserPublicApiService
-import com.example.active_portfolio_mobile.data.remote.dto.ChangePasswordRequest
-import com.example.active_portfolio_mobile.data.remote.dto.UpdateUserRequest
-import com.example.active_portfolio_mobile.data.remote.dto.User
+import com.example.active_portfolio_mobile.data.remote.dto.user.ChangePasswordRequest
+import com.example.active_portfolio_mobile.data.remote.dto.user.UpdateUserRequest
+import com.example.active_portfolio_mobile.data.remote.dto.user.User
 import com.example.active_portfolio_mobile.ui.common.ErrorParser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -82,9 +82,12 @@ class ProfileViewModel(
             _uiState.value = _uiState.value.copy( isLoading = true, error = null)
 
             try{
-                val newUser = authApi.getCurrentUser()
+                val loginResponse = authApi.getCurrentUser()
+                val newUser = loginResponse.user
+                val newToken = loginResponse.token
 
                 // save to local storage
+                tokenManager.saveToken(newToken)
                 tokenManager.saveUser(newUser)
 
                 _uiState.value = _uiState.value.copy(

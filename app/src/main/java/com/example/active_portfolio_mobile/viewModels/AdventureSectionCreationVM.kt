@@ -4,9 +4,9 @@ import android.graphics.Bitmap
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
-import com.example.active_portfolio_mobile.data.remote.dto.AdventureSectionCreationRequest
-import com.example.active_portfolio_mobile.data.remote.dto.Portfolio
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.AdventureSection
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.AdventureSectionCreationRequest
+import com.example.active_portfolio_mobile.data.remote.dto.portfolio.Portfolio
 import com.example.active_portfolio_mobile.data.remote.api.ActivePortfolioApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
