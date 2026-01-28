@@ -1,13 +1,15 @@
 package com.example.active_portfolio_mobile.data.remote.api
 
-import com.example.active_portfolio_mobile.data.remote.dto.CheckUsernameResponse
-import com.example.active_portfolio_mobile.data.remote.dto.User
+import com.example.active_portfolio_mobile.data.remote.dto.user.CheckUsernameResponse
+import com.example.active_portfolio_mobile.data.remote.dto.user.User
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
- * API endpoints for search user operations.
+ * User Public API Service
+ * All endpoints are publicly accessible without authentication.
+ * Used for user search, profile viewing, and username availability checks.
  */
 interface UserPublicApiService {
     /**

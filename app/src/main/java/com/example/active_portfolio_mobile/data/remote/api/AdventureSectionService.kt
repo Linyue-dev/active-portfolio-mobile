@@ -1,8 +1,8 @@
-package com.example.active_portfolio_mobile.data.remote.network
+package com.example.active_portfolio_mobile.data.remote.api
 
-import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
-import com.example.active_portfolio_mobile.data.remote.dto.AdventureSectionCreationRequest
-import com.example.active_portfolio_mobile.data.remote.dto.AdventureSectionUpdateRequest
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.AdventureSection
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.AdventureSectionCreationRequest
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.AdventureSectionUpdateRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response

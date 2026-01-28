@@ -1,15 +1,13 @@
 package com.example.active_portfolio_mobile.viewModels
 
-import android.util.Log.e
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.example.active_portfolio_mobile.data.remote.dto.Adventure
-import com.example.active_portfolio_mobile.data.remote.dto.AdventureSection
-import com.example.active_portfolio_mobile.data.remote.dto.AdventureUpdateRequest
-import com.example.active_portfolio_mobile.data.remote.dto.Portfolio
-import com.example.active_portfolio_mobile.data.remote.network.ActivePortfolioApi
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.Adventure
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.AdventureUpdateRequest
+import com.example.active_portfolio_mobile.data.remote.dto.portfolio.Portfolio
+import com.example.active_portfolio_mobile.data.remote.api.ActivePortfolioApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -1,10 +1,10 @@
-package com.example.active_portfolio_mobile.data.remote.network
+package com.example.active_portfolio_mobile.data.remote.api
 
 
-import com.example.active_portfolio_mobile.data.remote.dto.CreatePortfolioRequest
-import com.example.active_portfolio_mobile.data.remote.dto.DeleteResponse
-import com.example.active_portfolio_mobile.data.remote.dto.Portfolio
-import com.example.active_portfolio_mobile.data.remote.dto.UpdatePortfolioRequest
+import com.example.active_portfolio_mobile.data.remote.dto.portfolio.CreatePortfolioRequest
+import com.example.active_portfolio_mobile.data.remote.dto.portfolio.DeleteResponse
+import com.example.active_portfolio_mobile.data.remote.dto.portfolio.Portfolio
+import com.example.active_portfolio_mobile.data.remote.dto.portfolio.UpdatePortfolioRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -13,7 +13,6 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 
 interface PortfolioService {

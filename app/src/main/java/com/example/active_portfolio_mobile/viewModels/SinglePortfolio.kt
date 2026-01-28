@@ -3,10 +3,10 @@ package com.example.active_portfolio_mobile.viewModels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.active_portfolio_mobile.data.remote.dto.CreatePortfolioRequest
-import com.example.active_portfolio_mobile.data.remote.dto.Portfolio
-import com.example.active_portfolio_mobile.data.remote.dto.UpdatePortfolioRequest
-import com.example.active_portfolio_mobile.data.remote.network.ActivePortfolioApi
+import com.example.active_portfolio_mobile.data.remote.dto.portfolio.CreatePortfolioRequest
+import com.example.active_portfolio_mobile.data.remote.dto.portfolio.Portfolio
+import com.example.active_portfolio_mobile.data.remote.dto.portfolio.UpdatePortfolioRequest
+import com.example.active_portfolio_mobile.data.remote.api.ActivePortfolioApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

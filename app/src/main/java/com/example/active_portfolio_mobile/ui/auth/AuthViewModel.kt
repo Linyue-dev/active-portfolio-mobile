@@ -3,11 +3,12 @@ package com.example.active_portfolio_mobile.ui.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.active_portfolio_mobile.data.local.TokenManager
-import com.example.active_portfolio_mobile.data.remote.RetrofitClient
-import com.example.active_portfolio_mobile.data.remote.api.UserApiService
-import com.example.active_portfolio_mobile.data.remote.dto.LogInRequest
-import com.example.active_portfolio_mobile.data.remote.dto.SignUpRequest
-import com.example.active_portfolio_mobile.data.remote.dto.User
+import com.example.active_portfolio_mobile.data.remote.api.AuthApiService
+import com.example.active_portfolio_mobile.data.remote.network.RetrofitClient
+import com.example.active_portfolio_mobile.data.remote.api.UserPrivateApiService
+import com.example.active_portfolio_mobile.data.remote.dto.auth.LoginRequest
+import com.example.active_portfolio_mobile.data.remote.dto.user.SignUpRequest
+import com.example.active_portfolio_mobile.data.remote.dto.user.User
 import com.example.active_portfolio_mobile.ui.common.ErrorParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,9 +46,11 @@ class AuthViewModel(
     val tokenManager: TokenManager
 ) : ViewModel() {
 
-    // Retrofit API service for backend communication
-    private val apiService : UserApiService =
-        RetrofitClient.createService(UserApiService::class.java, tokenManager)
+    // Authentication API - for login, logout, token refresh
+    private val authApi: AuthApiService = RetrofitClient.authApi
+
+    // User API - for signup (creates new user account)
+    private val userPrivateApi: UserPrivateApiService = RetrofitClient.userPrivateApi
     private val _uiState = MutableStateFlow(
         //It will check whether there is already a Token in the TokenManager.
         AuthUiState(isLoggedIn = tokenManager.isLoggedIn())
@@ -84,7 +87,8 @@ class AuthViewModel(
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
             try {
-                val response = apiService.login(LogInRequest(email, password))
+                // Changed: Use authApi instead of userPrivateApi
+                val response = authApi.login(LoginRequest(email, password))
 
                 tokenManager.saveToken(response.token)
                 tokenManager.saveUser(response.user)
@@ -104,9 +108,10 @@ class AuthViewModel(
                     it.copy(isLoading = false,error = "Network error. Please check your connection.")
                 }
             } catch (ex: Exception) {
+                ex.printStackTrace()
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Network error"
+                    error = ex.message ?: ex.toString()
                 )
             }
         }
@@ -126,7 +131,9 @@ class AuthViewModel(
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
             try {
-                val response = apiService.signup(SignUpRequest(firstName,lastName,email,program,password, username))
+
+                // Signup stays in userPrivateApi
+                val response = userPrivateApi.signup(SignUpRequest(firstName,lastName,email,program,password, username))
                 tokenManager.saveToken(response.token)
                 tokenManager.saveUser(response.user)
 

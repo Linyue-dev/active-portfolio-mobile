@@ -1,7 +1,7 @@
-package com.example.active_portfolio_mobile.data.remote.network
+package com.example.active_portfolio_mobile.data.remote.api
 
-import com.example.active_portfolio_mobile.data.remote.dto.Adventure
-import com.example.active_portfolio_mobile.data.remote.dto.AdventureUpdateRequest
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.Adventure
+import com.example.active_portfolio_mobile.data.remote.dto.adventure.AdventureUpdateRequest
 import kotlinx.serialization.Serializable
 import retrofit2.Response
 import retrofit2.http.Body

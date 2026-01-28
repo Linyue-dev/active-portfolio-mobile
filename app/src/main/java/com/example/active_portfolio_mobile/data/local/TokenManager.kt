@@ -2,7 +2,7 @@ package com.example.active_portfolio_mobile.data.local
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.active_portfolio_mobile.data.remote.dto.User
+import com.example.active_portfolio_mobile.data.remote.dto.user.User
 import kotlinx.serialization.json.Json
 
 class TokenManager (context: Context) {
