@@ -9,6 +9,7 @@ import com.example.active_portfolio_mobile.data.remote.api.UserPrivateApiService
 import com.example.active_portfolio_mobile.data.remote.dto.auth.LoginRequest
 import com.example.active_portfolio_mobile.data.remote.dto.user.SignUpRequest
 import com.example.active_portfolio_mobile.data.remote.dto.user.User
+import com.example.active_portfolio_mobile.domain.repository.AuthRepository
 import com.example.active_portfolio_mobile.ui.common.ErrorParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,7 @@ data class AuthUiState(
     val isLoggedIn: Boolean = false,
     val user : User? = null,
     val error: String? = null,
+    val token: String? = null,
 )
 
 /**
@@ -43,7 +45,7 @@ data class AuthUiState(
  */
 
 class AuthViewModel(
-    val tokenManager: TokenManager
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     // Authentication API - for login, logout, token refresh
@@ -51,11 +53,11 @@ class AuthViewModel(
 
     // User API - for signup (creates new user account)
     private val userPrivateApi: UserPrivateApiService = RetrofitClient.userPrivateApi
-    private val _uiState = MutableStateFlow(
-        //It will check whether there is already a Token in the TokenManager.
-        AuthUiState(isLoggedIn = tokenManager.isLoggedIn())
-    )
 
+    // Initialize to the state of not being logged in
+    private val _uiState = MutableStateFlow(
+        AuthUiState(isLoggedIn = false)
+    )
     val uiState: StateFlow<AuthUiState> = _uiState
 
     /**
@@ -64,11 +66,16 @@ class AuthViewModel(
      * - If so, restore user and mark state as logged-in.
      */
     init {
-        if (tokenManager.isLoggedIn()){
-            _uiState.value = _uiState.value.copy(
-                isLoggedIn = true,
-                user = tokenManager.getUser()
-            )
+        // check state of login in coroutine
+        viewModelScope.launch {
+            val token = authRepository.getTokenOrNull()
+            if (token != null){
+                _uiState.value = _uiState.value.copy(
+                    isLoggedIn = true,
+                    token = token,
+                    user = authRepository.getUserOrNull()
+                )
+            }
         }
     }
 
@@ -90,12 +97,13 @@ class AuthViewModel(
                 // Changed: Use authApi instead of userPrivateApi
                 val response = authApi.login(LoginRequest(email, password))
 
-                tokenManager.saveToken(response.token)
-                tokenManager.saveUser(response.user)
+                authRepository.saveToken(response.token)
+                authRepository.saveUser(response.user)
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     isLoggedIn = true,
+                    token = response.token,
                     user = response.user
                 )
 
@@ -131,15 +139,17 @@ class AuthViewModel(
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
             try {
-
                 // Signup stays in userPrivateApi
-                val response = userPrivateApi.signup(SignUpRequest(firstName,lastName,email,program,password, username))
-                tokenManager.saveToken(response.token)
-                tokenManager.saveUser(response.user)
+                val response = userPrivateApi.signup(
+                    SignUpRequest(firstName,lastName,email,program,password, username)
+                )
+                authRepository.saveToken(response.token)
+                authRepository.saveUser(response.user)
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     isLoggedIn = true,
+                    token = response.token,
                     user = response.user
                 )
             } catch (ex: HttpException) {
@@ -161,12 +171,15 @@ class AuthViewModel(
      * Handle user logout
      */
     fun logout(){
-        tokenManager.clearAll()
-        _uiState.value = AuthUiState(
-            isLoading = false,
-            isLoggedIn = false,
-            user = null,
-            error = null
-        )
+        viewModelScope.launch {
+            authRepository.clearAll()
+            _uiState.value = AuthUiState(
+                isLoading = false,
+                isLoggedIn = false,
+                user = null,
+                token = null,
+                error = null
+            )
+        }
     }
 }

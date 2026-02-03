@@ -57,7 +57,9 @@ fun CreateOrEditPortfolioScreen(
 ){
     //User info
     val authViewModel: AuthViewModel = LocalAuthViewModel.current
-    val user = authViewModel.uiState.collectAsStateWithLifecycle().value.user
+    val authState = authViewModel.uiState.collectAsStateWithLifecycle().value
+    val token = authState.token
+    val user = authState.user
 
     //Local state for form fields.
     var title by remember { mutableStateOf("") }
@@ -130,7 +132,9 @@ fun CreateOrEditPortfolioScreen(
                                 newDescription = description,
                                 newVisibility = visibility.lowercase()
                             )
-                            singlePortfolioMV.updatePortfolio(authViewModel.tokenManager.getToken(), existingPortfolio.id, portfolio)
+                            token?.let {  // ← use token
+                                singlePortfolioMV.updatePortfolio(it, existingPortfolio.id, portfolio)
+                            }
                         } else {
                             /* Handle the creation part*/
                             val portfolio = CreatePortfolioRequest(
@@ -139,14 +143,18 @@ fun CreateOrEditPortfolioScreen(
                                 description = description,
                                 visibility = visibility.lowercase()
                             )
-                            singlePortfolioMV.createPortfolio(authViewModel.tokenManager.getToken(), portfolio)
+                            token?.let {
+                                singlePortfolioMV.createPortfolio(it, portfolio)
+                            }
                         }
                     },
                     /* Handle the delete part*/
                     onDeleteClick = if (isEditing) {
                         {
-                            existingPortfolio?.let {
-                                singlePortfolioMV.deletePortfolio(authViewModel.tokenManager.getToken(), it.id)
+                            existingPortfolio?.let { p ->
+                                token?.let { t ->
+                                    singlePortfolioMV.deletePortfolio(t, p.id)
+                                }
                             }
                         }
                     } else null

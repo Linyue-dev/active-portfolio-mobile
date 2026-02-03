@@ -56,6 +56,7 @@ fun UpdateSectionForm(
     val section = remember { mutableStateOf(sectionToShow) }
     val authViewModel = LocalAuthViewModel.current
     val scope = rememberCoroutineScope()
+    val token = authViewModel.uiState.collectAsStateWithLifecycle().value.token
 
     Column {
         TextField(
@@ -116,15 +117,17 @@ fun UpdateSectionForm(
                 .padding(horizontal = 15.dp).padding(top = 15.dp).padding(bottom = 5.dp)
         ) {
             IconButton(onClick = {
-                adventureSectionVM.updateSection(
-                    section.value,
-                    authViewModel.tokenManager.getToken()
-                ) { newMessage ->
-                    scope.launch {
-                        messageFlow.emit(newMessage)
+                token?.let {
+                    adventureSectionVM.updateSection(
+                        section.value,
+                        it
+                    ) { newMessage ->
+                        scope.launch {
+                            messageFlow.emit(newMessage)
+                        }
+                        println(newMessage)
+                        setUpdated()
                     }
-                    println(newMessage)
-                    setUpdated()
                 }
             }) {
                 Icon(
@@ -135,12 +138,14 @@ fun UpdateSectionForm(
             }
 
             DeleteButtonWithConfirm {
-                adventureSectionVM.deleteSection(
-                    section.value,
-                    authViewModel.tokenManager.getToken()
-                ) {
-                    scope.launch {
-                        messageFlow.emit(it)
+                token?.let {
+                    adventureSectionVM.deleteSection(
+                        section.value,
+                        it
+                    ) {
+                        scope.launch {
+                            messageFlow.emit(it)
+                        }
                     }
                 }
             }
@@ -192,6 +197,7 @@ fun UpdateImageSectionForm(
     val section by adventureSectionVM.section.collectAsStateWithLifecycle()
     val bitmaps = adventureSectionVM.bitmapImages.collectAsStateWithLifecycle()
     val authViewModel = LocalAuthViewModel.current
+    val token = authViewModel.uiState.collectAsStateWithLifecycle().value.token
 
     Column {
         TextField(
@@ -246,14 +252,14 @@ fun UpdateImageSectionForm(
                 .padding(horizontal = 15.dp).padding(top = 15.dp).padding(bottom = 5.dp)
         ) {
             IconButton(onClick = {
-                adventureSectionVM.updateSection(
-                    authViewModel.tokenManager.getToken()
-                ) { newMessage ->
-                    scope.launch {
-                        messageFlow.emit(newMessage)
+                token?.let {
+                    adventureSectionVM.updateSection(it){ newMessage ->
+                        scope.launch {
+                            messageFlow.emit(newMessage)
+                        }
+                        println(newMessage)
+                        setUpdated()
                     }
-                    println(newMessage)
-                    setUpdated()
                 }
             }) {
                 Icon(
@@ -264,12 +270,14 @@ fun UpdateImageSectionForm(
             }
 
             DeleteButtonWithConfirm {
-                allSectionsVM.deleteSection(
-                    section = section,
-                    token = authViewModel.tokenManager.getToken()
-                ) {
-                    scope.launch {
-                        messageFlow.emit(it)
+                token?.let{
+                    allSectionsVM.deleteSection(
+                        section = section,
+                        token = it
+                    ) {
+                        scope.launch {
+                            messageFlow.emit(it)
+                        }
                     }
                 }
             }

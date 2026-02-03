@@ -56,7 +56,9 @@ fun CreateAdventureScreen(
     adventureVM: AdventureCreationUpdateVM = viewModel()
 ) {
     val authViewModel: AuthViewModel = LocalAuthViewModel.current
-    val user = authViewModel.uiState.collectAsStateWithLifecycle().value.user
+    val authState  = authViewModel.uiState.collectAsStateWithLifecycle().value
+    val user = authState.user
+    val token = authState.token
     val navController: NavController = LocalNavController.current
     val adventure by adventureVM.adventure.collectAsStateWithLifecycle()
     val portfolios = adventureVM.portfolios
@@ -149,9 +151,11 @@ fun CreateAdventureScreen(
                         // Create Adventure or save changes to existing one.
                         IconButton(
                             onClick = {
-                                adventureVM.saveAdventure(authViewModel.tokenManager.getToken()) {
-                                    scope.launch {
-                                        messageFlow.emit(it)
+                                token?.let{ t ->
+                                    adventureVM.saveAdventure(t){ message ->
+                                        scope.launch {
+                                            messageFlow.emit(message)
+                                        }
                                     }
                                 }
                             }
@@ -165,9 +169,11 @@ fun CreateAdventureScreen(
                         // Delete the Adventure
                         if (adventure.id != "") {
                             DeleteButtonWithConfirm {
-                                adventureVM.deleteAdventure(authViewModel.tokenManager.getToken()) {
-                                    scope.launch {
-                                        messageFlow.emit(it)
+                                token?.let { t ->
+                                    adventureVM.deleteAdventure(t) { message ->
+                                        scope.launch {
+                                            messageFlow.emit(message)
+                                        }
                                     }
                                 }
                             }

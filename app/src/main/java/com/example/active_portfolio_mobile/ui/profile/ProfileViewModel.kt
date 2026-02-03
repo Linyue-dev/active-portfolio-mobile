@@ -10,6 +10,7 @@ import com.example.active_portfolio_mobile.data.remote.api.UserPublicApiService
 import com.example.active_portfolio_mobile.data.remote.dto.user.ChangePasswordRequest
 import com.example.active_portfolio_mobile.data.remote.dto.user.UpdateUserRequest
 import com.example.active_portfolio_mobile.data.remote.dto.user.User
+import com.example.active_portfolio_mobile.domain.repository.AuthRepository
 import com.example.active_portfolio_mobile.ui.common.ErrorParser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,7 +41,7 @@ data class ProfileUiState(
  * @param tokenManager Handles secure storage of tokens and cached user data
  */
 class ProfileViewModel(
-    private val tokenManager: TokenManager
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     // get current user by authApi
@@ -56,12 +57,15 @@ class ProfileViewModel(
     val uiState : StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
-        val cached = tokenManager.getUser()
-        if (cached != null){
-            _uiState.value = _uiState.value.copy(user = cached)
+
+        viewModelScope.launch {
+            val cached = authRepository.getUserOrNull()
+            if (cached != null) {
+                _uiState.value = _uiState.value.copy(user = cached)
+            }
+            // fetch latest user from backend
+            getMyProfile()
         }
-        // fetch lastest user from backend
-        getMyProfile()
     }
 
     /**
@@ -77,7 +81,6 @@ class ProfileViewModel(
      * - [HttpException] → parsed into meaningful messages using [ErrorParser]
      */
     fun getMyProfile(){
-        val token = tokenManager.getToken()
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy( isLoading = true, error = null)
 
@@ -87,8 +90,8 @@ class ProfileViewModel(
                 val newToken = loginResponse.token
 
                 // save to local storage
-                tokenManager.saveToken(newToken)
-                tokenManager.saveUser(newUser)
+                authRepository.saveToken(newToken)
+                authRepository.saveUser(newUser)
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -141,7 +144,7 @@ class ProfileViewModel(
 
                 if (updateResponse.isSuccessful){
                     val user = updateResponse.body()!!
-                    tokenManager.saveUser(user)
+                    authRepository.saveUser(user)
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         user = user,

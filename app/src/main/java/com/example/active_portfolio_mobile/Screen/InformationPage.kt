@@ -94,7 +94,6 @@ fun InformationPage(modifier: Modifier) {
                     }
                 }
             }
-
         }
     }
 }

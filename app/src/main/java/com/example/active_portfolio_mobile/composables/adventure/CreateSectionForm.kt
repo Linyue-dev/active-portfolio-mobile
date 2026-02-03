@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.active_portfolio_mobile.data.remote.dto.adventure.AdventureSection
 import com.example.active_portfolio_mobile.data.remote.dto.adventure.SectionType
@@ -60,6 +61,7 @@ fun CreateSectionForm(
     val navController: NavController = LocalNavController.current
     val parentPortfolios = sectionVM.portfolios
     val authViewModel = LocalAuthViewModel.current
+    val token = authViewModel.uiState.collectAsStateWithLifecycle().value.token
 
     Column {
         // Create the Section's label.
@@ -110,23 +112,6 @@ fun CreateSectionForm(
          * and confusing. We have therefore decided to simply have all sections appear in a
          * portfolio that includes their parent adventure.
          */
-//        // Set the portfolios in which to include this Section.
-//        if (parentPortfolios.value.isNotEmpty()) {
-//            DropDownTab(name = "Portfolios") {
-//                MultiSelectList(
-//                    selectedItems = parentPortfolios.value.filter{ it.id in portfolios },
-//                    list = parentPortfolios.value,
-//                    displayText = { it.title },
-//                    selectItem = {
-//                        portfolios.add(it.id)
-//                    },
-//                    deselectItem = {
-//                        portfolios.remove(it.id)
-//                    }
-//                )
-//            }
-//        }
-
         // Save the created section.
         IconButton(onClick = {
             var success = false
@@ -141,36 +126,40 @@ fun CreateSectionForm(
             )
             // Save the section according to its type.
             when (type) {
-                SectionType.IMAGE -> sectionVM.saveNewImageSection(
-                    token = authViewModel.tokenManager.getToken(),
-                    sectionToSave = sectionToSave,
-                    images = imageContent
-                ){
-                    success = it
-                    if (success) {
-                        scope.launch {
-                            messageFlow.emit("Success")
-                        }
-                        navController.navigateUp()
-                    } else {
-                        scope.launch {
-                            messageFlow.emit("Something went wrong: ${sectionVM.getMessage()}")
+                SectionType.IMAGE -> token?.let{
+                    sectionVM.saveNewImageSection(
+                        token = it,
+                        sectionToSave = sectionToSave,
+                        images = imageContent
+                    ){
+                        success = it
+                        if (success) {
+                            scope.launch {
+                                messageFlow.emit("Success")
+                            }
+                            navController.navigateUp()
+                        } else {
+                            scope.launch {
+                                messageFlow.emit("Something went wrong: ${sectionVM.getMessage()}")
+                            }
                         }
                     }
                 }
-                else -> sectionVM.saveNewSection(
-                    token = authViewModel.tokenManager.getToken(),
-                    sectionToSave = sectionToSave
-                ) {
-                    success = it
-                    if (success) {
-                        scope.launch {
-                            messageFlow.emit("Success")
-                        }
-                        navController.navigateUp()
-                    } else {
-                        scope.launch {
-                            messageFlow.emit("Something went wrong: ${sectionVM.getMessage()}")
+                else ->  token?.let{
+                    sectionVM.saveNewSection(
+                        token = it,
+                        sectionToSave = sectionToSave
+                    ) {
+                        success = it
+                        if (success) {
+                            scope.launch {
+                                messageFlow.emit("Success")
+                            }
+                            navController.navigateUp()
+                        } else {
+                            scope.launch {
+                                messageFlow.emit("Something went wrong: ${sectionVM.getMessage()}")
+                            }
                         }
                     }
                 }
