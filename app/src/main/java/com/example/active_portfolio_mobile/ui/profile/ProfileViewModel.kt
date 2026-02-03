@@ -57,12 +57,7 @@ class ProfileViewModel(
     val uiState : StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
-//        val cached = authRepository.getUserOrNull()
-//        if (cached != null){
-//            _uiState.value = _uiState.value.copy(user = cached)
-//        }
-//        // fetch lastest user from backend
-//        getMyProfile()
+
         viewModelScope.launch {
             val cached = authRepository.getUserOrNull()
             if (cached != null) {

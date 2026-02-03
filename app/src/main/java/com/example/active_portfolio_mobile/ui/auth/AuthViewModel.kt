@@ -72,6 +72,7 @@ class AuthViewModel(
             if (token != null){
                 _uiState.value = _uiState.value.copy(
                     isLoggedIn = true,
+                    token = token,
                     user = authRepository.getUserOrNull()
                 )
             }
@@ -102,6 +103,7 @@ class AuthViewModel(
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     isLoggedIn = true,
+                    token = response.token,
                     user = response.user
                 )
 
@@ -147,6 +149,7 @@ class AuthViewModel(
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     isLoggedIn = true,
+                    token = response.token,
                     user = response.user
                 )
             } catch (ex: HttpException) {
@@ -174,6 +177,7 @@ class AuthViewModel(
                 isLoading = false,
                 isLoggedIn = false,
                 user = null,
+                token = null,
                 error = null
             )
         }

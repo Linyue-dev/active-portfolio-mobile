@@ -151,12 +151,10 @@ fun CreateAdventureScreen(
                         // Create Adventure or save changes to existing one.
                         IconButton(
                             onClick = {
-                                token?.let{
-                                    scope.launch {
-                                        adventureVM.saveAdventure(it){
-                                            scope.launch {
-                                                messageFlow.emit(it)
-                                            }
+                                token?.let{ t ->
+                                    adventureVM.saveAdventure(t){ message ->
+                                        scope.launch {
+                                            messageFlow.emit(message)
                                         }
                                     }
                                 }
@@ -171,9 +169,11 @@ fun CreateAdventureScreen(
                         // Delete the Adventure
                         if (adventure.id != "") {
                             DeleteButtonWithConfirm {
-                                token?.let {
-                                    scope.launch {
-                                        messageFlow.emit(it)
+                                token?.let { t ->
+                                    adventureVM.deleteAdventure(t) { message ->
+                                        scope.launch {
+                                            messageFlow.emit(message)
+                                        }
                                     }
                                 }
                             }
