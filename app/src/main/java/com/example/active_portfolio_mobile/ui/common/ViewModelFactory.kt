@@ -3,6 +3,7 @@ package com.example.active_portfolio_mobile.ui.common
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.active_portfolio_mobile.data.local.TokenManager
+import com.example.active_portfolio_mobile.domain.repository.AuthRepository
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.ui.profile.ProfileViewModel
 /**
@@ -22,7 +23,7 @@ import com.example.active_portfolio_mobile.ui.profile.ProfileViewModel
  * ```
  */
 class ViewModelFactory (
-    private  val tokenManager: TokenManager
+    private  val authRepository: AuthRepository
 ) : ViewModelProvider.Factory{
 
     override fun <T : ViewModel> create (modelClass: Class<T>) : T{
@@ -30,11 +31,11 @@ class ViewModelFactory (
         @Suppress("UNCHECKED_CAST")
         return when {
             modelClass.isAssignableFrom(AuthViewModel::class.java) -> {
-                AuthViewModel(tokenManager) as T
+                AuthViewModel(authRepository) as T
             }
 
             modelClass.isAssignableFrom(ProfileViewModel::class.java) -> {
-                ProfileViewModel(tokenManager) as T
+                ProfileViewModel(authRepository) as T
             }
 
             else -> {

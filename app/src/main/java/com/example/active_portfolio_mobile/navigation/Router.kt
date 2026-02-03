@@ -33,6 +33,8 @@ import com.example.active_portfolio_mobile.Screen.adventure.UpdateSectionsScreen
 import com.example.active_portfolio_mobile.Screen.portfolio.DisplayPortfolioPage
 import com.example.active_portfolio_mobile.ui.profile.ProfilePage
 import com.example.active_portfolio_mobile.data.local.TokenManager
+import com.example.active_portfolio_mobile.data.remote.repository.AuthRepositoryImpl
+import com.example.active_portfolio_mobile.domain.repository.AuthRepository
 import com.example.active_portfolio_mobile.ui.auth.AuthViewModel
 import com.example.active_portfolio_mobile.ui.common.ViewModelFactory
 import com.example.active_portfolio_mobile.ui.auth.LoginPage
@@ -58,10 +60,15 @@ fun Router(modifier: Modifier) {
     val getPortfolio: GetPortfoliosVM = viewModel()
     val searchViewModel: SearchViewModel = viewModel()
 
-    val authViewModel: AuthViewModel = viewModel(
-        factory = ViewModelFactory(tokenManager)
-    )
+    // create AuthRepository
+    val authRepository: AuthRepository = remember {
+        AuthRepositoryImpl(tokenManager)
+    }
 
+    // use authRepository to create AuthViewModel
+    val authViewModel: AuthViewModel = viewModel(
+        factory = ViewModelFactory(authRepository)
+    )
     CompositionLocalProvider(LocalAuthViewModel provides authViewModel) {
         CompositionLocalProvider(
             LocalNavController provides navController
@@ -204,7 +211,7 @@ fun Router(modifier: Modifier) {
 
                     if (isLoggedIn) {
                         val profileViewModel: ProfileViewModel = viewModel(
-                            factory = ViewModelFactory(tokenManager)
+                            factory = ViewModelFactory(authRepository)
                         )
                         val adventureVM: AdventureVM = viewModel()
                         ProfilePage(
@@ -220,7 +227,7 @@ fun Router(modifier: Modifier) {
                 }
                 composable(Routes.EditProfile.route) {
                     val profileViewModel: ProfileViewModel = viewModel(
-                        factory = ViewModelFactory(tokenManager)
+                        factory = ViewModelFactory(authRepository)
                     )
                     EditProfilePage(
                         viewModel = profileViewModel,
@@ -240,7 +247,7 @@ fun Router(modifier: Modifier) {
                 ) { backStackEntry ->
                     val field = backStackEntry.arguments?.getString("field") ?: ""
                     val profileViewModel: ProfileViewModel = viewModel(
-                        factory = ViewModelFactory(tokenManager)
+                        factory = ViewModelFactory(authRepository)
                     )
                     EditFieldPage(
                         viewModel = profileViewModel,
@@ -252,7 +259,7 @@ fun Router(modifier: Modifier) {
                     route = Routes.ChangePassword.route
                 ){
                     val profileViewModel: ProfileViewModel = viewModel(
-                        factory = ViewModelFactory(tokenManager)
+                        factory = ViewModelFactory(authRepository)
                     )
                     ChangePasswordPage(
                         viewModel = profileViewModel
@@ -286,7 +293,7 @@ fun Router(modifier: Modifier) {
                     )
                 ) { backStackEntry ->
                     val profileViewModel: ProfileViewModel = viewModel(
-                        factory = ViewModelFactory(tokenManager)
+                        factory = ViewModelFactory(authRepository)
                     )
                     val adventureVM: AdventureVM = viewModel()
                     val username = backStackEntry.arguments?.getString("username") ?: ""
